@@ -1,34 +1,51 @@
-import { Tabs } from 'expo-router';
+import { Link, Tabs } from 'expo-router';
 import Icon from '@expo/vector-icons/Feather';
-import { View } from 'react-native';
+import { View, Text, StyleSheet, Modal } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-
-const CustomIcon = ({ focused, name }: { focused: boolean; name: any }) => (
-    <View>
-        <View style={{ backgroundColor: focused ? '#1c1c1c' : 'white', borderRadius: 30, width: 100, height: 60, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Icon
-                name={name}
-                size={30}
-                color={focused ? 'white' : 'gray'}
-            />
-        </View>
-    </View>
-);
+import Entypo from '@expo/vector-icons/Entypo';
+import { useDarkModeContext } from '@/providers/themeProvider';
+import { Colors } from '@/constants/Colors';
 
 const TabsLayout = () => {
+    const [isDarkMode, setIsDarkMode] = useDarkModeContext();
+
+    const CustomIcon = ({ focused, name, title }: { focused: boolean; name: any; title: string }) => (
+        <View>
+            <View style={[styles.customIconFill, { backgroundColor: focused ? Colors.green : isDarkMode ? Colors.dark : Colors.light }]}>
+                <Icon
+                    name={name}
+                    size={30}
+                    color={focused ? Colors.light : isDarkMode ? Colors.light : Colors.gray}
+                />
+                {focused ? <Text style={{ color: Colors.light, fontWeight: 'bold' }}>{title}</Text> : null}
+            </View>
+        </View>
+    );
+
     return (
         <>
-            <StatusBar style="dark" />
+            <StatusBar style="light" />
+            <View style={[styles.header, { backgroundColor: isDarkMode ? Colors.green : Colors.green }]}>
+                <View style={styles.headerInner}>
+                    <Text style={styles.headerText}>Bookaccio</Text>
+                    <Link href={'/(settings)/settings'}>
+                        <Entypo
+                            name="dots-three-vertical"
+                            size={22}
+                            color="white"
+                        />
+                    </Link>
+                </View>
+            </View>
             <Tabs
                 screenOptions={{
                     headerShown: false,
-                    tabBarActiveTintColor: 'blue',
                     tabBarShowLabel: false,
                     tabBarStyle: {
-                        backgroundColor: 'white',
-                        height: 70,
-                        margin: 20,
-                        borderRadius: 50,
+                        backgroundColor: isDarkMode ? Colors.dark : Colors.light,
+                        height: 65,
+                        borderTopColor: isDarkMode ? Colors.black : Colors.light,
+                        elevation: 10,
                     },
                 }}
             >
@@ -41,8 +58,10 @@ const TabsLayout = () => {
                             <CustomIcon
                                 name="bookmark"
                                 focused={focused}
+                                title="For Later"
                             />
                         ),
+                        // unmountOnBlur: true,
                     }}
                 />
                 <Tabs.Screen
@@ -54,8 +73,10 @@ const TabsLayout = () => {
                             <CustomIcon
                                 name="book-open"
                                 focused={focused}
+                                title="Reading"
                             />
                         ),
+                        // unmountOnBlur: true,
                     }}
                 />
                 <Tabs.Screen
@@ -67,8 +88,10 @@ const TabsLayout = () => {
                             <CustomIcon
                                 name="book"
                                 focused={focused}
+                                title="Done"
                             />
                         ),
+                        // unmountOnBlur: true,
                     }}
                 />
             </Tabs>
@@ -77,3 +100,35 @@ const TabsLayout = () => {
 };
 
 export default TabsLayout;
+
+const styles = StyleSheet.create({
+    header: {
+        width: '100%',
+        height: 90,
+        justifyContent: 'flex-end',
+        paddingHorizontal: 20,
+        paddingBottom: 10,
+    },
+
+    headerInner: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
+    headerText: {
+        fontSize: 25,
+        color: 'white',
+        fontWeight: 'bold',
+    },
+
+    customIconFill: {
+        borderRadius: 30,
+        width: 100,
+        height: 60,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 2,
+    },
+});
