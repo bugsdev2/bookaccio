@@ -5,11 +5,14 @@ import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import * as Progress from 'react-native-progress';
 import { useFontsContext } from '@/providers/fontProvider';
+import { useAccentColorContext } from '@/providers/accentColorProvider';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
 const BookItem = ({ data }: { data: BookItem }) => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
+
+    const [accentColor, setAccentColor] = useAccentColorContext();
 
     const [font, setFont] = useFontsContext();
 
@@ -26,7 +29,7 @@ const BookItem = ({ data }: { data: BookItem }) => {
                     <Progress.Bar
                         style={[styles.progressBar]}
                         width={null}
-                        color={Colors.green}
+                        color={accentColor}
                         progress={data?.currentPage / data?.pageCount}
                     />
                 ) : null}

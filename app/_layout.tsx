@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import ThemeProvider from '@/providers/themeProvider';
 import { useFonts } from 'expo-font';
 import FontsProvider from '@/providers/fontProvider';
+import AccentColorProvider from '@/providers/accentColorProvider';
 
 export default function RootLayout() {
     const [loaded] = useFonts({
@@ -30,23 +31,25 @@ export default function RootLayout() {
     }
 
     return (
-        <FontsProvider>
-            <ThemeProvider>
-                <Stack>
-                    <Stack.Screen
-                        name="index"
-                        options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                        name="(tabs)"
-                        options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                        name="(settings)"
-                        options={{ headerShown: false }}
-                    />
-                </Stack>
-            </ThemeProvider>
-        </FontsProvider>
+        <AccentColorProvider>
+            <FontsProvider>
+                <ThemeProvider>
+                    <Stack>
+                        <Stack.Screen
+                            name="index"
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="(tabs)"
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="(settings)"
+                            options={{ headerShown: false }}
+                        />
+                    </Stack>
+                </ThemeProvider>
+            </FontsProvider>
+        </AccentColorProvider>
     );
 }

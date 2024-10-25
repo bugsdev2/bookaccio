@@ -5,11 +5,14 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { Colors } from '../constants/Colors';
 import { useFontsContext } from '@/providers/fontProvider';
 import { setData } from '@/helpers/storage';
+import { useAccentColorContext } from '@/providers/accentColorProvider';
 
 const SettingItem = ({ label, data }: SettingItemProps) => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
 
     const [font, setFont] = useFontsContext();
+
+    const [accentColor, setAccentColor] = useAccentColorContext();
 
     const selectedText = () => {
         switch (label) {
@@ -17,6 +20,8 @@ const SettingItem = ({ label, data }: SettingItemProps) => {
                 return isDarkMode ? 'Dark' : 'Light';
             case 'Font':
                 return font;
+            case 'Accent Color':
+                return data.filter((item) => item.value === accentColor)[0].title;
         }
     };
 
@@ -30,6 +35,10 @@ const SettingItem = ({ label, data }: SettingItemProps) => {
                 setFont(value);
                 setData('font', value);
                 break;
+            case 'Accent Color':
+                setAccentColor(value);
+                setData('accentColor', value);
+                break;
         }
     };
 
@@ -38,14 +47,13 @@ const SettingItem = ({ label, data }: SettingItemProps) => {
             <Text style={[styles.themeLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>{label}</Text>
             <View style={[styles.themeSelect]}>
                 <Dropdown
-                    style={[styles.dropDownView, { backgroundColor: isDarkMode ? Colors.light : Colors.green }]}
+                    style={[styles.dropDownView, { backgroundColor: isDarkMode ? Colors.light : accentColor }]}
                     data={data}
                     onChange={(selectedItem) => handleSelectedItem(selectedItem.value)}
                     labelField={'title'}
                     placeholder={selectedText()}
                     placeholderStyle={[styles.dropDownView, { color: isDarkMode ? Colors.dark : Colors.light }]}
                     selectedTextStyle={[styles.dropDownView, { color: isDarkMode ? Colors.dark : Colors.light }]}
-                    containerStyle={styles.dropDownContainer}
                     valueField={'value'}
                     itemTextStyle={styles.dropDownText}
                 />
@@ -98,8 +106,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         fontFamily: 'MontR',
     },
-
-    dropDownContainer: {},
 
     dropDownText: {
         fontFamily: 'MontR',

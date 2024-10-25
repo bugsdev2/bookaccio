@@ -6,9 +6,13 @@ import { Colors } from '@/constants/Colors';
 import SettingItem from '@/components/settingItem';
 import { theme } from '@/constants/theme';
 import { fonts } from '@/constants/fonts';
+import { accentColors } from '@/constants/accentColors';
+import { useAccentColorContext } from '@/providers/accentColorProvider';
 
 const Settings = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
+
+    const [accentColor, setAccentColor] = useAccentColorContext();
 
     return (
         <ScrollView
@@ -17,16 +21,20 @@ const Settings = () => {
         >
             <SafeAreaView>
                 <View style={styles.headerContainer}>
-                    <Text style={[styles.headerTitle]}>Settings</Text>
+                    <Text style={[styles.headerTitle, { color: accentColor }]}>Settings</Text>
                 </View>
-                <View style={{ gap: 10 }}>
+                <View style={{ gap: 15 }}>
                     <SettingItem
-                        label="Theme"
-                        data={theme}
+                        label="Accent Color"
+                        data={accentColors}
                     />
                     <SettingItem
                         label="Font"
                         data={fonts}
+                    />
+                    <SettingItem
+                        label="Theme"
+                        data={theme}
                     />
                 </View>
             </SafeAreaView>
@@ -52,7 +60,6 @@ const styles = StyleSheet.create({
 
     headerTitle: {
         fontSize: 25,
-        color: Colors.green,
         textAlign: 'center',
         fontFamily: 'MontB',
     },

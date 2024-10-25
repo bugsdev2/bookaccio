@@ -5,13 +5,16 @@ import { StatusBar } from 'expo-status-bar';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
+import { useAccentColorContext } from '@/providers/accentColorProvider';
 
 const TabsLayout = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
 
+    const [accentColor, setAccentColor] = useAccentColorContext();
+
     const CustomIcon = ({ focused, name, title }: { focused: boolean; name: any; title: string }) => (
         <View>
-            <View style={[styles.customIconFill, { backgroundColor: focused ? Colors.green : isDarkMode ? Colors.dark : Colors.light }]}>
+            <View style={[styles.customIconFill, { backgroundColor: focused ? accentColor : isDarkMode ? Colors.dark : Colors.light }]}>
                 <Icon
                     name={name}
                     size={30}
@@ -25,7 +28,7 @@ const TabsLayout = () => {
     return (
         <>
             <StatusBar style="light" />
-            <View style={[styles.header, { backgroundColor: isDarkMode ? Colors.green : Colors.green }]}>
+            <View style={[styles.header, { backgroundColor: accentColor }]}>
                 <View style={styles.headerInner}>
                     <Text style={styles.headerText}>BOOKACCIO</Text>
                     <Link

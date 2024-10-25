@@ -7,9 +7,13 @@ import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import data from '../../test';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useAccentColorContext } from '@/providers/accentColorProvider';
 
 const ToRead = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
+
+    const [accentColor, setAccentColor] = useAccentColorContext();
+
     const [hidePlusBtn, setHidePlusBtn] = useState(false);
 
     return (
@@ -28,7 +32,7 @@ const ToRead = () => {
                     <AntDesign
                         name="pluscircle"
                         size={55}
-                        color={Colors.green}
+                        color={accentColor}
                     />
                 )}
             </View>
