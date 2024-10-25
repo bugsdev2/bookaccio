@@ -17,9 +17,9 @@ const ToRead = () => {
             <FlatList
                 data={data?.books}
                 renderItem={({ item }) => <View>{item.state === 'READ_LATER' ? <BookItem data={item} /> : null}</View>}
-                // ListFooterComponent={() => <View style={{ height: 100 }} />}
-                onScrollBeginDrag={() => setHidePlusBtn(true)}
-                onScrollEndDrag={() => setHidePlusBtn(false)}
+                ListFooterComponent={() => <View style={{ height: 10 }} />}
+                // onScrollBeginDrag={() => setHidePlusBtn(true)}
+                // onScrollEndDrag={() => setHidePlusBtn(false)}
                 onMomentumScrollBegin={() => setHidePlusBtn(true)}
                 onMomentumScrollEnd={() => setHidePlusBtn(false)}
             />

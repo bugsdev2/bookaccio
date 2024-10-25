@@ -1,6 +1,6 @@
 import { Link, Tabs } from 'expo-router';
 import Icon from '@expo/vector-icons/Feather';
-import { View, Text, StyleSheet, Modal } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -27,13 +27,18 @@ const TabsLayout = () => {
             <StatusBar style="light" />
             <View style={[styles.header, { backgroundColor: isDarkMode ? Colors.green : Colors.green }]}>
                 <View style={styles.headerInner}>
-                    <Text style={styles.headerText}>Bookaccio</Text>
-                    <Link href={'/(settings)/settings'}>
-                        <Entypo
-                            name="dots-three-vertical"
-                            size={22}
-                            color="white"
-                        />
+                    <Text style={styles.headerText}>BOOKACCIO</Text>
+                    <Link
+                        href={'/(settings)/settings'}
+                        asChild
+                    >
+                        <Pressable style={styles.headerIconContainer}>
+                            <Entypo
+                                name="dots-three-vertical"
+                                size={22}
+                                color="white"
+                            />
+                        </Pressable>
                     </Link>
                 </View>
             </View>
@@ -106,7 +111,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 90,
         justifyContent: 'flex-end',
-        paddingHorizontal: 20,
+        paddingLeft: 20,
         paddingBottom: 10,
     },
 
@@ -119,7 +124,9 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 25,
         color: 'white',
-        fontWeight: 'bold',
+        // fontWeight: 'bold',
+        fontFamily: 'OswaldB',
+        // letterSpacing: 0.5,
     },
 
     customIconFill: {
@@ -130,5 +137,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 2,
+    },
+
+    headerIconContainer: {
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingVertical: 8,
     },
 });

@@ -1,9 +1,10 @@
-import { StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
+import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getData, setData } from '@/helpers/storage';
-import SelectDropdown from 'react-native-select-dropdown';
-import { ThemeContext, useDarkModeContext } from '@/providers/themeProvider';
+import { useDarkModeContext } from '@/providers/themeProvider';
+import { Colors } from '@/constants/Colors';
+import SettingItem from '@/components/settingItem';
+import { useFontsContext } from '@/providers/fontProvider';
 
 const Settings = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -13,38 +14,60 @@ const Settings = () => {
         { title: 'Dark', value: true },
     ];
 
+    const font = [
+        { title: 'Libre', value: 'Libre' },
+        { title: 'Lora', value: 'Lora' },
+        { title: 'Mont', value: 'Mont' },
+        { title: 'Nunito', value: 'Nunito' },
+        { title: 'Oswald', value: 'Oswald' },
+        { title: 'PlayFair', value: 'PlayFair' },
+        { title: 'Quicksand', value: 'Quicksand' },
+    ];
+
     return (
-        <SafeAreaView>
-            <View style={{ flexDirection: 'row' }}>
-                <Text>Theme:</Text>
-                <View style={{ flex: 1, borderWidth: 6 }}>
-                    <SelectDropdown
-                        dropdownStyle={{ flex: 1 }}
-                        onSelect={(selectedItem) => {
-                            setIsDarkMode(selectedItem.value);
-                        }}
+        <ScrollView
+            style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}
+            contentContainerStyle={styles.contentContainer}
+        >
+            <SafeAreaView>
+                <View style={styles.headerContainer}>
+                    <Text style={[styles.headerTitle]}>Settings</Text>
+                </View>
+                <View style={{ gap: 10 }}>
+                    <SettingItem
+                        label="Theme"
                         data={theme}
-                        renderButton={(selectedItem, isOpened) => {
-                            return (
-                                <View style={{ backgroundColor: 'yellow', borderWidth: 3 }}>
-                                    <Text>{selectedItem ? selectedItem.title : isDarkMode ? 'Dark' : 'Light'}</Text>
-                                </View>
-                            );
-                        }}
-                        renderItem={(item, index, isSelected) => {
-                            return (
-                                <View style={{ backgroundColor: 'red' }}>
-                                    <Text>{item.title}</Text>
-                                </View>
-                            );
-                        }}
+                    />
+                    <SettingItem
+                        label="Font"
+                        data={font}
                     />
                 </View>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </ScrollView>
     );
 };
 
 export default Settings;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    container: {
+        //
+    },
+
+    contentContainer: {
+        padding: 10,
+    },
+
+    headerContainer: {
+        padding: 10,
+        marginBottom: 10,
+    },
+
+    headerTitle: {
+        fontSize: 25,
+        color: Colors.green,
+        textAlign: 'center',
+        fontFamily: 'MontB',
+    },
+});

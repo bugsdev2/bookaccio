@@ -1,4 +1,9 @@
-declare module '.png';
+declare module '*.png';
+
+declare interface SettingItemProps {
+    label: string;
+    data: { title: string; value: string | boolean }[];
+}
 
 declare interface BookItem {
     author: string;

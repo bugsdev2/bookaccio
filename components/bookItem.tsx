@@ -1,14 +1,17 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import * as Progress from 'react-native-progress';
+import { useFontsContext } from '@/providers/fontProvider';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
 const BookItem = ({ data }: { data: BookItem }) => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
+
+    const [font, setFont] = useFontsContext();
 
     const percentCompleted = Math.round((data.currentPage / data.pageCount) * 100);
 
@@ -38,14 +41,14 @@ const BookItem = ({ data }: { data: BookItem }) => {
                     <View style={{ flexWrap: 'wrap' }}>
                         <Text
                             numberOfLines={1}
-                            style={[styles.title, { color: isDarkMode ? Colors.light : Colors.dark }]}
+                            style={[styles.title, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}B` }]}
                         >
                             {data.title.toUpperCase()}
                         </Text>
-                        <Text style={{ color: isDarkMode ? Colors.light : Colors.dark }}>{data?.subTitle}</Text>
+                        <Text style={[styles.subtitle, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{data?.subTitle}</Text>
                     </View>
                     <View>
-                        <Text style={[styles.author, { color: isDarkMode ? Colors.light : Colors.dark }]}>{data.author}</Text>
+                        <Text style={[styles.author, { color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>{data.author}</Text>
                     </View>
                 </View>
                 <View style={[styles.endContent, { justifyContent: data.state === 'READING' ? 'space-around' : 'flex-start' }]}>
@@ -54,7 +57,7 @@ const BookItem = ({ data }: { data: BookItem }) => {
                         size={18}
                         color={isDarkMode ? Colors.light : Colors.dark}
                     />
-                    {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark }]}>{percentCompleted}%</Text> : null}
+                    {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
                 </View>
             </View>
         </TouchableOpacity>
@@ -70,7 +73,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderWidth: 1,
         gap: 10,
-        marginBottom: 5,
+        marginBottom: 0,
         borderRadius: 10,
         overflow: 'hidden',
     },
@@ -82,17 +85,22 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        fontWeight: 'bold',
+        // Commenting out these font families because I'm using them dynamically
+        // fontFamily: 'QuicksandB',
+        letterSpacing: 0.5,
+    },
+
+    subtitle: {
+        // fontFamily: 'QuicksandR',
     },
 
     author: {
-        //
+        // fontFamily: 'QuicksandR',
     },
 
     midContent: {
         width: '74%',
         overflow: 'hidden',
-        justifyContent: 'space-around',
     },
 
     endContent: {
