@@ -4,6 +4,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Colors } from '../constants/Colors';
 import { useFontsContext } from '@/providers/fontProvider';
+import { setData } from '@/helpers/storage';
 
 const SettingItem = ({ label, data }: SettingItemProps) => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -23,9 +24,11 @@ const SettingItem = ({ label, data }: SettingItemProps) => {
         switch (label) {
             case 'Theme':
                 setIsDarkMode(value);
+                setData('theme', value);
                 break;
             case 'Font':
                 setFont(value);
+                setData('font', value);
                 break;
         }
     };

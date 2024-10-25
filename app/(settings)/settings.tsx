@@ -4,25 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import SettingItem from '@/components/settingItem';
-import { useFontsContext } from '@/providers/fontProvider';
+import { theme } from '@/constants/theme';
+import { fonts } from '@/constants/fonts';
 
 const Settings = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
-
-    const theme = [
-        { title: 'Light', value: false },
-        { title: 'Dark', value: true },
-    ];
-
-    const font = [
-        { title: 'Libre', value: 'Libre' },
-        { title: 'Lora', value: 'Lora' },
-        { title: 'Mont', value: 'Mont' },
-        { title: 'Nunito', value: 'Nunito' },
-        { title: 'Oswald', value: 'Oswald' },
-        { title: 'PlayFair', value: 'PlayFair' },
-        { title: 'Quicksand', value: 'Quicksand' },
-    ];
 
     return (
         <ScrollView
@@ -40,7 +26,7 @@ const Settings = () => {
                     />
                     <SettingItem
                         label="Font"
-                        data={font}
+                        data={fonts}
                     />
                 </View>
             </SafeAreaView>
