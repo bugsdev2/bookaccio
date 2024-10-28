@@ -13,6 +13,10 @@ const SettingLayout = () => {
                     name="settings"
                     options={{ headerShown: false }}
                 />
+                <Stack.Screen
+                    name="about"
+                    options={{ headerShown: false }}
+                />
             </Stack>
         </>
     );

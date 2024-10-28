@@ -1,16 +1,21 @@
 import { Link, Tabs } from 'expo-router';
 import Icon from '@expo/vector-icons/Feather';
-import { View, Text, StyleSheet, Modal, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
+import Modal from 'react-native-modal';
+import { useState } from 'react';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const TabsLayout = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
 
     const [accentColor, setAccentColor] = useAccentColorContext();
+
+    const [modalVisible, setModalVisible] = useState(false);
 
     const CustomIcon = ({ focused, name, title }: { focused: boolean; name: any; title: string }) => (
         <View>
@@ -31,18 +36,71 @@ const TabsLayout = () => {
             <View style={[styles.header, { backgroundColor: accentColor }]}>
                 <View style={styles.headerInner}>
                     <Text style={styles.headerText}>BOOKACCIO</Text>
-                    <Link
-                        href={'/(settings)/settings'}
-                        asChild
+                    <Pressable
+                        onPress={() => setModalVisible(true)}
+                        style={styles.headerIconContainer}
                     >
-                        <Pressable style={styles.headerIconContainer}>
-                            <Entypo
-                                name="dots-three-vertical"
-                                size={22}
-                                color="white"
-                            />
-                        </Pressable>
-                    </Link>
+                        <Entypo
+                            name="dots-three-vertical"
+                            size={22}
+                            color="white"
+                        />
+                    </Pressable>
+                    <Modal
+                        isVisible={modalVisible}
+                        onBackdropPress={() => setModalVisible(false)}
+                    >
+                        <View style={[styles.modalView, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
+                            <Pressable
+                                style={[styles.closeBtn]}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <MaterialIcons
+                                    name="close"
+                                    size={23}
+                                    color={isDarkMode ? Colors.light : accentColor}
+                                />
+                            </Pressable>
+                            <View>
+                                <View>
+                                    <Link
+                                        href={'/(settings)/settings'}
+                                        asChild
+                                    >
+                                        <Pressable
+                                            style={styles.linkContainer}
+                                            onPress={() => setModalVisible(false)}
+                                        >
+                                            <MaterialIcons
+                                                name="settings"
+                                                size={22}
+                                                color={isDarkMode ? Colors.light : accentColor}
+                                            />
+                                            <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>Settings</Text>
+                                        </Pressable>
+                                    </Link>
+                                </View>
+                                <View>
+                                    <Link
+                                        href={'/(settings)/about'}
+                                        asChild
+                                    >
+                                        <Pressable
+                                            style={styles.linkContainer}
+                                            onPress={() => setModalVisible(false)}
+                                        >
+                                            <MaterialIcons
+                                                name="info"
+                                                size={22}
+                                                color={isDarkMode ? Colors.light : accentColor}
+                                            />
+                                            <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>About</Text>
+                                        </Pressable>
+                                    </Link>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
             </View>
             <Tabs
@@ -146,5 +204,36 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         paddingRight: 15,
         paddingVertical: 8,
+    },
+
+    modalView: {
+        height: 200,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 15,
+        margin: -20,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
+
+    linkContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        padding: 10,
+    },
+
+    linkText: {
+        fontSize: 17,
+        fontFamily: 'MontB',
+    },
+
+    closeBtn: {
+        position: 'absolute',
+        top: 15,
+        right: 15,
     },
 });

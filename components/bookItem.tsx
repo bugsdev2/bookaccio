@@ -6,6 +6,7 @@ import { Colors } from '@/constants/Colors';
 import * as Progress from 'react-native-progress';
 import { useFontsContext } from '@/providers/fontProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
+import { router } from 'expo-router';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -23,7 +24,14 @@ const BookItem = ({ data }: { data: BookItem }) => {
     }
 
     return (
-        <TouchableOpacity>
+        <TouchableOpacity
+            onPress={() =>
+                router.push({
+                    pathname: '/(pages)/[bookDetails]',
+                    params: { bookDetails: data.title },
+                })
+            }
+        >
             <View style={[styles.bookContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
                 {data.state === 'READING' ? (
                     <Progress.Bar

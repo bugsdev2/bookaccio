@@ -47,6 +47,10 @@ export default function RootLayout() {
                             name="(settings)"
                             options={{ headerShown: false }}
                         />
+                        <Stack.Screen
+                            name="(pages)"
+                            options={{ headerShown: false }}
+                        />
                     </Stack>
                 </ThemeProvider>
             </FontsProvider>

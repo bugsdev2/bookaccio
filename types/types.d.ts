@@ -21,8 +21,8 @@ declare interface BookItem {
     startDate: number;
     state: string;
     subTitle: string;
-    summary?: string;
-    thumbnailAddress?: string;
+    summary: string;
+    thumbnailAddress: string;
     title: string;
     wishlistDate: number;
 }

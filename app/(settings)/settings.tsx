@@ -24,18 +24,24 @@ const Settings = () => {
                     <Text style={[styles.headerTitle, { color: accentColor }]}>Settings</Text>
                 </View>
                 <View style={{ gap: 15 }}>
-                    <SettingItem
-                        label="Accent Color"
-                        data={accentColors}
-                    />
-                    <SettingItem
-                        label="Font"
-                        data={fonts}
-                    />
-                    <SettingItem
-                        label="Theme"
-                        data={theme}
-                    />
+                    <View style={styles.sectionContainer}>
+                        <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Colors</Text>
+                        <SettingItem
+                            label="Accent Color"
+                            data={accentColors}
+                        />
+                        <SettingItem
+                            label="Theme"
+                            data={theme}
+                        />
+                    </View>
+                    <View style={styles.sectionContainer}>
+                        <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Fonts</Text>
+                        <SettingItem
+                            label="Font"
+                            data={fonts}
+                        />
+                    </View>
                 </View>
             </SafeAreaView>
         </ScrollView>
@@ -62,5 +68,15 @@ const styles = StyleSheet.create({
         fontSize: 25,
         textAlign: 'center',
         fontFamily: 'MontB',
+    },
+
+    sectionContainer: {
+        gap: 15,
+    },
+
+    subheading: {
+        textAlign: 'center',
+        fontFamily: 'MontB',
+        fontSize: 18,
     },
 });
