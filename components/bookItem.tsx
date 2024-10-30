@@ -27,7 +27,7 @@ const BookItem = ({ data }: { data: BookItem }) => {
         <TouchableOpacity
             onPress={() =>
                 router.push({
-                    pathname: '/(pages)/[bookDetails]',
+                    pathname: '/(bookDetails)/[bookDetails]',
                     params: { bookDetails: data.title },
                 })
             }

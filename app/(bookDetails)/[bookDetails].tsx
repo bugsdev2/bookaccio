@@ -52,7 +52,7 @@ const BookDetails = () => {
             updateBookDetails({ id, currentPage: currentPage });
         }
         if (pages !== undefined) {
-            updateBookDetails({ id, pageCount: pages });
+            updateBookDetails({ id, pageCount: Number(pages) });
         }
         Keyboard.dismiss();
         setIsModalVisible(false);

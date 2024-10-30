@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Pressable, TextInput } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, TextInput, Image, ScrollView, Keyboard } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -8,21 +8,35 @@ import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { getBookList } from '@/helpers/getBookList';
 import Modal from 'react-native-modal';
 import { useFontsContext } from '@/providers/fontProvider';
+import { getBookDetails } from '@/helpers/getBookDetails';
+import axios from 'axios';
+
+import BookSearchItem from '@/components/bookSearchItem';
+import { useSelectedBookContext } from '@/providers/selectedBookProvider';
+import { router } from 'expo-router';
 
 const Home = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
 
     const [accentColor, setAccentColor] = useAccentColorContext();
 
+    const [selectedBook, setSelectedBook] = useSelectedBookContext();
+
     const [font, setFont] = useFontsContext();
 
     const [hidePlusBtn, setHidePlusBtn] = useState(false);
 
-    const [bookList, setBookList] = useState<BookItem[]>();
+    let [bookList, setBookList] = useState<BookItem[]>();
 
     const [firstModal, setFirstModal] = useState(false);
-    const [manualModal, setManualModal] = useState(false);
+
     const [searchModal, setSearchModal] = useState(false);
+
+    const [title, setTitle] = useState('');
+
+    const [isSearchActive, setIsSearchActive] = useState(false);
+
+    const [bookSearchResults, setBookSearchResults] = useState<BookSearchResultProp[]>([]);
 
     useEffect(() => {
         getBookList().then((data) => {
@@ -33,6 +47,38 @@ const Home = () => {
     function handleAddBook() {
         setFirstModal(true);
     }
+
+    async function handleBookSearch(title: string) {
+        Keyboard.dismiss();
+        setIsSearchActive(true);
+        const data = await getBookDetails(title);
+        setBookSearchResults(await data);
+    }
+
+    async function handleBookSelection(url: string, state: string) {
+        const res = await axios.get(url);
+        setSelectedBook(await res.data.volumeInfo);
+        Keyboard.dismiss();
+        setSearchModal(false);
+        router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
+    }
+
+    function addBookManually(state: string) {
+        setSelectedBook({});
+        Keyboard.dismiss();
+        setFirstModal(false);
+        router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
+    }
+
+    // function handleNextPage() {
+    //     setInitialIndex((prevIndex) => (prevIndex += 10));
+    //     setFinalIndex((prevIndex) => (prevIndex += 10));
+    // }
+
+    // function handlePreviousPage() {
+    //     setInitialIndex((prevIndex) => Math.min(0, (prevIndex -= 10)));
+    //     setFinalIndex((prevIndex) => Math.min(10, (prevIndex -= 10)));
+    // }
 
     return (
         <View style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
@@ -66,10 +112,7 @@ const Home = () => {
                     <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Add Book</Text>
                     <View style={styles.modalButtonContainer}>
                         <Pressable
-                            onPress={() => {
-                                setFirstModal(false);
-                                setManualModal(true);
-                            }}
+                            onPress={() => addBookManually('READING')}
                             style={styles.modalButton}
                         >
                             <AntDesign
@@ -95,23 +138,38 @@ const Home = () => {
                 </View>
             </Modal>
             <Modal
-                isVisible={manualModal}
-                onBackdropPress={() => setManualModal(false)}
-            >
-                <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
-                    <Text>Manual Modal</Text>
-                </View>
-            </Modal>
-            <Modal
                 isVisible={searchModal}
                 onBackdropPress={() => setSearchModal(false)}
             >
                 <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
-                    <Text>Enter the title</Text>
-                    <TextInput style={[styles.modalSearchInput]} />
-                    <Pressable style={styles.searchContainer}>
-                        <Text>SEARCH</Text>
+                    <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the title</Text>
+                    <TextInput
+                        style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
+                        value={title}
+                        onChangeText={(value) => setTitle(value)}
+                        onSubmitEditing={() => handleBookSearch(title)}
+                    />
+                    <Pressable
+                        onTouchStart={() => handleBookSearch(title)}
+                        style={styles.searchContainer}
+                    >
+                        <Text style={[{ fontFamily: `${font}B` }]}>SEARCH</Text>
                     </Pressable>
+                    {isSearchActive && (
+                        <ScrollView
+                            style={styles.modalScrollView}
+                            contentContainerStyle={{ width: '90%' }}
+                        >
+                            {bookSearchResults.map((book) => (
+                                <View key={book.selfLink}>
+                                    <BookSearchItem
+                                        book={book}
+                                        onPress={() => handleBookSelection(book.selfLink, 'READING')}
+                                    />
+                                </View>
+                            ))}
+                        </ScrollView>
+                    )}
                 </View>
             </Modal>
         </View>
@@ -172,5 +230,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 25,
         paddingVertical: 5,
         borderRadius: 10,
+    },
+
+    modalScrollView: {
+        height: 300,
     },
 });

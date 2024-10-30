@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { getBookList } from './getBookList';
 import { storeBooks } from './storeBooks';
 
@@ -28,6 +29,10 @@ export const updateBookDetails = async ({ currentPage, author, endDate, googleBo
 
     const updatedBooklist = bookList.map((book) => {
         if (book.id === id) {
+            if (currentPage && currentPage > book.pageCount) {
+                Alert.alert("Current Page shouldn't exceed the Page Count");
+            }
+
             return {
                 currentPage: currentPage ? currentPage : book.currentPage,
                 author: author ? author : book.author,
