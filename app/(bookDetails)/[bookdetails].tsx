@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, Pressable, TextInput, Alert, Keyboard, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Pressable, TextInput, Alert, Keyboard, ActivityIndicator, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { getBookList } from '@/helpers/getBookList';
@@ -9,15 +9,18 @@ import { Colors } from '@/constants/Colors';
 import * as Progress from 'react-native-progress';
 import Modal from 'react-native-modal';
 import { updateBookDetails } from '@/helpers/updateBookDetails';
+import { blankBook } from '@/helpers/blankBookDetails';
+import { formatDate } from '@/helpers/formatDate';
+import DatePicker from 'react-native-modern-datepicker';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
 const BookDetails = () => {
-    const { bookDetails } = useLocalSearchParams();
+    const { bookdetails } = useLocalSearchParams();
 
-    const [bookList, setBookList] = useState<BookItem[]>([]);
+    const [bookList, setBookList] = useState<Book[]>([]);
 
-    const book = bookList.find((book) => book.title === bookDetails);
+    if (Array.isArray(bookdetails)) throw new Error("bookdetails should't be an array");
 
     const [font, setFont] = useFontsContext();
 
@@ -29,34 +32,91 @@ const BookDetails = () => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const [currentPage, setCurrentPage] = useState(book?.currentPage);
-
-    const [pages, setPages] = useState(book?.pageCount);
-
-    useEffect(() => {
-        getBookList().then((data) => {
-            setBookList(data);
-        });
-    }, [bookList]);
-
     function handleTextExpansion() {
         numOfLines !== 0 ? setNumOfLines(0) : setNumOfLines(6);
     }
 
-    if (book === undefined) return <ActivityIndicator />;
+    useEffect(() => {
+        getBookList().then((data: Book[]) => {
+            setBookList(data);
+            // console.log('ola');
+        });
+    }, []);
+
+    let book = bookList.find((book) => book.title === bookdetails);
+
+    if (book === undefined) {
+        return <ActivityIndicator />;
+    }
+
+    const [currentPage, setCurrentPage] = useState(book?.currentPage);
+
+    const [pages, setPages] = useState(book?.pageCount);
+
+    const [bookDetails, setBookDetails] = useState<Book>({
+        id: book.id,
+        title: book.title,
+        subtitle: book.subtitle,
+        authors: book.authors,
+        categories: book.categories,
+        pageCount: book.pageCount,
+        description: book.description,
+        imageLinks: book.imageLinks,
+        currentPage: book.currentPage,
+        state: book.state,
+        startDate: book.startDate,
+        endDate: book.endDate,
+    });
 
     let bookProgress = book.currentPage / book.pageCount;
 
     function handleProgressDetails(id: number) {
         if (currentPage !== undefined) {
-            updateBookDetails({ id, currentPage: currentPage });
+            updateBookDetails({ ...blankBook, id, currentPage: currentPage });
         }
         if (pages !== undefined) {
-            updateBookDetails({ id, pageCount: Number(pages) });
+            updateBookDetails({ ...blankBook, id, pageCount: pages });
         }
         Keyboard.dismiss();
         setIsModalVisible(false);
     }
+
+    // // START DATE PICKER //
+    // const [isStartDatePickerVisible, setIsStartDatePickerVisible] = useState(false);
+
+    // const showStartDatePicker = () => {
+    //     setIsStartDatePickerVisible(true);
+    // };
+
+    // const hideStartDatePicker = () => {
+    //     setIsStartDatePickerVisible(false);
+    // };
+
+    // const handleStartDate = (date: string) => {
+    //     setBookDetails({ ...book, startDate: date });
+    //     hideStartDatePicker();
+    // };
+
+    // ///////////////////////
+
+    // // END DATE PICKER //
+
+    // const [isEndDatePickerVisible, setIsEndDatePickerVisible] = useState(false);
+
+    // const showEndDatePicker = () => {
+    //     setIsEndDatePickerVisible(true);
+    // };
+
+    // const hideEndDatePicker = () => {
+    //     setIsEndDatePickerVisible(false);
+    // };
+
+    // const handleEndDate = (date: string) => {
+    //     setBookDetails({ ...bookDetails, endDate: date });
+    //     hideEndDatePicker();
+    // };
+
+    ////////////////////
 
     return (
         <ScrollView
@@ -66,19 +126,19 @@ const BookDetails = () => {
             <View>
                 <Image
                     style={styles.thumbnailImage}
-                    source={book.thumbnailAddress ? { uri: book?.thumbnailAddress } : bookCoverPlaceholder}
+                    source={book.imageLinks.thumbnail !== '' ? { uri: book?.imageLinks.thumbnail } : bookCoverPlaceholder}
                 />
             </View>
             <View style={styles.textContainer}>
                 <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>{book?.title}</Text>
-                {book?.subTitle && <Text style={[styles.subtitle, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.subTitle}</Text>}
-                <Text style={[styles.author, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.author}</Text>
+                {book?.subtitle && <Text style={[styles.subtitle, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.subtitle}</Text>}
+                <Text style={[styles.author, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.authors[0]}</Text>
                 <Text
                     onPress={handleTextExpansion}
                     numberOfLines={numOfLines}
                     style={[styles.summary, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
                 >
-                    {book?.summary}
+                    {book?.description?.replace(/<\/?[^>]+(>|$)/g, '')}
                 </Text>
             </View>
             <View style={styles.progressContainer}>
@@ -97,6 +157,48 @@ const BookDetails = () => {
                     </Pressable>
                 )}
             </View>
+            {/* <View style={styles.dateContainer}>
+                <TouchableOpacity
+                    onPress={showStartDatePicker}
+                    style={styles.bigBtn}
+                >
+                    <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>Start Date</Text>
+                    <Text style={styles.date}>{formatDate(bookDetails.startDate ? bookDetails.startDate : '')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={showEndDatePicker}
+                    style={styles.bigBtn}
+                >
+                    <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>End Date</Text>
+                    <Text style={styles.date}>{formatDate(bookDetails.endDate ? bookDetails.endDate : '')}</Text>
+                </TouchableOpacity>
+            </View>
+            <Modal
+                isVisible={isStartDatePickerVisible}
+                onBackdropPress={hideStartDatePicker}
+            >
+                <View></View>
+                <DatePicker
+                    style={styles.dateTimePicker}
+                    mode="calendar"
+                    onDateChange={(selectedDate) => handleStartDate(selectedDate)}
+                    selected={bookDetails.startDate}
+                    current={bookDetails.startDate}
+                    minuteInterval={30}
+                />
+            </Modal>
+            <Modal
+                isVisible={isEndDatePickerVisible}
+                onBackdropPress={hideEndDatePicker}
+            >
+                <View></View>
+                <DatePicker
+                    style={styles.dateTimePicker}
+                    mode="calendar"
+                    onDateChange={(selectedDate) => handleEndDate(selectedDate)}
+                    minimumDate={bookDetails.startDate}
+                />
+            </Modal> */}
             <Modal
                 isVisible={isModalVisible}
                 onBackdropPress={() => setIsModalVisible(false)}
@@ -228,5 +330,36 @@ const styles = StyleSheet.create({
 
     modalBtnText: {
         fontSize: 15,
+    },
+
+    dateContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 40,
+    },
+
+    dateTimePicker: {
+        borderRadius: 20,
+    },
+
+    bigBtn: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 150,
+        height: 80,
+        borderWidth: 1,
+        borderRadius: 10,
+        padding: 10,
+    },
+
+    dateLabel: {
+        fontSize: 18,
+        position: 'absolute',
+        top: -15,
+        paddingHorizontal: 8,
+    },
+
+    date: {
+        fontSize: 17,
     },
 });

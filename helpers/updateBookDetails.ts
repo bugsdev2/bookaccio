@@ -2,62 +2,34 @@ import { Alert } from 'react-native';
 import { getBookList } from './getBookList';
 import { storeBooks } from './storeBooks';
 
-type BookProps = {
-    author?: string;
-    currentPage?: number;
-    endDate?: number;
-    googleBooksLink?: string;
-    id: number;
-    isbn?: string;
-    labels?: any;
-    language?: string;
-    pageCount?: number;
-    position?: number;
-    publishedDate?: string;
-    rating?: number;
-    startDate?: number;
-    state?: string;
-    subTitle?: string;
-    summary?: string;
-    thumbnailAddress?: string;
-    title?: string;
-    wishlistDate?: number;
-};
-
-export const updateBookDetails = async ({ currentPage, author, endDate, googleBooksLink, id, pageCount, publishedDate, state, startDate, summary, title, subTitle, wishlistDate, rating }: BookProps) => {
-    const bookList: BookItem[] = await getBookList();
+export const updateBookDetails = async ({ currentPage, authors, endDate, imageLinks, id, pageCount, publishedDate, state, startDate, description, title, subtitle, rating }: Book) => {
+    const bookList: Book[] = await getBookList();
 
     const updatedBooklist = bookList.map((book) => {
         if (book.id === id) {
-            if (currentPage && currentPage > book.pageCount) {
-                Alert.alert("Current Page shouldn't exceed the Page Count");
-            }
-
             return {
                 currentPage: currentPage ? currentPage : book.currentPage,
-                author: author ? author : book.author,
+                authors: authors ? authors : book.authors[0],
                 endDate: endDate ? endDate : book.endDate,
-                googleBooksLink: googleBooksLink ? googleBooksLink : book.googleBooksLink,
+                image: book?.imageLinks ? book?.imageLinks?.thumbnail : undefined,
                 pageCount: pageCount ? pageCount : book.pageCount,
                 publishedDate: publishedDate ? publishedDate : book.publishedDate,
                 state: state ? state : book.state,
                 startDate: startDate ? startDate : book.startDate,
-                summary: summary ? summary : book.summary,
+                description: description ? description : book.description,
                 title: title ? title : book.title,
-                subTitle: subTitle ? subTitle : book.subTitle,
-                wishlistDate: wishlistDate ? wishlistDate : book.wishlistDate,
+                subtitle: subtitle ? subtitle : book.subtitle,
                 rating: rating ? rating : book.rating,
                 id: book.id,
-                thumbnailAddress: book.thumbnailAddress,
                 isbn: book.isbn,
                 language: book.language,
-                labels: book.labels,
-                position: book.position,
             };
         } else {
             return book;
         }
     });
+
+    console.log('hello');
 
     storeBooks(updatedBooklist);
 };

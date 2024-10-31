@@ -13,6 +13,7 @@ import { getBookDetails } from '@/helpers/getBookDetails';
 import axios from 'axios';
 import { router } from 'expo-router';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
+import { blankBook } from '@/helpers/blankBookDetails';
 
 const Read = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -25,7 +26,7 @@ const Read = () => {
 
     const [hidePlusBtn, setHidePlusBtn] = useState(false);
 
-    const [bookList, setBookList] = useState<BookItem[]>();
+    const [bookList, setBookList] = useState<Book[]>();
 
     const [firstModal, setFirstModal] = useState(false);
 
@@ -41,7 +42,7 @@ const Read = () => {
         getBookList().then((data) => {
             setBookList(data);
         });
-    }, []);
+    }, [bookList]);
 
     function handleAddBook() {
         setFirstModal(true);
@@ -63,7 +64,7 @@ const Read = () => {
     }
 
     function addBookManually(state: string) {
-        setSelectedBook({});
+        setSelectedBook(blankBook);
         Keyboard.dismiss();
         setFirstModal(false);
         router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });

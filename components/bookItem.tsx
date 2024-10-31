@@ -10,68 +10,70 @@ import { router } from 'expo-router';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
-const BookItem = ({ data }: { data: BookItem }) => {
+const BookItem = ({ data }: { data: Book }) => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
 
     const [accentColor, setAccentColor] = useAccentColorContext();
 
     const [font, setFont] = useFontsContext();
 
-    const percentCompleted = Math.round((data.currentPage / data.pageCount) * 100);
+    const percentCompleted = Math.round((Number(data.currentPage) / Number(data.pageCount)) * 100);
 
     if (percentCompleted == 100 && data.state === 'READING') {
         Alert.alert('Move to Completed?', `Do you want to move the book '${data.title}' to the Completed category?`);
     }
 
     return (
-        <TouchableOpacity
-            onPress={() =>
-                router.push({
-                    pathname: '/(bookDetails)/[bookDetails]',
-                    params: { bookDetails: data.title },
-                })
-            }
-        >
-            <View style={[styles.bookContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
-                {data.state === 'READING' ? (
-                    <Progress.Bar
-                        style={[styles.progressBar]}
-                        width={null}
-                        color={accentColor}
-                        progress={data?.currentPage / data?.pageCount}
-                    />
-                ) : null}
+        <>
+            <TouchableOpacity
+                onPress={() => {
+                    router.push({
+                        pathname: '/(bookDetails)/[bookdetails]',
+                        params: { bookdetails: data.title ? data.title : '' },
+                    });
+                }}
+            >
+                <View style={[styles.bookContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
+                    {data.state === 'READING' ? (
+                        <Progress.Bar
+                            style={[styles.progressBar]}
+                            width={null}
+                            color={accentColor}
+                            progress={data?.currentPage / data?.pageCount}
+                        />
+                    ) : null}
 
-                <View>
-                    <Image
-                        style={styles.image}
-                        source={data.thumbnailAddress ? { uri: data?.thumbnailAddress } : bookCoverPlaceholder}
-                    />
-                </View>
-                <View style={styles.midContent}>
-                    <View style={{ flexWrap: 'wrap' }}>
-                        <Text
-                            numberOfLines={1}
-                            style={[styles.title, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}B` }]}
-                        >
-                            {data.title.toUpperCase()}
-                        </Text>
-                        <Text style={[styles.subtitle, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{data?.subTitle}</Text>
-                    </View>
                     <View>
-                        <Text style={[styles.author, { color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>{data.author}</Text>
+                        <Image
+                            style={styles.image}
+                            source={data.imageLinks.thumbnail !== '' ? { uri: data.imageLinks.thumbnail } : bookCoverPlaceholder}
+                        />
+                    </View>
+                    <View style={styles.midContent}>
+                        <View style={{ flexWrap: 'wrap' }}>
+                            <Text
+                                numberOfLines={1}
+                                style={[styles.title, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}B` }]}
+                            >
+                                {data.title?.toUpperCase()}
+                            </Text>
+                            <Text style={[styles.subtitle, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{data?.subtitle}</Text>
+                        </View>
+                        <View>
+                            <Text style={[styles.author, { color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>{data.authors && data.authors[0]}</Text>
+                        </View>
+                    </View>
+                    <View style={[styles.endContent, { justifyContent: data.state === 'READING' ? 'space-around' : 'flex-start' }]}>
+                        <Entypo
+                            name="dots-three-horizontal"
+                            size={18}
+                            color={isDarkMode ? Colors.light : Colors.dark}
+                        />
+                        {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
                     </View>
                 </View>
-                <View style={[styles.endContent, { justifyContent: data.state === 'READING' ? 'space-around' : 'flex-start' }]}>
-                    <Entypo
-                        name="dots-three-horizontal"
-                        size={18}
-                        color={isDarkMode ? Colors.light : Colors.dark}
-                    />
-                    {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
-                </View>
-            </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+        </>
     );
 };
 
@@ -96,8 +98,6 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        // Commenting out these font families because I'm using them dynamically
-        // fontFamily: 'QuicksandB',
         letterSpacing: 0.5,
     },
 

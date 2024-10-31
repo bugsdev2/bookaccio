@@ -10,7 +10,7 @@ import Modal from 'react-native-modal';
 import { useFontsContext } from '@/providers/fontProvider';
 import { getBookDetails } from '@/helpers/getBookDetails';
 import axios from 'axios';
-
+import { blankBook } from '@/helpers/blankBookDetails';
 import BookSearchItem from '@/components/bookSearchItem';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { router } from 'expo-router';
@@ -26,7 +26,7 @@ const Home = () => {
 
     const [hidePlusBtn, setHidePlusBtn] = useState(false);
 
-    let [bookList, setBookList] = useState<BookItem[]>();
+    let [bookList, setBookList] = useState<Book[]>([]);
 
     const [firstModal, setFirstModal] = useState(false);
 
@@ -39,10 +39,10 @@ const Home = () => {
     const [bookSearchResults, setBookSearchResults] = useState<BookSearchResultProp[]>([]);
 
     useEffect(() => {
-        getBookList().then((data) => {
+        getBookList().then((data: Book[]) => {
             setBookList(data);
         });
-    }, []);
+    }, [bookList]);
 
     function handleAddBook() {
         setFirstModal(true);
@@ -64,7 +64,7 @@ const Home = () => {
     }
 
     function addBookManually(state: string) {
-        setSelectedBook({});
+        setSelectedBook(blankBook);
         Keyboard.dismiss();
         setFirstModal(false);
         router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });

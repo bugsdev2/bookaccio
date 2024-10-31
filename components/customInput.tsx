@@ -8,7 +8,7 @@ import { Colors } from '@/constants/Colors';
 interface CustomInputProps {
     label: string;
     onChangeText: (value: any) => void;
-    value: string;
+    value: string | string[];
     multiline?: boolean;
     inputMode?: 'text' | 'numeric';
 }
@@ -19,7 +19,11 @@ const CustomInput = ({ label, onChangeText, value, multiline = false, inputMode 
     const [font, setFont] = useFontsContext();
 
     // To remove html tags from summary
-    const cleanText = value.replace(/<\/?[^>]+(>|$)/g, '');
+
+    let cleanText = '';
+    if (!Array.isArray(value)) {
+        cleanText = value?.replace(/<\/?[^>]+(>|$)/g, '');
+    }
 
     const [accentColor, setAccentColor] = useAccentColorContext();
     return (

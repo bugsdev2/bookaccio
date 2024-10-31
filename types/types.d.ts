@@ -45,10 +45,12 @@ declare interface BookSearchResultProp {
 }
 
 declare interface Book {
-    authors?: string[];
+    id: number;
+    currentPage: number;
+    authors: string[];
     categories?: string[];
     description?: string;
-    imageLinks?: {
+    imageLinks: {
         extraLarge?: string;
         large?: string;
         medium?: string;
@@ -56,14 +58,19 @@ declare interface Book {
         smallThumbnail?: string;
         thumbnail?: string;
     };
-    language?: 'en';
-    maturityRating?: 'NOT_MATURE';
-    pageCount?: Number;
+
+    language?: string;
+    maturityRating?: 'NOT_MATURE' | 'MATURE';
+    pageCount: number;
     previewLink?: string;
-    printedPageCount?: Number;
+    printedPageCount?: number;
     publishedDate?: string;
     publisher?: string;
     subtitle?: string;
     title?: string;
     state?: 'READ' | 'READING' | 'READ_LATER';
+    startDate?: string;
+    endDate?: string;
+    rating?: number;
+    isbn?: string;
 }

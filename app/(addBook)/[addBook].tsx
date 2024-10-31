@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, ScrollView, Image, Pressable, TextInput, Alert, Keyboard, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Alert, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { getBookList } from '@/helpers/getBookList';
+import Modal from 'react-native-modal';
 import { useFontsContext } from '@/providers/fontProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -9,11 +10,18 @@ import { Colors } from '@/constants/Colors';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import CustomInput from '@/components/customInput';
 import { Dropdown } from 'react-native-element-dropdown';
+import DatePicker, { getToday } from 'react-native-modern-datepicker';
 
 import bookCoverPlaceholder from '../../assets/images/others/book-cover-placeholder.png';
 
+import { addNewBook } from '@/helpers/addNewBook';
+
 const AddNewBook = () => {
-    const { addBook } = useLocalSearchParams();
+    const { addBook }: { addBook: 'READING' | 'READ' | 'READ_LATER' } = useLocalSearchParams();
+
+    if (Array.isArray(addBook)) {
+        throw new Error('Custom addBook Array Error');
+    }
 
     const [font, setFont] = useFontsContext();
 
@@ -23,7 +31,7 @@ const AddNewBook = () => {
 
     const [selectedBook, setSelectedBook] = useSelectedBookContext();
 
-    const [bookList, setBookList] = useState<BookItem[]>();
+    const [bookList, setBookList] = useState<Book[]>();
 
     useEffect(() => {
         getBookList().then((data) => {
@@ -40,33 +48,31 @@ const AddNewBook = () => {
         return uid;
     }
 
-    const [bookDetails, setBookDetails] = useState({
+    const [bookDetails, setBookDetails] = useState<Book>({
         id: createUID(),
         title: selectedBook.title ? selectedBook.title : '',
         subtitle: selectedBook.subtitle ? selectedBook.subtitle : '',
-        author: selectedBook.authors ? selectedBook.authors[0] : '',
-        category: selectedBook.categories ? selectedBook.categories[0] : '',
-        pageCount: selectedBook.pageCount ? selectedBook.pageCount : '',
-        summary: selectedBook.description ? selectedBook.description : '',
-        image: selectedBook.imageLinks?.thumbnail ? selectedBook.imageLinks.thumbnail : '',
-        currentPage: '0',
-        status: addBook,
-        startDate: new Date().toLocaleDateString(),
-        endDate: new Date().toLocaleDateString(),
+        authors: selectedBook.authors ? selectedBook.authors : [''],
+        categories: selectedBook.categories ? selectedBook.categories : [''],
+        pageCount: selectedBook.pageCount ? selectedBook.pageCount : 0,
+        description: selectedBook.description ? selectedBook.description : '',
+        imageLinks: {
+            thumbnail: selectedBook.imageLinks ? selectedBook.imageLinks.thumbnail : '',
+        },
+        currentPage: 0,
+        state: addBook,
+        startDate: getToday(),
+        endDate: '',
     });
 
-    const statusData = [
+    const statusData: { title: string; value: 'READ' | 'READING' | 'READ_LATER' }[] = [
         { title: 'Reading', value: 'READING' },
         { title: 'Read Later', value: 'READ_LATER' },
         { title: 'Read', value: 'READ' },
     ];
 
-    useEffect(() => {
-        console.log(bookDetails);
-    }, []);
-
     function selectedText() {
-        switch (bookDetails.status) {
+        switch (bookDetails.state) {
             case 'READ':
                 return 'Read';
                 break;
@@ -79,6 +85,16 @@ const AddNewBook = () => {
         }
     }
 
+    function handleAddBook() {
+        if (bookDetails.title === '' || bookDetails.authors[0] === '' || bookDetails.pageCount === 0) {
+            Alert.alert('Title, Author and Pages are mandatory fields');
+            return;
+        }
+
+        addNewBook(bookDetails);
+        router.back();
+    }
+
     return (
         <ScrollView
             style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}
@@ -87,22 +103,22 @@ const AddNewBook = () => {
             <View>
                 <Image
                     style={styles.image}
-                    source={selectedBook.imageLinks?.thumbnail ? { uri: bookDetails.image } : bookCoverPlaceholder}
+                    source={selectedBook.imageLinks?.thumbnail !== '' ? { uri: selectedBook.imageLinks.thumbnail } : bookCoverPlaceholder}
                 />
             </View>
             <View style={[styles.detailsContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
                 <View>
                     <CustomInput
                         label="Title"
-                        value={bookDetails.title}
+                        value={bookDetails.title !== undefined ? bookDetails.title : ''}
                         onChangeText={(value) => setBookDetails({ ...bookDetails, title: value })}
                     />
                 </View>
                 <View>
                     <CustomInput
                         label="Author"
-                        value={bookDetails.author}
-                        onChangeText={(value) => setBookDetails({ ...bookDetails, author: value })}
+                        value={bookDetails.authors[0]}
+                        onChangeText={(value) => setBookDetails({ ...bookDetails, authors: value })}
                     />
                 </View>
                 <View>
@@ -116,11 +132,11 @@ const AddNewBook = () => {
                 <View style={styles.statusContainer}>
                     <Text style={[styles.statusText, { fontFamily: `${font}B`, backgroundColor: isDarkMode ? Colors.black : Colors.light, color: accentColor, zIndex: 1 }]}>Status</Text>
                     <Dropdown
-                        style={[styles.dropDownField, { backgroundColor: isDarkMode ? Colors.black : accentColor, borderColor: isDarkMode ? Colors.gray : Colors.dark }]}
+                        style={[styles.dropDownField, { backgroundColor: isDarkMode ? Colors.black : Colors.light, borderColor: isDarkMode ? Colors.gray : Colors.dark }]}
                         labelField={'title'}
                         valueField={'value'}
                         data={statusData}
-                        onChange={(selectedItem) => setBookDetails({ ...bookDetails, status: selectedItem.value })}
+                        onChange={(selectedItem) => setBookDetails({ ...bookDetails, state: selectedItem.value })}
                         placeholder={selectedText()}
                         placeholderStyle={[styles.dropDownView, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}B` }]}
                         selectedTextStyle={[styles.dropDownView, { color: isDarkMode ? Colors.dark : Colors.light, fontFamily: `${font}B` }]}
@@ -134,25 +150,35 @@ const AddNewBook = () => {
                 <View>
                     <CustomInput
                         label="Subtitle"
-                        value={bookDetails.subtitle}
+                        value={bookDetails.subtitle ? bookDetails.subtitle : ''}
                         onChangeText={(value) => setBookDetails({ ...bookDetails, subtitle: value })}
                     />
                 </View>
                 <View>
                     <CustomInput
                         label="Category"
-                        value={bookDetails.category}
-                        onChangeText={(value) => setBookDetails({ ...bookDetails, category: value })}
+                        value={bookDetails.categories ? bookDetails.categories[0] : ['']}
+                        onChangeText={(value) => setBookDetails({ ...bookDetails, categories: value })}
                     />
                 </View>
                 <View>
                     <CustomInput
-                        label="Summary"
-                        value={bookDetails.summary}
-                        onChangeText={(value) => setBookDetails({ ...bookDetails, summary: value })}
+                        label="Description"
+                        value={bookDetails.description ? bookDetails.description : ''}
+                        onChangeText={(value) => setBookDetails({ ...bookDetails, description: value })}
                         multiline={true}
                     />
                 </View>
+            </View>
+            <View style={styles.btnContainer}>
+                <TouchableOpacity
+                    onPress={handleAddBook}
+                    style={styles.bigBtn}
+                >
+                    <View>
+                        <Text>Add Book</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
         </ScrollView>
     );
@@ -214,5 +240,19 @@ const styles = StyleSheet.create({
         top: -18,
         left: 18,
         paddingHorizontal: 5,
+    },
+
+    btnContainer: {
+        alignSelf: 'center',
+    },
+
+    bigBtn: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 150,
+        height: 80,
+        borderWidth: 1,
+        borderRadius: 10,
+        padding: 10,
     },
 });

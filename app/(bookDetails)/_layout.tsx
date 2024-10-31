@@ -50,7 +50,7 @@ const PagesLayout = () => {
             </View>
             <Stack>
                 <Stack.Screen
-                    name="[bookDetails]"
+                    name="[bookdetails]"
                     options={{
                         headerShown: false,
                     }}
