@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, Image, Alert, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useFontsContext } from '@/providers/fontProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
@@ -34,6 +34,8 @@ const AddNewBook = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const [imgUrl, setImgUrl] = useState('');
+
+    const imageRef = useRef(null);
 
     function createUID() {
         let uid = Math.round(Math.random() * 10000000000);
@@ -87,7 +89,7 @@ const AddNewBook = () => {
 
     function handleImageChange() {
         setBookDetails({ ...bookDetails, imageLinks: { thumbnail: imgUrl } });
-        console.log(bookDetails.imageLinks.thumbnail);
+        setIsModalVisible(false);
     }
 
     function handleAddBook() {
@@ -116,7 +118,7 @@ const AddNewBook = () => {
                 <TouchableOpacity onPress={() => setIsModalVisible(true)}>
                     <Image
                         style={styles.image}
-                        source={selectedBook?.imageLinks?.thumbnail && selectedBook.imageLinks?.thumbnail !== '' ? { uri: selectedBook.imageLinks.thumbnail } : bookCoverPlaceholder}
+                        source={imgUrl !== '' ? { uri: imgUrl } : selectedBook.imageLinks?.thumbnail && selectedBook.imageLinks?.thumbnail !== '' ? { uri: selectedBook.imageLinks.thumbnail } : bookCoverPlaceholder}
                     />
                 </TouchableOpacity>
             </View>

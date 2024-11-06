@@ -14,6 +14,10 @@ const PagesLayout = () => {
 
     if (Array.isArray(bookdetails)) throw new Error("bookdetails shouldn't be an array");
 
+    function handleEditBook() {
+        //
+    }
+
     return (
         <>
             <View style={[styles.header, { backgroundColor: accentColor, borderColor: accentColor }]}>
@@ -41,7 +45,10 @@ const PagesLayout = () => {
                             {bookdetails}
                         </Text>
                     </View>
-                    <Pressable style={styles.headerIconContainer}>
+                    <Pressable
+                        onPress={handleEditBook}
+                        style={styles.headerIconContainer}
+                    >
                         <Entypo
                             name="edit"
                             size={22}

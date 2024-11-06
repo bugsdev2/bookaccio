@@ -29,7 +29,7 @@ const BookItem = ({ data }: { data: Book }) => {
 
     const percentCompleted = Math.round((Number(data.currentPage) / Number(data.pageCount)) * 100);
 
-    const deleteBook = async (id: number) => {
+    const deleteBook = (id: number) => {
         fullBookList.map((book) => {
             if (book.id === id) {
                 fullBookList.splice(fullBookList.indexOf(book), 1);
@@ -38,20 +38,34 @@ const BookItem = ({ data }: { data: Book }) => {
 
         setFullBookList([...fullBookList]);
 
-        await storeBooks(fullBookList).then(() => {
+        storeBooks(fullBookList).then(() => {
             setIsModalVisible(false);
         });
     };
 
-    function handleModalMenus(state: 'READ' | 'READING' | 'READ_LATER' | undefined) {
+    function handleMoveBook({ id, state }: { id: number; state: 'READ' | 'READING' | 'READ_LATER' }) {
+        fullBookList.map((book) => {
+            if (book.id === id) {
+                book.state = state;
+            }
+        });
+
+        setFullBookList([...fullBookList]);
+
+        storeBooks(fullBookList).then(() => {
+            setIsModalVisible(false);
+        });
+    }
+
+    function handleModalMenus({ id, state }: { id: number; state: 'READ' | 'READING' | 'READ_LATER' | undefined }) {
         switch (state) {
             case 'READING':
                 return (
                     <>
-                        <TouchableOpacity>
-                            <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Move to Read</Text>
+                        <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READ' })}>
+                            <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Move to Done</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READ_LATER' })}>
                             <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Move to Read Later</Text>
                         </TouchableOpacity>
                     </>
@@ -60,10 +74,10 @@ const BookItem = ({ data }: { data: Book }) => {
             case 'READ':
                 return (
                     <>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READING' })}>
                             <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Move to Reading</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READ_LATER' })}>
                             <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Move to Read Later</Text>
                         </TouchableOpacity>
                     </>
@@ -72,10 +86,10 @@ const BookItem = ({ data }: { data: Book }) => {
             case 'READ_LATER':
                 return (
                     <>
-                        <TouchableOpacity>
-                            <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Move to Read</Text>
+                        <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READ' })}>
+                            <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Move to Done</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READING' })}>
                             <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Move to Reading</Text>
                         </TouchableOpacity>
                     </>
@@ -171,7 +185,7 @@ const BookItem = ({ data }: { data: Book }) => {
                         <Text style={[styles.modalTitle, { color: isDarkMode ? Colors.light : Colors.dark }]}>{data?.title}</Text>
                     </View>
                     <View style={styles.modalTextContainer}>
-                        {handleModalMenus(data.state)}
+                        {handleModalMenus({ id: data.id, state: data.state })}
                         <TouchableOpacity onPress={() => handleDeleteBook(data.title, data.id)}>
                             <Text style={[styles.modalText, { fontFamily: `${font}B` }]}>Delete Book</Text>
                         </TouchableOpacity>

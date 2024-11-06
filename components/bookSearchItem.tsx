@@ -8,8 +8,6 @@ import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 const BookSearchItem = ({ book, onPress }: { book: BookSearchResultProp; onPress: any }) => {
     const [font, setFont] = useFontsContext();
 
-    const [selectedBook, setSelectedBook] = useSelectedBookContext();
-
     return (
         <>
             <TouchableOpacity

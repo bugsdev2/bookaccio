@@ -185,20 +185,24 @@ const BookDetails = () => {
                     )}
                 </View>
                 <View style={[styles.dateContainer]}>
-                    <TouchableOpacity
-                        onPress={showStartDatePicker}
-                        style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
-                    >
-                        <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>Start Date</Text>
-                        <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(startDate)}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={showEndDatePicker}
-                        style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
-                    >
-                        <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>End Date</Text>
-                        <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(endDate)}</Text>
-                    </TouchableOpacity>
+                    {book?.state !== 'READ_LATER' && (
+                        <>
+                            <TouchableOpacity
+                                onPress={showStartDatePicker}
+                                style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
+                            >
+                                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>Start Date</Text>
+                                <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(startDate)}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={showEndDatePicker}
+                                style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
+                            >
+                                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>End Date</Text>
+                                <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(endDate)}</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
 
                 <GlobalDateTimePicker

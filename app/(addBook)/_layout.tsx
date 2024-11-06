@@ -9,14 +9,13 @@ import { useAccentColorContext } from '@/providers/accentColorProvider';
 const PagesLayout = () => {
     const { addBook } = useLocalSearchParams();
 
-    const [isDarkMode, setIsDarkMode] = useDarkModeContext();
     const [accentColor, setAccentColor] = useAccentColorContext();
 
     return (
         <>
             <View style={[styles.header, { backgroundColor: accentColor, borderColor: accentColor }]}>
                 <View style={styles.headerInner}>
-                    <View>
+                    <View style={{ flex: 1 }}>
                         <Pressable onPress={() => router.back()}>
                             <MaterialIcons
                                 name="chevron-left"
@@ -39,13 +38,7 @@ const PagesLayout = () => {
                             Add New Book
                         </Text>
                     </View>
-                    <Pressable style={styles.headerIconContainer}>
-                        {/* <Entypo
-                            name="edit"
-                            size={22}
-                            color="white"
-                        /> */}
-                    </Pressable>
+                    <View style={{ flex: 1 }}></View>
                 </View>
             </View>
             <Stack>
