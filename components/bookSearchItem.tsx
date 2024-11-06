@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import bookCoverPlaceholder from '../assets/images/others/book-cover-placeholder.png';
 import { useFontsContext } from '@/providers/fontProvider';
 import axios from 'axios';
@@ -19,7 +19,7 @@ const BookSearchItem = ({ book, onPress }: { book: BookSearchResultProp; onPress
                 <View style={styles.modalBookItem}>
                     <Image
                         style={styles.modalImage}
-                        source={book?.volumeInfo?.imageLinks?.thumbnail !== '' ? { uri: book?.volumeInfo?.imageLinks?.thumbnail } : bookCoverPlaceholder}
+                        source={book?.volumeInfo?.imageLinks && book?.volumeInfo?.imageLinks?.thumbnail !== '' ? { uri: book?.volumeInfo?.imageLinks?.thumbnail } : bookCoverPlaceholder}
                     />
                     <View style={{ width: '70%' }}>
                         <Text style={[styles.modalBookTitle, { fontFamily: `${font}B` }]}>{book?.volumeInfo?.title}</Text>

@@ -1,5 +1,23 @@
-// import { createContext } from "react";
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-// const BooksFullListContext = createContext(null)
+type FullBooksListContextProps = [Book[], React.Dispatch<React.SetStateAction<Book[]>>];
 
-// const BooksFullListProvider
+const FullBooksListContext = createContext<FullBooksListContextProps | []>([]);
+
+const FullBooksListProvider = ({ children }: { children: React.ReactNode }) => {
+    const [fullBookList, setFullBookList] = useState<Book[]>([]);
+
+    return <FullBooksListContext.Provider value={[fullBookList, setFullBookList]}>{children}</FullBooksListContext.Provider>;
+};
+
+export default FullBooksListProvider;
+
+export const useFullBookListContext = (): FullBooksListContextProps => {
+    const [fullBookList, setFullBookList] = useContext(FullBooksListContext);
+
+    if (fullBookList === undefined || setFullBookList === undefined) {
+        throw new Error('fullBookList or setFullBookList is undefined');
+    }
+
+    return [fullBookList, setFullBookList];
+};

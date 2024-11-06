@@ -1,26 +1,28 @@
-import { StyleSheet, Text, View, ScrollView, Image, Pressable, TextInput, Alert, Keyboard, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Pressable, TextInput, Alert, Keyboard, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import { getBookList } from '@/helpers/getBookList';
 import { useFontsContext } from '@/providers/fontProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import * as Progress from 'react-native-progress';
 import Modal from 'react-native-modal';
-import { updateBookDetails } from '@/helpers/updateBookDetails';
-import { blankBook } from '@/helpers/blankBookDetails';
+
 import { formatDate } from '@/helpers/formatDate';
-import DatePicker from 'react-native-modern-datepicker';
+import GlobalDateTimePicker, { CalendarType, weekDaysJalali, yearMonthsJalali, DateTimePickerMode, DateTimePickerThemes, DateTimePickerTranslations } from 'react-native-global-datetimepicker';
+import { useFullBookListContext } from '@/providers/booksFullListProvider';
+import { storeBooks } from '@/helpers/storeBooks';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
 const BookDetails = () => {
     const { bookdetails } = useLocalSearchParams();
 
-    const [bookList, setBookList] = useState<Book[]>([]);
-
     if (Array.isArray(bookdetails)) throw new Error("bookdetails should't be an array");
+
+    const [fullBooksList, setFullBooksList] = useFullBookListContext();
+
+    const book = fullBooksList.find((book) => book.title === bookdetails);
 
     const [font, setFont] = useFontsContext();
 
@@ -28,217 +30,234 @@ const BookDetails = () => {
 
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
 
-    const [numOfLines, setNumOfLines] = useState(6);
+    const [numOfLines, setNumOfLines] = useState(4);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    function handleTextExpansion() {
-        numOfLines !== 0 ? setNumOfLines(0) : setNumOfLines(6);
-    }
-
-    useEffect(() => {
-        getBookList().then((data: Book[]) => {
-            setBookList(data);
-            // console.log('ola');
-        });
-    }, []);
-
-    let book = bookList.find((book) => book.title === bookdetails);
-
-    if (book === undefined) {
-        return <ActivityIndicator />;
-    }
-
     const [currentPage, setCurrentPage] = useState(book?.currentPage);
 
-    const [pages, setPages] = useState(book?.pageCount);
+    const [pageCount, setPageCount] = useState(book?.pageCount);
 
-    const [bookDetails, setBookDetails] = useState<Book>({
-        id: book.id,
-        title: book.title,
-        subtitle: book.subtitle,
-        authors: book.authors,
-        categories: book.categories,
-        pageCount: book.pageCount,
-        description: book.description,
-        imageLinks: book.imageLinks,
-        currentPage: book.currentPage,
-        state: book.state,
-        startDate: book.startDate,
-        endDate: book.endDate,
-    });
+    const [bookProgress, setBookProgress] = useState(book!.currentPage / book!.pageCount);
 
-    let bookProgress = book.currentPage / book.pageCount;
+    const [startDate, setStartDate] = useState(new Date(book!.startDate));
+
+    const [endDate, setEndDate] = useState(new Date(book!.endDate));
+
+    function handleTextExpansion() {
+        numOfLines !== 0 ? setNumOfLines(0) : setNumOfLines(4);
+    }
+
+    const updateBookDetails = ({ id, authors, currentPage, pageCount, categories, description, endDate, publishedDate, publisher, rating, startDate, state, subtitle, title }: BookOptional) => {
+        const updatedBooklist: Book[] = fullBooksList.map((book) => {
+            if (book.id === id) {
+                return {
+                    ...book,
+                    authors: authors ? authors : book.authors,
+                    categories: categories ? categories : book.categories,
+                    currentPage: currentPage ? currentPage : book.currentPage,
+                    description: description ? description : book.description,
+                    endDate: endDate ? Date.parse(endDate.toString()) : book.endDate,
+                    pageCount: pageCount ? pageCount : book.pageCount,
+                    publishedDate: publishedDate ? publishedDate : book.publishedDate,
+                    publisher: publisher ? publisher : book.publisher,
+                    rating: rating ? rating : book.rating,
+                    startDate: startDate ? Date.parse(startDate.toString()) : book.startDate,
+                    state: state ? state : book.state,
+                    subtitle: subtitle ? subtitle : book.subtitle,
+                    title: title ? title : book.title,
+                };
+            } else {
+                return {
+                    ...book,
+                };
+            }
+        });
+
+        setFullBooksList([...updatedBooklist]);
+
+        storeBooks(updatedBooklist);
+    };
 
     function handleProgressDetails(id: number) {
-        if (currentPage !== undefined) {
-            updateBookDetails({ ...blankBook, id, currentPage: currentPage });
+        if (currentPage! > pageCount!) {
+            Alert.alert('Current Page should not exceed Page Count');
+            return;
         }
-        if (pages !== undefined) {
-            updateBookDetails({ ...blankBook, id, pageCount: pages });
-        }
+
+        updateBookDetails({ id, currentPage, pageCount });
+
+        setBookProgress(currentPage! / pageCount!);
+
         Keyboard.dismiss();
+
         setIsModalVisible(false);
     }
 
-    // // START DATE PICKER //
-    // const [isStartDatePickerVisible, setIsStartDatePickerVisible] = useState(false);
+    // START DATE PICKER //
+    const [isStartDatePickerVisible, setIsStartDatePickerVisible] = useState(false);
 
-    // const showStartDatePicker = () => {
-    //     setIsStartDatePickerVisible(true);
-    // };
+    const showStartDatePicker = () => {
+        setIsStartDatePickerVisible(true);
+    };
 
-    // const hideStartDatePicker = () => {
-    //     setIsStartDatePickerVisible(false);
-    // };
+    const hideStartDatePicker = () => {
+        setIsStartDatePickerVisible(false);
+    };
 
-    // const handleStartDate = (date: string) => {
-    //     setBookDetails({ ...book, startDate: date });
-    //     hideStartDatePicker();
-    // };
+    const handleStartDate = ({ id, startDate }: { id: number; startDate: Date }) => {
+        if (Date.parse(startDate.toString()) > Date.parse(endDate.toString())) {
+            Alert.alert('Date Error!', 'Well, how can you end a book before you even start it?');
+            return;
+        }
+        setStartDate(startDate);
+        updateBookDetails({ id, startDate });
+        hideStartDatePicker();
+    };
 
-    // ///////////////////////
+    ///////////////////////
 
-    // // END DATE PICKER //
+    // END DATE PICKER //
 
-    // const [isEndDatePickerVisible, setIsEndDatePickerVisible] = useState(false);
+    const [isEndDatePickerVisible, setIsEndDatePickerVisible] = useState(false);
 
-    // const showEndDatePicker = () => {
-    //     setIsEndDatePickerVisible(true);
-    // };
+    const showEndDatePicker = () => {
+        setIsEndDatePickerVisible(true);
+    };
 
-    // const hideEndDatePicker = () => {
-    //     setIsEndDatePickerVisible(false);
-    // };
+    const hideEndDatePicker = () => {
+        setIsEndDatePickerVisible(false);
+    };
 
-    // const handleEndDate = (date: string) => {
-    //     setBookDetails({ ...bookDetails, endDate: date });
-    //     hideEndDatePicker();
-    // };
+    const handleEndDate = ({ id, endDate }: { id: number; endDate: Date }) => {
+        if (Date.parse(startDate.toString()) > Date.parse(endDate.toString())) {
+            Alert.alert('Error!', 'Well, how can you end a book before you even start it?');
+            return;
+        }
+        setEndDate(endDate);
+        updateBookDetails({ id, endDate });
+        hideEndDatePicker();
+    };
 
-    ////////////////////
+    //////////////////
 
-    return (
-        <ScrollView
-            style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}
-            contentContainerStyle={styles.contentContainer}
-        >
-            <View>
-                <Image
-                    style={styles.thumbnailImage}
-                    source={book.imageLinks.thumbnail !== '' ? { uri: book?.imageLinks.thumbnail } : bookCoverPlaceholder}
-                />
-            </View>
-            <View style={styles.textContainer}>
-                <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>{book?.title}</Text>
-                {book?.subtitle && <Text style={[styles.subtitle, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.subtitle}</Text>}
-                <Text style={[styles.author, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.authors[0]}</Text>
-                <Text
-                    onPress={handleTextExpansion}
-                    numberOfLines={numOfLines}
-                    style={[styles.summary, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
-                >
-                    {book?.description?.replace(/<\/?[^>]+(>|$)/g, '')}
-                </Text>
-            </View>
-            <View style={styles.progressContainer}>
-                {book?.state !== 'READ_LATER' && (
-                    <Pressable onPress={() => setIsModalVisible(true)}>
-                        <Progress.Circle
-                            size={180}
-                            color={accentColor}
-                            progress={bookProgress}
-                            thickness={10}
-                            borderWidth={0}
-                            borderColor={isDarkMode ? Colors.light : Colors.dark}
-                            showsText={true}
-                            formatText={() => `${Math.round(bookProgress * 100)}%`}
-                        />
-                    </Pressable>
-                )}
-            </View>
-            {/* <View style={styles.dateContainer}>
-                <TouchableOpacity
-                    onPress={showStartDatePicker}
-                    style={styles.bigBtn}
-                >
-                    <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>Start Date</Text>
-                    <Text style={styles.date}>{formatDate(bookDetails.startDate ? bookDetails.startDate : '')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={showEndDatePicker}
-                    style={styles.bigBtn}
-                >
-                    <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>End Date</Text>
-                    <Text style={styles.date}>{formatDate(bookDetails.endDate ? bookDetails.endDate : '')}</Text>
-                </TouchableOpacity>
-            </View>
-            <Modal
-                isVisible={isStartDatePickerVisible}
-                onBackdropPress={hideStartDatePicker}
+    if (!book) {
+        null;
+    } else {
+        return (
+            <ScrollView
+                style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}
+                contentContainerStyle={styles.contentContainer}
             >
-                <View></View>
-                <DatePicker
-                    style={styles.dateTimePicker}
-                    mode="calendar"
-                    onDateChange={(selectedDate) => handleStartDate(selectedDate)}
-                    selected={bookDetails.startDate}
-                    current={bookDetails.startDate}
-                    minuteInterval={30}
-                />
-            </Modal>
-            <Modal
-                isVisible={isEndDatePickerVisible}
-                onBackdropPress={hideEndDatePicker}
-            >
-                <View></View>
-                <DatePicker
-                    style={styles.dateTimePicker}
-                    mode="calendar"
-                    onDateChange={(selectedDate) => handleEndDate(selectedDate)}
-                    minimumDate={bookDetails.startDate}
-                />
-            </Modal> */}
-            <Modal
-                isVisible={isModalVisible}
-                onBackdropPress={() => setIsModalVisible(false)}
-            >
-                <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>
-                    <View>
-                        <Text style={[styles.modalHeader, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>Enter Progress</Text>
-                    </View>
-                    <View style={[styles.modalInputContainer, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}>
-                        <Text style={[styles.modalLabel, { fontFamily: `${font}R`, backgroundColor: isDarkMode ? Colors.black : Colors.light, color: isDarkMode ? Colors.light : Colors.dark }]}>Current Page</Text>
-                        <TextInput
-                            style={[styles.modalInput, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
-                            // value={currentPage?.toString()}
-                            inputMode="numeric"
-                            onChangeText={(value) => setCurrentPage(Number(value))}
-                            defaultValue={book?.currentPage.toString()}
-                        />
-                    </View>
-                    <View style={[styles.modalInputContainer, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}>
-                        <Text style={[styles.modalLabel, { fontFamily: `${font}R`, backgroundColor: isDarkMode ? Colors.black : Colors.light, color: isDarkMode ? Colors.light : Colors.dark }]}>Pages</Text>
-                        <TextInput
-                            style={[styles.modalInput, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
-                            // value={pages?.toString()}
-                            inputMode="numeric"
-                            onChangeText={(value) => setPages(Number(value))}
-                            defaultValue={book?.pageCount.toString()}
-                        />
-                    </View>
-                    <View>
-                        <Pressable
-                            onTouchStart={() => handleProgressDetails(book.id)}
-                            style={[styles.modalBtn, { backgroundColor: isDarkMode ? Colors.light : accentColor }]}
-                        >
-                            <Text style={[styles.modalBtnText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.dark : Colors.light }]}>SAVE</Text>
-                        </Pressable>
-                    </View>
+                <View>
+                    <Image
+                        style={styles.thumbnailImage}
+                        source={book?.imageLinks.thumbnail !== '' ? { uri: book?.imageLinks.thumbnail } : bookCoverPlaceholder}
+                    />
                 </View>
-            </Modal>
-        </ScrollView>
-    );
+                <View style={styles.textContainer}>
+                    <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>{book?.title}</Text>
+                    {book?.subtitle && <Text style={[styles.subtitle, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.subtitle}</Text>}
+                    <Text style={[styles.author, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.authors[0]}</Text>
+                    <Text style={[styles.category, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.categories}</Text>
+                    <Text
+                        onPress={handleTextExpansion}
+                        numberOfLines={numOfLines}
+                        style={[styles.summary, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
+                    >
+                        {book?.description?.replace(/<\/?[^>]+(>|$)/g, '')}
+                    </Text>
+                </View>
+                <View style={styles.progressContainer}>
+                    {book?.state !== 'READ_LATER' && (
+                        <Pressable onPress={() => setIsModalVisible(true)}>
+                            <Progress.Circle
+                                size={180}
+                                color={accentColor}
+                                progress={bookProgress}
+                                thickness={10}
+                                borderWidth={1}
+                                borderColor={isDarkMode ? Colors.light : Colors.dark}
+                                showsText={true}
+                                formatText={() => `${Math.round(bookProgress * 100)}%`}
+                            />
+                        </Pressable>
+                    )}
+                </View>
+                <View style={[styles.dateContainer]}>
+                    <TouchableOpacity
+                        onPress={showStartDatePicker}
+                        style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
+                    >
+                        <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>Start Date</Text>
+                        <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(startDate)}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={showEndDatePicker}
+                        style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
+                    >
+                        <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>End Date</Text>
+                        <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(endDate)}</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <GlobalDateTimePicker
+                    visible={isStartDatePickerVisible}
+                    initialDate={startDate}
+                    onSelect={(selectedDate) => handleStartDate({ id: book.id, startDate: selectedDate })}
+                    onCancel={() => setIsStartDatePickerVisible(false)}
+                />
+
+                <GlobalDateTimePicker
+                    visible={isEndDatePickerVisible}
+                    initialDate={endDate}
+                    onSelect={(selectedDate) => handleEndDate({ id: book.id, endDate: selectedDate })}
+                    onCancel={() => setIsEndDatePickerVisible(false)}
+                />
+
+                <Modal
+                    isVisible={isModalVisible}
+                    onBackdropPress={() => setIsModalVisible(false)}
+                >
+                    <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>
+                        <View>
+                            <Text style={[styles.modalHeader, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>Enter Progress</Text>
+                        </View>
+                        <View style={[styles.modalInputContainer, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}>
+                            <Text style={[styles.modalLabel, { fontFamily: `${font}R`, backgroundColor: isDarkMode ? Colors.black : Colors.light, color: isDarkMode ? Colors.light : Colors.dark }]}>Current Page</Text>
+                            <TextInput
+                                style={[styles.modalInput, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
+                                value={currentPage?.toString()}
+                                inputMode="numeric"
+                                onChangeText={(value) => setCurrentPage(Number(value))}
+                                defaultValue={book?.currentPage.toString()}
+                                onSubmitEditing={() => handleProgressDetails(book ? book.id : 0)}
+                            />
+                        </View>
+                        <View style={[styles.modalInputContainer, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}>
+                            <Text style={[styles.modalLabel, { fontFamily: `${font}R`, backgroundColor: isDarkMode ? Colors.black : Colors.light, color: isDarkMode ? Colors.light : Colors.dark }]}>Pages</Text>
+                            <TextInput
+                                style={[styles.modalInput, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
+                                value={pageCount?.toString()}
+                                inputMode="numeric"
+                                onChangeText={(value) => setPageCount(Number(value))}
+                                defaultValue={book?.pageCount.toString()}
+                                onSubmitEditing={() => handleProgressDetails(book ? book.id : 0)}
+                            />
+                        </View>
+                        <View>
+                            <Pressable
+                                onTouchStart={() => handleProgressDetails(book ? book.id : 0)}
+                                style={[styles.modalBtn, { backgroundColor: isDarkMode ? Colors.light : accentColor }]}
+                            >
+                                <Text style={[styles.modalBtnText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.dark : Colors.light }]}>SAVE</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </Modal>
+            </ScrollView>
+        );
+    }
 };
 
 export default BookDetails;
@@ -280,12 +299,17 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
+    category: {
+        textAlign: 'center',
+    },
+
     summary: {
         textAlign: 'center',
     },
 
     progressContainer: {
-        marginTop: 20,
+        marginVertical: 20,
+        marginBottom: 40,
     },
 
     modalHeader: {

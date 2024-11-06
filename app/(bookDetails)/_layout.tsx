@@ -7,10 +7,12 @@ import { useDarkModeContext } from '@/providers/themeProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 
 const PagesLayout = () => {
-    const { bookDetails } = useLocalSearchParams();
+    const { bookdetails } = useLocalSearchParams();
 
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
     const [accentColor, setAccentColor] = useAccentColorContext();
+
+    if (Array.isArray(bookdetails)) throw new Error("bookdetails shouldn't be an array");
 
     return (
         <>
@@ -36,7 +38,7 @@ const PagesLayout = () => {
                             textBreakStrategy="highQuality"
                             minimumFontScale={12}
                         >
-                            {bookDetails}
+                            {bookdetails}
                         </Text>
                     </View>
                     <Pressable style={styles.headerIconContainer}>

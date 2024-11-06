@@ -1,11 +1,10 @@
-import { StyleSheet, Text, View, FlatList, Pressable, TextInput, Image, ScrollView, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, TextInput, ScrollView, Keyboard } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
-import { getBookList } from '@/helpers/getBookList';
 import Modal from 'react-native-modal';
 import { useFontsContext } from '@/providers/fontProvider';
 import { getBookDetails } from '@/helpers/getBookDetails';
@@ -13,7 +12,9 @@ import axios from 'axios';
 import { blankBook } from '@/helpers/blankBookDetails';
 import BookSearchItem from '@/components/bookSearchItem';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useFullBookListContext } from '@/providers/booksFullListProvider';
+import { getBookList } from '@/helpers/getBookList';
 
 const Home = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -26,8 +27,6 @@ const Home = () => {
 
     const [hidePlusBtn, setHidePlusBtn] = useState(false);
 
-    let [bookList, setBookList] = useState<Book[]>([]);
-
     const [firstModal, setFirstModal] = useState(false);
 
     const [searchModal, setSearchModal] = useState(false);
@@ -38,11 +37,13 @@ const Home = () => {
 
     const [bookSearchResults, setBookSearchResults] = useState<BookSearchResultProp[]>([]);
 
+    const [fullBookList, setFullBookList] = useFullBookListContext();
+
     useEffect(() => {
-        getBookList().then((data: Book[]) => {
-            setBookList(data);
+        getBookList().then((data) => {
+            setFullBookList([...data]);
         });
-    }, [bookList]);
+    }, []);
 
     function handleAddBook() {
         setFirstModal(true);
@@ -70,21 +71,12 @@ const Home = () => {
         router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
     }
 
-    // function handleNextPage() {
-    //     setInitialIndex((prevIndex) => (prevIndex += 10));
-    //     setFinalIndex((prevIndex) => (prevIndex += 10));
-    // }
-
-    // function handlePreviousPage() {
-    //     setInitialIndex((prevIndex) => Math.min(0, (prevIndex -= 10)));
-    //     setFinalIndex((prevIndex) => Math.min(10, (prevIndex -= 10)));
-    // }
-
     return (
         <View style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
             <FlatList
                 keyExtractor={(_, index) => index.toString()}
-                data={bookList}
+                data={fullBookList}
+                extraData={fullBookList}
                 renderItem={({ item }) => <View>{item.state === 'READING' ? <BookItem data={item} /> : null}</View>}
                 ListFooterComponent={() => <View style={{ height: 10 }} />}
                 // onScrollBeginDrag={() => setHidePlusBtn(true)}
@@ -161,7 +153,7 @@ const Home = () => {
                             contentContainerStyle={{ width: '90%' }}
                         >
                             {bookSearchResults.map((book) => (
-                                <View key={book.selfLink}>
+                                <View key={book.id}>
                                     <BookSearchItem
                                         book={book}
                                         onPress={() => handleBookSelection(book.selfLink, 'READING')}

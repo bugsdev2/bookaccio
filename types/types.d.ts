@@ -58,7 +58,6 @@ declare interface Book {
         smallThumbnail?: string;
         thumbnail?: string;
     };
-
     language?: string;
     maturityRating?: 'NOT_MATURE' | 'MATURE';
     pageCount: number;
@@ -69,8 +68,38 @@ declare interface Book {
     subtitle?: string;
     title?: string;
     state?: 'READ' | 'READING' | 'READ_LATER';
-    startDate?: string;
-    endDate?: string;
+    startDate: number;
+    endDate: number;
+    rating?: number;
+    isbn?: string;
+}
+
+declare interface BookOptional {
+    id: number;
+    currentPage?: number;
+    authors?: string[];
+    categories?: string[];
+    description?: string;
+    imageLinks?: {
+        extraLarge?: string;
+        large?: string;
+        medium?: string;
+        small?: string;
+        smallThumbnail?: string;
+        thumbnail?: string;
+    };
+    language?: string;
+    maturityRating?: 'NOT_MATURE' | 'MATURE';
+    pageCount?: number;
+    previewLink?: string;
+    printedPageCount?: number;
+    publishedDate?: string;
+    publisher?: string;
+    subtitle?: string;
+    title?: string;
+    state?: 'READ' | 'READING' | 'READ_LATER';
+    startDate?: Date;
+    endDate?: Date;
     rating?: number;
     isbn?: string;
 }

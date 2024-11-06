@@ -1,8 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Image, Alert, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { getBookList } from '@/helpers/getBookList';
-import Modal from 'react-native-modal';
 import { useFontsContext } from '@/providers/fontProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -10,17 +8,17 @@ import { Colors } from '@/constants/Colors';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import CustomInput from '@/components/customInput';
 import { Dropdown } from 'react-native-element-dropdown';
-import DatePicker, { getToday } from 'react-native-modern-datepicker';
-
+import Modal from 'react-native-modal';
 import bookCoverPlaceholder from '../../assets/images/others/book-cover-placeholder.png';
 
-import { addNewBook } from '@/helpers/addNewBook';
+import { useFullBookListContext } from '@/providers/booksFullListProvider';
+import { storeBooks } from '@/helpers/storeBooks';
 
 const AddNewBook = () => {
     const { addBook }: { addBook: 'READING' | 'READ' | 'READ_LATER' } = useLocalSearchParams();
 
     if (Array.isArray(addBook)) {
-        throw new Error('Custom addBook Array Error');
+        throw new Error("Custom addBook mustn't be an Array Error");
     }
 
     const [font, setFont] = useFontsContext();
@@ -31,17 +29,15 @@ const AddNewBook = () => {
 
     const [selectedBook, setSelectedBook] = useSelectedBookContext();
 
-    const [bookList, setBookList] = useState<Book[]>();
+    const [fullBookList, setFullBookList] = useFullBookListContext();
 
-    useEffect(() => {
-        getBookList().then((data) => {
-            setBookList(data);
-        });
-    }, []);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const [imgUrl, setImgUrl] = useState('');
 
     function createUID() {
         let uid = Math.round(Math.random() * 10000000000);
-        let sameID = bookList?.find((book) => book.id === uid)?.id;
+        let sameID = fullBookList?.find((book) => book.id === uid)?.id;
         while (uid === sameID) {
             uid = Math.round(Math.random() * 10000000000);
         }
@@ -61,8 +57,12 @@ const AddNewBook = () => {
         },
         currentPage: 0,
         state: addBook,
-        startDate: getToday(),
-        endDate: '',
+        startDate: Date.parse(new Date().toString()),
+        endDate: Date.parse(new Date().toString()),
+        publishedDate: selectedBook.publishedDate,
+        language: selectedBook.language,
+        publisher: selectedBook.publisher,
+        maturityRating: selectedBook.maturityRating,
     });
 
     const statusData: { title: string; value: 'READ' | 'READING' | 'READ_LATER' }[] = [
@@ -85,13 +85,25 @@ const AddNewBook = () => {
         }
     }
 
+    function handleImageChange() {
+        setBookDetails({ ...bookDetails, imageLinks: { thumbnail: imgUrl } });
+        console.log(bookDetails.imageLinks.thumbnail);
+    }
+
     function handleAddBook() {
         if (bookDetails.title === '' || bookDetails.authors[0] === '' || bookDetails.pageCount === 0) {
             Alert.alert('Title, Author and Pages are mandatory fields');
             return;
         }
 
-        addNewBook(bookDetails);
+        let updatedBookList = fullBookList;
+
+        updatedBookList.push(bookDetails);
+
+        setFullBookList([...updatedBookList]);
+
+        storeBooks(updatedBookList);
+
         router.back();
     }
 
@@ -101,10 +113,12 @@ const AddNewBook = () => {
             contentContainerStyle={styles.contentContainer}
         >
             <View>
-                <Image
-                    style={styles.image}
-                    source={selectedBook.imageLinks?.thumbnail !== '' ? { uri: selectedBook.imageLinks.thumbnail } : bookCoverPlaceholder}
-                />
+                <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+                    <Image
+                        style={styles.image}
+                        source={selectedBook?.imageLinks?.thumbnail && selectedBook.imageLinks?.thumbnail !== '' ? { uri: selectedBook.imageLinks.thumbnail } : bookCoverPlaceholder}
+                    />
+                </TouchableOpacity>
             </View>
             <View style={[styles.detailsContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
                 <View>
@@ -118,7 +132,7 @@ const AddNewBook = () => {
                     <CustomInput
                         label="Author"
                         value={bookDetails.authors[0]}
-                        onChangeText={(value) => setBookDetails({ ...bookDetails, authors: value })}
+                        onChangeText={(value) => setBookDetails({ ...bookDetails, authors: [value] })}
                     />
                 </View>
                 <View>
@@ -173,13 +187,31 @@ const AddNewBook = () => {
             <View style={styles.btnContainer}>
                 <TouchableOpacity
                     onPress={handleAddBook}
-                    style={styles.bigBtn}
+                    style={[styles.bigBtn, { backgroundColor: accentColor }]}
                 >
                     <View>
-                        <Text>Add Book</Text>
+                        <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>Add Book</Text>
                     </View>
                 </TouchableOpacity>
             </View>
+            <Modal
+                isVisible={isModalVisible}
+                onBackdropPress={() => setIsModalVisible(false)}
+            >
+                <View style={[styles.modal, { backgroundColor: isDarkMode ? Colors.dark : Colors.light }]}>
+                    <CustomInput
+                        label="Image URL"
+                        value={imgUrl}
+                        onChangeText={(value) => setImgUrl(value)}
+                    />
+                    <TouchableOpacity
+                        onPress={handleImageChange}
+                        style={[styles.bigBtn, { backgroundColor: accentColor, alignSelf: 'center' }]}
+                    >
+                        <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>Save</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </ScrollView>
     );
 };
@@ -227,7 +259,6 @@ const styles = StyleSheet.create({
         paddingVertical: 3,
         paddingHorizontal: 8,
         borderRadius: 5,
-        //
     },
 
     statusContainer: {
@@ -250,9 +281,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: 150,
-        height: 80,
-        borderWidth: 1,
+        height: 50,
+        // borderWidth: 1,
         borderRadius: 10,
         padding: 10,
+    },
+
+    btnTxt: {
+        fontSize: 16,
+        color: Colors.light,
+    },
+
+    modal: {
+        margin: 'auto',
+        width: '90%',
+        justifyContent: 'center',
+        paddingVertical: 40,
+        paddingHorizontal: 15,
+        borderRadius: 10,
+        gap: 15,
     },
 });

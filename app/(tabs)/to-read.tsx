@@ -4,7 +4,6 @@ import Modal from 'react-native-modal';
 import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
-import { getBookList } from '@/helpers/getBookList';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import BookSearchItem from '@/components/bookSearchItem';
@@ -14,6 +13,8 @@ import { router } from 'expo-router';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { useFontsContext } from '@/providers/fontProvider';
 import { blankBook } from '@/helpers/blankBookDetails';
+import { useFullBookListContext } from '@/providers/booksFullListProvider';
+import { getBookList } from '@/helpers/getBookList';
 
 const ToRead = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -26,8 +27,6 @@ const ToRead = () => {
 
     const [hidePlusBtn, setHidePlusBtn] = useState(false);
 
-    const [bookList, setBookList] = useState<Book[]>();
-
     const [firstModal, setFirstModal] = useState(false);
 
     const [searchModal, setSearchModal] = useState(false);
@@ -38,11 +37,7 @@ const ToRead = () => {
 
     const [bookSearchResults, setBookSearchResults] = useState<BookSearchResultProp[]>([]);
 
-    useEffect(() => {
-        getBookList().then((data) => {
-            setBookList(data);
-        });
-    }, [bookList]);
+    const [fullBookList, setFullBookList] = useFullBookListContext();
 
     function handleAddBook() {
         setFirstModal(true);
@@ -74,7 +69,8 @@ const ToRead = () => {
         <View style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
             <FlatList
                 keyExtractor={(_, index) => index.toString()}
-                data={bookList}
+                data={fullBookList}
+                extraData={fullBookList}
                 renderItem={({ item }) => <View>{item.state === 'READ_LATER' ? <BookItem data={item} /> : null}</View>}
                 ListFooterComponent={() => <View style={{ height: 10 }} />}
                 // onScrollBeginDrag={() => setHidePlusBtn(true)}
@@ -151,7 +147,7 @@ const ToRead = () => {
                             contentContainerStyle={{ width: '90%' }}
                         >
                             {bookSearchResults.map((book) => (
-                                <View key={book.selfLink}>
+                                <View key={book.id}>
                                     <BookSearchItem
                                         book={book}
                                         onPress={() => handleBookSelection(book.selfLink, 'READ_LATER')}

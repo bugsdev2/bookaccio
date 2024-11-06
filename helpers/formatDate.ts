@@ -1,3 +1,5 @@
-export const formatDate = (date: string) => {
-    return date.split('/').reverse().join('/');
+export const formatDate = (date: Date | undefined) => {
+    if (!date) return '';
+    let dateMSEC = Date.parse(date.toString());
+    return new Date(dateMSEC).toLocaleDateString();
 };
