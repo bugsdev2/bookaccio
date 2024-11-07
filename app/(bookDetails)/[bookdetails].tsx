@@ -13,6 +13,7 @@ import GlobalDateTimePicker, { CalendarType, weekDaysJalali, yearMonthsJalali, D
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
 import CustomInput from '@/components/customInput';
+import { processUrl } from '@/helpers/processUrl';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -167,9 +168,9 @@ const BookDetails = () => {
             return [...Array(5)].map((_, index) => (
                 <MaterialIcons
                     key={Math.random() * 5000}
-                    name="star"
+                    name="star-outline"
                     size={24}
-                    color={'white'}
+                    color={Colors.gray}
                 />
             ));
         } else {
@@ -187,9 +188,9 @@ const BookDetails = () => {
                 [...Array(5 - rating)].map((_, index) => (
                     <View key={index}>
                         <MaterialIcons
-                            name="star"
+                            name="star-outline"
                             size={24}
-                            color={'white'}
+                            color={Colors.gray}
                         />
                     </View>
                 )),
@@ -208,7 +209,7 @@ const BookDetails = () => {
                 <View>
                     <Image
                         style={styles.thumbnailImage}
-                        source={book?.imageLinks.thumbnail !== '' ? { uri: book?.imageLinks.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
+                        source={book?.imageLinks.thumbnail !== '' ? { uri: processUrl(book?.imageLinks.thumbnail) } : bookCoverPlaceholder}
                     />
                 </View>
                 <View style={styles.textContainer}>

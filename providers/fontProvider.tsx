@@ -6,7 +6,7 @@ type FontsProps = [string, React.Dispatch<React.SetStateAction<string>>];
 export const FontsContext = createContext<FontsProps | []>([]);
 
 const FontsProvider = ({ children }: { children: React.ReactNode }) => {
-    const [font, setFont] = useState<string>('Quicksand');
+    const [font, setFont] = useState<string>('Nunito');
 
     getData('font').then((value) => {
         if (value) {

@@ -13,6 +13,7 @@ import bookCoverPlaceholder from '../../assets/images/others/book-cover-placehol
 
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
+import { processUrl } from '@/helpers/processUrl';
 
 const AddNewBook = () => {
     const { editBook }: { editBook: any } = useLocalSearchParams();
@@ -118,7 +119,7 @@ const AddNewBook = () => {
                 <TouchableOpacity onPress={() => setIsModalVisible(true)}>
                     <Image
                         style={styles.image}
-                        source={imgUrl !== '' ? { uri: imgUrl } : selectedBook.imageLinks?.thumbnail && selectedBook.imageLinks?.thumbnail !== '' ? { uri: selectedBook.imageLinks.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
+                        source={imgUrl !== '' ? { uri: processUrl(imgUrl) } : selectedBook.imageLinks?.thumbnail && selectedBook.imageLinks?.thumbnail !== '' ? { uri: processUrl(selectedBook.imageLinks.thumbnail) } : bookCoverPlaceholder}
                     />
                 </TouchableOpacity>
             </View>

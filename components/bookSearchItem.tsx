@@ -4,6 +4,7 @@ import bookCoverPlaceholder from '../assets/images/others/book-cover-placeholder
 import { useFontsContext } from '@/providers/fontProvider';
 import axios from 'axios';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
+import { processUrl } from '@/helpers/processUrl';
 
 const BookSearchItem = ({ book, onPress }: { book: BookSearchResultProp; onPress: any }) => {
     const [font, setFont] = useFontsContext();
@@ -17,7 +18,7 @@ const BookSearchItem = ({ book, onPress }: { book: BookSearchResultProp; onPress
                 <View style={styles.modalBookItem}>
                     <Image
                         style={styles.modalImage}
-                        source={book?.volumeInfo?.imageLinks && book?.volumeInfo?.imageLinks?.thumbnail !== '' ? { uri: book?.volumeInfo?.imageLinks?.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
+                        source={book?.volumeInfo?.imageLinks && book?.volumeInfo?.imageLinks?.thumbnail !== '' ? { uri: processUrl(book?.volumeInfo?.imageLinks?.thumbnail) } : bookCoverPlaceholder}
                     />
                     <View style={{ width: '70%' }}>
                         <Text style={[styles.modalBookTitle, { fontFamily: `${font}B` }]}>{book?.volumeInfo?.title}</Text>

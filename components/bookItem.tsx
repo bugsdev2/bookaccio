@@ -11,6 +11,7 @@ import Modal from 'react-native-modal';
 import { getBookList } from '@/helpers/getBookList';
 import { storeBooks } from '@/helpers/storeBooks';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
+import { processUrl } from '@/helpers/processUrl';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -135,7 +136,7 @@ const BookItem = ({ data }: { data: Book }) => {
                     <View>
                         <Image
                             style={styles.image}
-                            source={data.imageLinks.thumbnail !== '' ? { uri: data.imageLinks.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
+                            source={data.imageLinks.thumbnail !== '' ? { uri: processUrl(data.imageLinks.thumbnail) } : bookCoverPlaceholder}
                         />
                     </View>
                     <View style={styles.midContent}>
@@ -179,7 +180,7 @@ const BookItem = ({ data }: { data: Book }) => {
                 <View style={[styles.modal, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>
                     <Image
                         style={styles.imageModal}
-                        source={data.imageLinks.thumbnail !== '' ? { uri: data.imageLinks.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
+                        source={data.imageLinks.thumbnail !== '' ? { uri: processUrl(data.imageLinks.thumbnail) } : bookCoverPlaceholder}
                     />
                     <View>
                         <Text style={[styles.modalTitle, { color: isDarkMode ? Colors.light : Colors.dark }]}>{data?.title}</Text>
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderWidth: 1,
         gap: 10,
-        marginBottom: 0,
+        marginBottom: 2,
         borderRadius: 10,
         overflow: 'hidden',
     },
