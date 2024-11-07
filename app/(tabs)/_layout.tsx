@@ -35,10 +35,6 @@ const TabsLayout = () => {
             <StatusBar style="light" />
             <View style={[styles.header, { backgroundColor: accentColor }]}>
                 <View style={styles.headerInner}>
-                    {/* <Image
-                        style={styles.brand}
-                        source={require('@/assets/images/bookaccio-brand.png')}
-                    /> */}
                     <Text style={styles.headerText}>BOOKACCIO</Text>
                     <Pressable
                         onPress={() => setModalVisible(true)}

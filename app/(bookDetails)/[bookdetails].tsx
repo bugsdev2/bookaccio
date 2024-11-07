@@ -208,7 +208,7 @@ const BookDetails = () => {
                 <View>
                     <Image
                         style={styles.thumbnailImage}
-                        source={book?.imageLinks.thumbnail !== '' ? { uri: book?.imageLinks.thumbnail } : bookCoverPlaceholder}
+                        source={book?.imageLinks.thumbnail !== '' ? { uri: book?.imageLinks.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
                     />
                 </View>
                 <View style={styles.textContainer}>

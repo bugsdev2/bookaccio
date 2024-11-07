@@ -135,7 +135,7 @@ const BookItem = ({ data }: { data: Book }) => {
                     <View>
                         <Image
                             style={styles.image}
-                            source={data.imageLinks.thumbnail !== '' ? { uri: data.imageLinks.thumbnail } : bookCoverPlaceholder}
+                            source={data.imageLinks.thumbnail !== '' ? { uri: data.imageLinks.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
                         />
                     </View>
                     <View style={styles.midContent}>
@@ -179,7 +179,7 @@ const BookItem = ({ data }: { data: Book }) => {
                 <View style={[styles.modal, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>
                     <Image
                         style={styles.imageModal}
-                        source={data.imageLinks.thumbnail !== '' ? { uri: data.imageLinks.thumbnail } : bookCoverPlaceholder}
+                        source={data.imageLinks.thumbnail !== '' ? { uri: data.imageLinks.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
                     />
                     <View>
                         <Text style={[styles.modalTitle, { color: isDarkMode ? Colors.light : Colors.dark }]}>{data?.title}</Text>

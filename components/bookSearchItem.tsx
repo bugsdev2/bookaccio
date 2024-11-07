@@ -17,7 +17,7 @@ const BookSearchItem = ({ book, onPress }: { book: BookSearchResultProp; onPress
                 <View style={styles.modalBookItem}>
                     <Image
                         style={styles.modalImage}
-                        source={book?.volumeInfo?.imageLinks && book?.volumeInfo?.imageLinks?.thumbnail !== '' ? { uri: book?.volumeInfo?.imageLinks?.thumbnail } : bookCoverPlaceholder}
+                        source={book?.volumeInfo?.imageLinks && book?.volumeInfo?.imageLinks?.thumbnail !== '' ? { uri: book?.volumeInfo?.imageLinks?.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
                     />
                     <View style={{ width: '70%' }}>
                         <Text style={[styles.modalBookTitle, { fontFamily: `${font}B` }]}>{book?.volumeInfo?.title}</Text>

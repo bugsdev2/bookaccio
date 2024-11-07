@@ -118,7 +118,7 @@ const AddNewBook = () => {
                 <TouchableOpacity onPress={() => setIsModalVisible(true)}>
                     <Image
                         style={styles.image}
-                        source={imgUrl !== '' ? { uri: imgUrl } : selectedBook.imageLinks?.thumbnail && selectedBook.imageLinks?.thumbnail !== '' ? { uri: selectedBook.imageLinks.thumbnail } : bookCoverPlaceholder}
+                        source={imgUrl !== '' ? { uri: imgUrl } : selectedBook.imageLinks?.thumbnail && selectedBook.imageLinks?.thumbnail !== '' ? { uri: selectedBook.imageLinks.thumbnail, headers: { Accept: 'image/*' } } : bookCoverPlaceholder}
                     />
                 </TouchableOpacity>
             </View>
