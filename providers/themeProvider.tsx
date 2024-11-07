@@ -7,7 +7,7 @@ type ContextProps = [boolean, Dispatch<SetStateAction<boolean>>];
 export const ThemeContext = createContext<ContextProps | []>([]);
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [isDarkMode, setIsDarkMode] = useState<boolean>(useColorScheme() == 'dark');
+    const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
     getData('theme').then((value) => {
         if (value !== undefined) {

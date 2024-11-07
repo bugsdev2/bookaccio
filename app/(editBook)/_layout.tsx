@@ -7,16 +7,9 @@ import { useDarkModeContext } from '@/providers/themeProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 
 const PagesLayout = () => {
-    const { bookdetails } = useLocalSearchParams();
+    const { addBook } = useLocalSearchParams();
 
-    const [isDarkMode, setIsDarkMode] = useDarkModeContext();
     const [accentColor, setAccentColor] = useAccentColorContext();
-
-    if (Array.isArray(bookdetails)) throw new Error("bookdetails shouldn't be an array");
-
-    function handleEditBook() {
-        //
-    }
 
     return (
         <>
@@ -42,16 +35,15 @@ const PagesLayout = () => {
                             textBreakStrategy="highQuality"
                             minimumFontScale={12}
                         >
-                            {bookdetails}
+                            Add New Book
                         </Text>
                     </View>
-
                     <View style={{ flex: 1 }}></View>
                 </View>
             </View>
             <Stack>
                 <Stack.Screen
-                    name="[bookdetails]"
+                    name="[addBook]"
                     options={{
                         headerShown: false,
                     }}

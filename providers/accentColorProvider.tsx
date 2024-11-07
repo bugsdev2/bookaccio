@@ -6,7 +6,7 @@ type AccentColorProps = [string, React.Dispatch<React.SetStateAction<string>>];
 export const AccentColorContext = createContext<AccentColorProps | []>([]);
 
 const AccentColorProvider = ({ children }: { children: React.ReactNode }) => {
-    const [accentColor, setAccentColor] = useState('#50a65c');
+    const [accentColor, setAccentColor] = useState('#43646b');
     getData('accentColor').then((value) => {
         if (value) {
             setAccentColor(value);

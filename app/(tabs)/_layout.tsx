@@ -1,6 +1,6 @@
 import { Link, Tabs } from 'expo-router';
 import Icon from '@expo/vector-icons/Feather';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -35,6 +35,10 @@ const TabsLayout = () => {
             <StatusBar style="light" />
             <View style={[styles.header, { backgroundColor: accentColor }]}>
                 <View style={styles.headerInner}>
+                    {/* <Image
+                        style={styles.brand}
+                        source={require('@/assets/images/bookaccio-brand.png')}
+                    /> */}
                     <Text style={styles.headerText}>BOOKACCIO</Text>
                     <Pressable
                         onPress={() => setModalVisible(true)}
@@ -188,6 +192,11 @@ const styles = StyleSheet.create({
         // fontWeight: 'bold',
         fontFamily: 'OswaldB',
         // letterSpacing: 0.5,
+    },
+
+    brand: {
+        width: 160,
+        height: 30,
     },
 
     customIconFill: {

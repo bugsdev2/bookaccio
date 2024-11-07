@@ -7,11 +7,12 @@ import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import * as Progress from 'react-native-progress';
 import Modal from 'react-native-modal';
-
+import { MaterialIcons } from '@expo/vector-icons/';
 import { formatDate } from '@/helpers/formatDate';
 import GlobalDateTimePicker, { CalendarType, weekDaysJalali, yearMonthsJalali, DateTimePickerMode, DateTimePickerThemes, DateTimePickerTranslations } from 'react-native-global-datetimepicker';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
+import CustomInput from '@/components/customInput';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -34,6 +35,8 @@ const BookDetails = () => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
+    const [isRatingModalVisible, setIsRatinModalVisible] = useState(false);
+
     const [currentPage, setCurrentPage] = useState(book?.currentPage);
 
     const [pageCount, setPageCount] = useState(book?.pageCount);
@@ -43,6 +46,8 @@ const BookDetails = () => {
     const [startDate, setStartDate] = useState(new Date(book!.startDate));
 
     const [endDate, setEndDate] = useState(new Date(book!.endDate));
+
+    const [rating, setRating] = useState(book!.rating);
 
     function handleTextExpansion() {
         numOfLines !== 0 ? setNumOfLines(0) : setNumOfLines(4);
@@ -141,6 +146,57 @@ const BookDetails = () => {
 
     //////////////////
 
+    function handleRatingValue(value: string) {
+        let intValue = parseInt(value);
+        if (intValue) {
+            if (intValue <= 5) {
+                setRating(intValue);
+            } else {
+                Alert.alert('Invalid Number', 'You have entered an invalid number');
+            }
+        }
+    }
+
+    function handleBookRating(id: number) {
+        updateBookDetails({ id, rating });
+        setIsRatinModalVisible(false);
+    }
+
+    function handleBookRatingStar(rating: number = 0) {
+        if (rating === 0) {
+            return [...Array(5)].map((_, index) => (
+                <MaterialIcons
+                    key={Math.random() * 5000}
+                    name="star"
+                    size={24}
+                    color={'white'}
+                />
+            ));
+        } else {
+            return [
+                [...Array(rating)].map((_, index) => (
+                    <View key={index}>
+                        <MaterialIcons
+                            key={Math.random() * 5000}
+                            name="star"
+                            size={24}
+                            color={'gold'}
+                        />
+                    </View>
+                )),
+                [...Array(5 - rating)].map((_, index) => (
+                    <View key={index}>
+                        <MaterialIcons
+                            name="star"
+                            size={24}
+                            color={'white'}
+                        />
+                    </View>
+                )),
+            ];
+        }
+    }
+
     if (!book) {
         null;
     } else {
@@ -159,6 +215,12 @@ const BookDetails = () => {
                     <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>{book?.title}</Text>
                     {book?.subtitle && <Text style={[styles.subtitle, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.subtitle}</Text>}
                     <Text style={[styles.author, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.authors[0]}</Text>
+                    <Pressable
+                        onPress={() => setIsRatinModalVisible(true)}
+                        style={styles.ratingContainer}
+                    >
+                        {handleBookRatingStar(rating)}
+                    </Pressable>
                     <Text style={[styles.category, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.categories}</Text>
                     <Text
                         onPress={handleTextExpansion}
@@ -259,6 +321,34 @@ const BookDetails = () => {
                         </View>
                     </View>
                 </Modal>
+                <Modal
+                    isVisible={isRatingModalVisible}
+                    onBackdropPress={() => setIsRatinModalVisible(false)}
+                >
+                    <View style={[styles.ratingModalContainer, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>
+                        <View>
+                            <Text style={[styles.ratingLabel, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}B` }]}>Rating [0-5]</Text>
+                            <TextInput
+                                style={[styles.ratingInput, { borderColor: isDarkMode ? Colors.light : Colors.dark, color: isDarkMode ? Colors.light : Colors.dark }]}
+                                keyboardType="numeric"
+                                maxLength={1}
+                                onChangeText={(value) => {
+                                    handleRatingValue(value);
+                                }}
+                                onSubmitEditing={(value) => {
+                                    handleRatingValue(value.nativeEvent.text);
+                                    handleBookRating(book.id);
+                                }}
+                            />
+                            <Pressable
+                                onTouchStart={() => handleBookRating(book.id)}
+                                style={[styles.ratingSaveBtn, { backgroundColor: accentColor }]}
+                            >
+                                <Text style={styles.ratingSaveTxt}>Save</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </Modal>
             </ScrollView>
         );
     }
@@ -284,7 +374,9 @@ const styles = StyleSheet.create({
     },
 
     textContainer: {
-        gap: 8,
+        marginTop: 15,
+        gap: 15,
+        paddingHorizontal: 10,
     },
 
     title: {
@@ -303,12 +395,21 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
+    ratingContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 5,
+    },
+
     category: {
         textAlign: 'center',
     },
 
     summary: {
-        textAlign: 'center',
+        textAlign: 'justify',
+        lineHeight: 24,
+        fontSize: 15,
     },
 
     progressContainer: {
@@ -389,5 +490,38 @@ const styles = StyleSheet.create({
 
     date: {
         fontSize: 17,
+    },
+
+    ratingModalContainer: {
+        padding: 20,
+        borderRadius: 10,
+    },
+
+    ratingLabel: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginBottom: 15,
+    },
+
+    ratingInput: {
+        borderWidth: 1,
+        borderRadius: 20,
+        paddingVertical: 5,
+        paddingHorizontal: 20,
+        fontSize: 40,
+        textAlign: 'center',
+        width: 'auto',
+    },
+
+    ratingSaveBtn: {
+        alignSelf: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 8,
+        marginTop: 15,
+        borderRadius: 20,
+    },
+
+    ratingSaveTxt: {
+        fontSize: 18,
     },
 });
