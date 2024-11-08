@@ -149,7 +149,7 @@ const BookDetails = () => {
 
     function handleRatingValue(value: string) {
         let intValue = parseInt(value);
-        if (intValue) {
+        if (intValue >= 0) {
             if (intValue <= 5) {
                 setRating(intValue);
             } else {
