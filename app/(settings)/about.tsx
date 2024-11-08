@@ -11,8 +11,6 @@ const About = () => {
 
     const [accentColor, setAccentColor] = useAccentColorContext();
 
-    const [numOfLines, setNumOfLines] = useState(4);
-
     function handleLink(url: string) {
         WebBrowser.openBrowserAsync(url);
     }
