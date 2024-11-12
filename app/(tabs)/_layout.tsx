@@ -52,22 +52,31 @@ const TabsLayout = () => {
         let tempArr;
         switch (value) {
             case 'title':
-                tempArr = fullBookList.sort((a, b) => (a?.title! > b?.title! ? 1 : -1));
-                setFullBookList([...tempArr]);
-                storeBooks([...tempArr]);
-                setIsSortModalVisible(false);
+                getBookList().then((data: Book[]) => {
+                    tempArr = data.sort((a, b) => (a?.title! > b?.title! ? 1 : -1));
+                    setFullBookList([...tempArr]);
+                    storeBooks([...tempArr]);
+                    setIsSortModalVisible(false);
+                    textInputRef.current?.clear();
+                });
                 break;
             case 'dateAsc':
-                tempArr = fullBookList.sort((a, b) => a.startDate - b.startDate);
-                setFullBookList([...tempArr]);
-                storeBooks([...tempArr]);
-                setIsSortModalVisible(false);
+                getBookList().then((data: Book[]) => {
+                    tempArr = data.sort((a, b) => a.startDate - b.startDate);
+                    setFullBookList([...tempArr]);
+                    storeBooks([...tempArr]);
+                    setIsSortModalVisible(false);
+                    textInputRef.current?.clear();
+                });
                 break;
             case 'dateDesc':
-                tempArr = fullBookList.sort((a, b) => b.startDate - a.startDate);
-                setFullBookList([...tempArr]);
-                storeBooks([...tempArr]);
-                setIsSortModalVisible(false);
+                getBookList().then((data: Book[]) => {
+                    tempArr = data.sort((a, b) => b.startDate - a.startDate);
+                    setFullBookList([...tempArr]);
+                    storeBooks([...tempArr]);
+                    setIsSortModalVisible(false);
+                    textInputRef.current?.clear();
+                });
                 break;
         }
     }
@@ -95,7 +104,8 @@ const TabsLayout = () => {
                         <Pressable
                             onPress={() => {
                                 setIsSearchContainerVisible(true);
-                                textInputRef.current?.focus();
+                                // commenting this out because in phone, sometimes the keyboard doesn't show up
+                                // textInputRef.current?.focus();
                             }}
                             style={styles.headerIconContainer}
                         >
@@ -131,7 +141,7 @@ const TabsLayout = () => {
                         <TextInput
                             ref={textInputRef}
                             value={searchTxt}
-                            placeholder="search by book title or author"
+                            placeholder="search by title or author"
                             placeholderTextColor={'#9e9e9e'}
                             style={[styles.searchInput, { fontFamily: `${font}B` }]}
                             onChangeText={(value) => {

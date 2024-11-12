@@ -9,11 +9,12 @@ import * as Progress from 'react-native-progress';
 import Modal from 'react-native-modal';
 import { MaterialIcons } from '@expo/vector-icons/';
 import { formatDate } from '@/helpers/formatDate';
-import GlobalDateTimePicker, { CalendarType, weekDaysJalali, yearMonthsJalali, DateTimePickerMode, DateTimePickerThemes, DateTimePickerTranslations } from 'react-native-global-datetimepicker';
+import GlobalDateTimePicker from 'react-native-global-datetimepicker';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
-import CustomInput from '@/components/customInput';
 import { processUrl } from '@/helpers/processUrl';
+import { processInterjections } from '@/helpers/processInterjections';
+import { processDuration } from '@/helpers/processDuration';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -247,6 +248,7 @@ const BookDetails = () => {
                         </Pressable>
                     )}
                 </View>
+                <View style={styles.durationContainer}>{book.state === 'READ' && bookProgress === 1 && <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{processInterjections() + ' You finished this book in ' + processDuration(book.startDate, book.endDate)}</Text>}</View>
                 <View style={[styles.dateContainer]}>
                     {book?.state !== 'READ_LATER' && (
                         <>
@@ -407,8 +409,17 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
+    durationContainer: {
+        paddingBottom: 25,
+        paddingHorizontal: 10,
+    },
+
+    durationMsg: {
+        fontSize: 22,
+        textAlign: 'center',
+    },
+
     summary: {
-        textAlign: 'justify',
         lineHeight: 24,
         fontSize: 15,
     },

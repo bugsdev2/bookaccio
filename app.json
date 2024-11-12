@@ -2,7 +2,7 @@
     "expo": {
         "name": "Bookaccio",
         "slug": "bookaccio",
-        "version": "0.0.1",
+        "version": "0.0.4",
         "orientation": "portrait",
         "icon": "./assets/images/icon.png",
         "scheme": "myapp",
@@ -16,12 +16,12 @@
             "supportsTablet": true
         },
         "android": {
+            "package": "com.bugsdev2.bookaccio",
+            "versionCode": 4,
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
-            },
-            "package": "com.bugsdev2.bookaccio",
-            "versionCode": 1
+            }
         },
         "web": {
             "bundler": "metro",
