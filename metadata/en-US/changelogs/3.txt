@@ -1,0 +1,3 @@
+- Enabled book search using Google Books API
+- Added features to add and delete books in the library
+- Initial performance optimizations for smoother usage

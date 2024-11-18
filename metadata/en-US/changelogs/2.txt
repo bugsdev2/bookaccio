@@ -1,0 +1,3 @@
+- Refined app interface for easier navigation
+- Improved book search functionality with better API handling
+- Fixed bugs in initial release

@@ -1,0 +1,3 @@
+- Initial release of BookAccio
+- Basic library management features
+- Book search functionality powered by Google Books API

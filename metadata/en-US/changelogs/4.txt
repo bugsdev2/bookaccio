@@ -1,0 +1,3 @@
+- Introduced functionality to update book metadata
+- Added support for tracking reading progress by pages read
+- Enhanced layout for better library organization
