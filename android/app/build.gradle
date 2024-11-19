@@ -109,7 +109,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.bookaccio"
+    namespace "com.bugsdev2.bookaccio"
     defaultConfig {
         applicationId 'com.bugsdev2.bookaccio'
         minSdkVersion rootProject.ext.minSdkVersion
