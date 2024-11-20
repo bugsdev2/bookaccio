@@ -1,6 +1,26 @@
-Bookaccio is a book tracking application that helps you manage and organize your reading list. With Bookaccio, you can:
+<b>Bookaccio: Your Personal Book Tracker</b>
+--------------------------------------------
+<b>Bookaccio</b> is a book tracking application that helps you manage and organize your reading list. With Bookaccio, you can:
   * Search for books and add them to your collection using the Google Books API
   * Update your progress
   * Import and export book data
   * Delete books when needed
   * Keep a clear and organized view of your entire library, making reading goals easier to track
+  
+Permissions:
+------------
+<b>android.permission.INTERNET</b> </br>
+Reason: This permission is required to allow the app to access online services, such as fetching book metadata from the Google Books API and updating book details. It ensures the app can connect to the internet to retrieve real-time information and synchronize data.
+
+<b>android.permission.READ_EXTERNAL_STORAGE</b> </br>
+Reason: This permission is required for reading user data stored in external storage, such as when importing or exporting book data. It enables the app to access user files that are stored on the device.
+
+<b>android.permission.SYSTEM_ALERT_WINDOW</b> </br>
+Reason: This permission is required since the app uses alert messages to provide essential information (such as when the app is not given permission to read/write data). It is essential for providing persistent notifications or messages that users can easily interact with.
+
+<b>android.permission.VIBRATE</b> </br>
+Reason: This permission is optional and is used to enable vibration feedback for notifications, reminders, or alerts within the app. For example, users may receive a vibration alert when a new reading goal is achieved, helping enhance the app's interactivity and user experience.
+
+<b>android.permission.WRITE_EXTERNAL_STORAGE</b> </br>
+Reason: This permission is allows the app to save and modify data on the device’s external storage, such as exporting or saving book data. It is essential for creating backups of book data and providing a smooth experience for storing and retrieving files.
+
