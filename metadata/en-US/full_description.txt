@@ -1,11 +1,12 @@
 <b>Bookaccio: Your Personal Book Tracker</b>
 --------------------------------------------
 <b>Bookaccio</b> is a book tracking application that helps you manage and organize your reading list. With Bookaccio, you can:
-  * Search for books and add them to your collection using the Google Books API
-  * Update your progress
-  * Import and export book data
-  * Delete books when needed
-  * Keep a clear and organized view of your entire library, making reading goals easier to track
+
+* Search for books and add them to your collection using the Google Books API
+* Update your progress
+* Import and export book data
+* Delete books when needed
+* Keep a clear and organized view of your entire library, making reading goals easier to track
   
 Permissions:
 ------------
