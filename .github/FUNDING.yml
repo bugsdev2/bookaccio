@@ -1,7 +1,5 @@
 # FUNDING.yml
 
 github: bugsdev2
-custom:
-  - url: https://buymeacoffee.com/bugsdev2
-    label: ☕ Buy Me a Coffee
+custom: ["https://buymeacoffee.com/bugsdev2", "☕ Buy Me a Coffee"]
 
