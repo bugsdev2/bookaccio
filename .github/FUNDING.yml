@@ -2,5 +2,6 @@
 
 github: bugsdev2
 custom:
-  - https://buymeacoffee.com/bugsdev2
+  - url: https://buymeacoffee.com/bugsdev2
+    label: ☕ Buy Me a Coffee
 
