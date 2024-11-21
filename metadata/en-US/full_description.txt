@@ -1,5 +1,3 @@
-<b>Bookaccio: Your Personal Book Tracker</b>
---------------------------------------------
 <b>Bookaccio</b> is a book tracking application that helps you manage and organize your reading list. With Bookaccio, you can:
 
 * Search for books and add them to your collection using the Google Books API
@@ -24,4 +22,3 @@ Reason: This permission is optional and is used to enable vibration feedback for
 
 <b>WRITE_EXTERNAL_STORAGE</b> </br>
 Reason: This permission is allows the app to save and modify data on the device’s external storage, such as exporting or saving book data. It is essential for creating backups of book data and providing a smooth experience for storing and retrieving files.
-
