@@ -23,7 +23,7 @@
 
 ## 📲 Download Now
 
-[![IzzyOnDroid Badge](https://github.com/IzzySoft/IzzyOnDroid/master/docs/images/logo.png)](https://apt.izzysoft.de/fdroid/index/apk/com.bugsdev2.bookaccio)  
+[![IzzyOnDroid Badge](https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/IzzyOnDroid.png)](https://apt.izzysoft.de/fdroid/index/apk/com.bugsdev2.bookaccio)  
 [![APKPure Badge](https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/apkpure.png)](https://apkpure.com/app/com.bugsdev2.bookaccio)
 
 ---
