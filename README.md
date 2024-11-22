@@ -1,46 +1,64 @@
-# BookAccio 📚
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .screenshot img {
+      margin: 10px;
+    }
+    .badge {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
 
-**Bookaccio** is a book tracking application that helps you manage and organize your reading list. With Bookaccio, you can:
+<h1>BookAccio 📚</h1>
 
----
+<p>
+  <strong>BookAccio</strong> is your personal book tracker, making it easy to manage your reading habits, track progress, and organize your library. Add books, update metadata, log pages read, and much more!
+</p>
 
-## 📝 Features
-* Search for books and add them to your collection using the Google Books API
-* Update your progress
-* Import and export book data
-* Delete books when needed
-* Keep a clear and organized view of your entire library, making reading goals easier to track
+<hr />
 
----
+<h2>📷 Screenshots</h2>
+<div class="screenshot">
+  <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/bookaccio_mobile_3.png" alt="Screenshot 1" width="150" />
+  <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/bookaccio_mobile_4.png" alt="Screenshot 2" width="150" />
+  <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/bookaccio_mobile_1.png" alt="Screenshot 3" width="150" />
+  <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/bookaccio_mobile_2.png" alt="Screenshot 3" width="150" />
+</div>
 
-## 📷 Screenshots
-![Screenshot 1](https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/bookaccio_mobile_3.png)
-![Screenshot 2](https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/bookaccio_mobile_4.png)
-![Screenshot 3](https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/bookaccio_mobile_1.png)
-![Screenshot 4](https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/bookaccio_mobile_2.png)
+<hr />
 
----
+<h2>📲 Download Now</h2>
 
-## 📲 Download Now
+<div class="badge">
+  <a href="https://apt.izzysoft.de/fdroid/index/apk/com.bugsdev2.bookaccio">
+    <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/IzzyOnDroid.png" alt="IzzyOnDroid Badge" width="50" />
+  </a>
+</div>
+<div class="badge">
+  <a href="https://apkpure.com/your-app-id">
+    <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/apkpure.png" alt="APKPure Badge" width="45" />
+  </a>
+</div>
 
-[![IzzyOnDroid Badge](https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/IzzyOnDroid.png)](https://apt.izzysoft.de/fdroid/index/apk/com.bugsdev2.bookaccio)  
-[![APKPure Badge](https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/apkpure.png)](https://apkpure.com/app/com.bugsdev2.bookaccio)
+<hr />
 
----
+<h2>💖 Support My Work</h2>
 
-## ❤️ Support My Work
-If you like **BookAccio**, consider supporting its development:
+<p>
+  <a href="https://buymeacoffee.com/bugsdev2">
+    <img src="https://your-link-to-buy-me-a-coffee-badge.com" alt="Buy Me a Coffee Badge" width="200" />
+  </a>
+</p>
 
-[![Buy Me a Coffee](https://img.shields.io/badge/☕-Buy%20Me%20a%20Coffee-orange?style=for-the-badge)](https://buymeacoffee.com/bugsdev2)  
-[![Sponsor Me on GitHub](https://img.shields.io/badge/❤️-Sponsor%20Me%20on%20GitHub-red?style=for-the-badge)](https://github.com/sponsors/bugsdev2)
+<p>
+  <a href="https://github.com/sponsors/bugsdev2">
+    <img src="https://github.githubassets.com/images/modules/site/icons/funding_platforms/sponsors.svg" alt="Sponsor Me on GitHub Badge" width="200" />
+  </a>
+</p>
 
----
-
-## 🔗 Repository Links
-- **IzzyOnDroid**: [BookAccio on IzzyOnDroid](https://apt.izzysoft.de/fdroid/index/apk/com.bugsdev2.bookaccio)
-- **APKPure**: [BookAccio on APKPure](https://apkpure.com/app/com.bugsdev2.bookaccio)
-
----
-
-### Made with ❤️ by BugsDev2
+</body>
+</html>
 
