@@ -29,8 +29,8 @@
   </a>
 
 
-  <a href="https://apkpure.com/your-app-id">
-    <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/apkpure.png" alt="APKPure Badge" width="140" />
+  <a href="https://apkpure.com/bookaccio/com.bugsdev2.bookaccio">
+    <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/apkpure.png" alt="APKPure Badge" width="130" />
   </a>
 
 
