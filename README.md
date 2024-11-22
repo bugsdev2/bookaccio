@@ -23,16 +23,16 @@
 
 <h2>📲 Download Now</h2>
 
-<div class="badge">
+
   <a href="https://apt.izzysoft.de/fdroid/index/apk/com.bugsdev2.bookaccio">
     <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/IzzyOnDroid.png" alt="IzzyOnDroid Badge" width="150" />
   </a>
-</div>
-<div class="badge">
+
+
   <a href="https://apkpure.com/your-app-id">
     <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/apkpure.png" alt="APKPure Badge" width="140" />
   </a>
-</div>
+
 
 <hr />
 
@@ -46,7 +46,7 @@
 
 <p>
   <a href="https://github.com/sponsors/bugsdev2">
-    <img src="hhttps://img.shields.io/badge/❤️-Sponsor%20Me%20on%20GitHub-red?style=for-the-badge" alt="Sponsor Me on GitHub Badge" width="200" />
+    <img src="https://img.shields.io/badge/❤️-Sponsor%20Me%20on%20GitHub-red?style=for-the-badge" alt="Sponsor Me on GitHub Badge" width="200" />
   </a>
 </p>
 
