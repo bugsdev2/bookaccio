@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, Image, Pressable, TextInput, Alert, Keyboard, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { useFontsContext } from '@/providers/fontProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
@@ -15,6 +15,7 @@ import { storeBooks } from '@/helpers/storeBooks';
 import { processUrl } from '@/helpers/processUrl';
 import { processInterjections } from '@/helpers/processInterjections';
 import { processDuration } from '@/helpers/processDuration';
+import { getBookList } from '@/helpers/getBookList';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -23,9 +24,9 @@ const BookDetails = () => {
 
     if (Array.isArray(bookdetails)) throw new Error("bookdetails should't be an array");
 
-    const [fullBooksList, setFullBooksList] = useFullBookListContext();
+    const [fullBookList, setFullBookList] = useFullBookListContext();
 
-    const book = fullBooksList.find((book) => book.title === bookdetails);
+    const book = fullBookList.find((book) => book.title === bookdetails);
 
     const [font, setFont] = useFontsContext();
 
@@ -55,14 +56,20 @@ const BookDetails = () => {
         numOfLines !== 0 ? setNumOfLines(0) : setNumOfLines(4);
     }
 
+    useEffect(() => {
+        getBookList().then((data) => {
+            setFullBookList([...data]);
+        });
+    }, []);
+
     const updateBookDetails = ({ id, authors, currentPage, pageCount, categories, description, endDate, publishedDate, publisher, rating, startDate, state, subtitle, title }: BookOptional) => {
-        const updatedBooklist: Book[] = fullBooksList.map((book) => {
+        const updatedBooklist: Book[] = fullBookList.map((book) => {
             if (book.id === id) {
                 return {
                     ...book,
                     authors: authors ? authors : book.authors,
                     categories: categories ? categories : book.categories,
-                    currentPage: currentPage ? currentPage : book.currentPage,
+                    currentPage: currentPage !== undefined ? currentPage : book.currentPage,
                     description: description ? description : book.description,
                     endDate: endDate ? Date.parse(endDate.toString()) : book.endDate,
                     pageCount: pageCount ? pageCount : book.pageCount,
@@ -81,7 +88,7 @@ const BookDetails = () => {
             }
         });
 
-        setFullBooksList([...updatedBooklist]);
+        setFullBookList([...updatedBooklist]);
 
         storeBooks(updatedBooklist);
     };
@@ -223,7 +230,7 @@ const BookDetails = () => {
                     >
                         {handleBookRatingStar(rating)}
                     </Pressable>
-                    <Text style={[styles.category, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.categories}</Text>
+                    <Text style={[styles.category, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{[...new Set([...book!.categories!.join(' /').split('/')])].join('/')}</Text>
                     <Text
                         onPress={handleTextExpansion}
                         numberOfLines={numOfLines}

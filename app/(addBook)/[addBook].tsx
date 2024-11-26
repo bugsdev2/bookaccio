@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, Image, Alert, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useFontsContext } from '@/providers/fontProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
@@ -14,6 +14,7 @@ import bookCoverPlaceholder from '../../assets/images/others/book-cover-placehol
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
 import { processUrl } from '@/helpers/processUrl';
+import { getBookList } from '@/helpers/getBookList';
 
 const AddNewBook = () => {
     const { addBook }: { addBook: 'READING' | 'READ' | 'READ_LATER' } = useLocalSearchParams();
@@ -37,6 +38,12 @@ const AddNewBook = () => {
     const [imgUrl, setImgUrl] = useState('');
 
     const imageRef = useRef(null);
+
+    useEffect(() => {
+        getBookList().then((data) => {
+            setFullBookList([...data]);
+        });
+    }, []);
 
     function createUID() {
         let uid = Math.round(Math.random() * 10000000000);

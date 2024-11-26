@@ -5,7 +5,7 @@ export const blankBook: Book = {
     pageCount: 0,
     categories: [''],
     description: '',
-    endDate: new Date(),
+    endDate: 0,
     imageLinks: {
         extraLarge: '',
         large: '',
@@ -22,7 +22,7 @@ export const blankBook: Book = {
     publishedDate: '',
     publisher: '',
     rating: 0,
-    startDate: new Date(),
+    startDate: 0,
     state: 'READ_LATER',
     subtitle: '',
     title: '',

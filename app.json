@@ -1,47 +1,45 @@
 {
-  "expo": {
-    "name": "Bookaccio",
-    "slug": "bookaccio",
-    "version": "0.0.5",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#77b3d4ff"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.bugsdev2.bookaccio"
-    },
-    "android": {
-      "package": "com.bugsdev2.bookaccio",
-      "versionCode": 5,
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#77b3d4ff"
-      }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "1c30e353-a54f-45bc-b351-ff43a5dd8bdb"
-      }
+    "expo": {
+        "name": "Bookaccio",
+        "slug": "bookaccio",
+        "version": "0.0.6",
+        "orientation": "portrait",
+        "icon": "./assets/images/icon.png",
+        "scheme": "myapp",
+        "userInterfaceStyle": "automatic",
+        "splash": {
+            "image": "./assets/images/splash.png",
+            "resizeMode": "cover",
+            "backgroundColor": "#77b3d4ff"
+        },
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.bugsdev2.bookaccio"
+        },
+        "android": {
+            "package": "com.bugsdev2.bookaccio",
+            "versionCode": 6,
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/adaptive-icon.png",
+                "backgroundColor": "#77b3d4ff"
+            }
+        },
+        "web": {
+            "bundler": "metro",
+            "output": "static",
+            "favicon": "./assets/images/favicon.png"
+        },
+        "plugins": ["expo-router"],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "router": {
+                "origin": false
+            },
+            "eas": {
+                "projectId": "1c30e353-a54f-45bc-b351-ff43a5dd8bdb"
+            }
+        }
     }
-  }
 }

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList, Pressable, TextInput, ScrollView, Keyboard } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
@@ -12,7 +12,7 @@ import axios from 'axios';
 import { blankBook } from '@/helpers/blankBookDetails';
 import BookSearchItem from '@/components/bookSearchItem';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { getBookList } from '@/helpers/getBookList';
 

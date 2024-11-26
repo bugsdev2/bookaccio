@@ -1,0 +1,4 @@
+- Fixed the issue of book data getting deleted when used in combination with search option
+- Added page number progress in the reading section along with the already existing percentage progress
+- Added contact links in the settings page for easy bug reports
+- Other minor bug fixes and performance enhancements

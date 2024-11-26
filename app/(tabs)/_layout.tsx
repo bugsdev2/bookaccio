@@ -1,18 +1,19 @@
 import { Link, Tabs } from 'expo-router';
 import Icon from '@expo/vector-icons/Feather';
-import { View, Text, StyleSheet, Pressable, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Entypo, Ionicons } from '@expo/vector-icons/';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import Modal from 'react-native-modal';
-import { LegacyRef, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { useFontsContext } from '@/providers/fontProvider';
 import { getBookList } from '@/helpers/getBookList';
 import { storeBooks } from '@/helpers/storeBooks';
+import { useIsFocused } from '@react-navigation/native';
 
 const TabsLayout = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -32,6 +33,20 @@ const TabsLayout = () => {
     const [searchTxt, setSearchTxt] = useState('');
 
     const textInputRef = useRef<TextInput>(null);
+
+    const isScreenFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isScreenFocused && searchTxt !== '') {
+            getBookList().then((data: Book[]) => {
+                setFullBookList([...data.filter((book) => book.title?.toLowerCase().includes(searchTxt.toLowerCase()) || book?.authors.join(',').toLowerCase().includes(searchTxt.toLowerCase()))]);
+            });
+        } else {
+            getBookList().then((data) => {
+                setFullBookList([...data]);
+            });
+        }
+    }, [isScreenFocused]);
 
     function onSearch(value: string) {
         if (value === '') {

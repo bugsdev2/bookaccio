@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Colors } from '@/constants/Colors';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';

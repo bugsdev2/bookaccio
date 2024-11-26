@@ -1,14 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { Entypo, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import { useDarkModeContext } from '@/providers/themeProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 
 const PagesLayout = () => {
-    const { addBook } = useLocalSearchParams();
-
     const [accentColor, setAccentColor] = useAccentColorContext();
 
     return (

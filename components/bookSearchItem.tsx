@@ -1,9 +1,7 @@
-import { StyleSheet, Text, View, Pressable, Image, TouchableOpacity } from 'react-native';
-import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
 import bookCoverPlaceholder from '../assets/images/others/book-cover-placeholder.png';
 import { useFontsContext } from '@/providers/fontProvider';
-import axios from 'axios';
-import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { processUrl } from '@/helpers/processUrl';
 
 const BookSearchItem = ({ book, onPress }: { book: BookSearchResultProp; onPress: any }) => {

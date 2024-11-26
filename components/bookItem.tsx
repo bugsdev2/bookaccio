@@ -31,30 +31,34 @@ const BookItem = ({ data }: { data: Book }) => {
     const percentCompleted = Math.round((Number(data.currentPage) / Number(data.pageCount)) * 100);
 
     const deleteBook = (id: number) => {
-        fullBookList.map((book) => {
-            if (book.id === id) {
-                fullBookList.splice(fullBookList.indexOf(book), 1);
-            }
-        });
+        getBookList().then((data) => {
+            data.map((book: Book) => {
+                if (book.id === id) {
+                    data.splice(data.indexOf(book), 1);
+                }
+            });
 
-        setFullBookList([...fullBookList]);
+            setFullBookList([...data]);
 
-        storeBooks(fullBookList).then(() => {
-            setIsModalVisible(false);
+            storeBooks(data).then(() => {
+                setIsModalVisible(false);
+            });
         });
     };
 
     function handleMoveBook({ id, state }: { id: number; state: 'READ' | 'READING' | 'READ_LATER' }) {
-        fullBookList.map((book) => {
-            if (book.id === id) {
-                book.state = state;
-            }
-        });
+        getBookList().then((data) => {
+            data.map((book: Book) => {
+                if (book.id === id) {
+                    book.state = state;
+                }
+            });
 
-        setFullBookList([...fullBookList]);
+            setFullBookList([...data]);
 
-        storeBooks(fullBookList).then(() => {
-            setIsModalVisible(false);
+            storeBooks(data).then(() => {
+                setIsModalVisible(false);
+            });
         });
     }
 
@@ -155,7 +159,12 @@ const BookItem = ({ data }: { data: Book }) => {
                             </Text>
                         </View>
                         <View>
-                            <Text style={[styles.author, { color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>{data.authors && data.authors[0]}</Text>
+                            <Text
+                                numberOfLines={1}
+                                style={[styles.author, { color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}
+                            >
+                                {data.authors && data.authors[0]}
+                            </Text>
                         </View>
                     </View>
                     <View style={[styles.endContent, { justifyContent: data.state === 'READING' ? 'space-around' : 'flex-start' }]}>
@@ -169,7 +178,14 @@ const BookItem = ({ data }: { data: Book }) => {
                                 color={isDarkMode ? Colors.light : Colors.dark}
                             />
                         </Pressable>
-                        {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
+                        <View style={{ flexDirection: 'row', gap: 20, alignItems: 'flex-end' }}>
+                            {data.state === 'READING' && (
+                                <Text style={[styles.percent, { color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>
+                                    {data.currentPage}/{data.pageCount}
+                                </Text>
+                            )}
+                            {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
+                        </View>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -228,15 +244,16 @@ const styles = StyleSheet.create({
     },
 
     subtitle: {
-        // fontFamily: 'QuicksandR',
+        //
     },
 
     author: {
-        // fontFamily: 'QuicksandR',
+        width: 175,
+        paddingBottom: 2,
     },
 
     midContent: {
-        width: '74%',
+        width: '70%',
         overflow: 'hidden',
         justifyContent: 'space-between',
     },

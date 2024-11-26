@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, FlatList, Pressable, TextInput, Keyboard, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';

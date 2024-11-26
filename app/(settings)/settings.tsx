@@ -13,6 +13,7 @@ import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { getBookList } from '@/helpers/getBookList';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
+import * as WebBrowser from 'expo-web-browser';
 
 const Settings = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -20,6 +21,10 @@ const Settings = () => {
     const [accentColor, setAccentColor] = useAccentColorContext();
 
     const [fullBookList, setFullBookList] = useFullBookListContext();
+
+    function handleLink(url: string) {
+        WebBrowser.openBrowserAsync(url);
+    }
 
     const handleImport = async () => {
         let result = await DocumentPicker.getDocumentAsync({});
@@ -107,13 +112,30 @@ const Settings = () => {
                                 style={[styles.btn, { backgroundColor: accentColor }]}
                                 onPress={handleImport}
                             >
-                                <Text style={{ color: Colors.light }}>Import</Text>
+                                <Text style={styles.text}>Import</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.btn, { backgroundColor: accentColor }]}
                                 onPress={handleExport}
                             >
-                                <Text style={{ color: Colors.light }}>Export</Text>
+                                <Text style={styles.text}>Export</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={styles.sectionContainer}>
+                        <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Report a Bug</Text>
+                        <View style={{ flexDirection: 'column', gap: 15 }}>
+                            <TouchableOpacity
+                                onPress={() => handleLink('https://t.me/+2qtifdFNRv00Y2M9')}
+                                style={[styles.btn, { backgroundColor: accentColor }]}
+                            >
+                                <Text style={styles.text}>Join the Official Telegram Group</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => handleLink('https://github.com/bugsdev2/bookaccio/issues')}
+                                style={[styles.btn, { backgroundColor: accentColor }]}
+                            >
+                                <Text style={styles.text}>Create a New Issue via Github</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -171,5 +193,11 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light,
         borderRadius: 20,
         padding: 25,
+    },
+
+    text: {
+        color: Colors.light,
+        fontFamily: 'MontR',
+        textAlign: 'center',
     },
 });
