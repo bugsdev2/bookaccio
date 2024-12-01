@@ -123,7 +123,7 @@ const BookItem = ({ data }: { data: Book }) => {
                 onPress={() => {
                     router.push({
                         pathname: '/(bookDetails)/[bookdetails]',
-                        params: { bookdetails: data.title ? data.title : '' },
+                        params: { bookdetails: data.id ? data.id.toString() : '' },
                     });
                 }}
             >

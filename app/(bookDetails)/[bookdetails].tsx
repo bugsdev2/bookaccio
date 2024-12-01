@@ -26,7 +26,7 @@ const BookDetails = () => {
 
     const [fullBookList, setFullBookList] = useFullBookListContext();
 
-    const book = fullBookList.find((book) => book.title === bookdetails);
+    const book = fullBookList.find((book) => book.id.toString() === bookdetails);
 
     const [font, setFont] = useFontsContext();
 
