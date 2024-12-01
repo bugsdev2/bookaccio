@@ -23,16 +23,13 @@
 
 <h2>📲 Download Now</h2>
 
-
   <a href="https://apt.izzysoft.de/fdroid/index/apk/com.bugsdev2.bookaccio">
-    <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/IzzyOnDroid.png" alt="IzzyOnDroid Badge" width="150" />
+    <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/IzzyOnDroid.png" alt="IzzyOnDroid Download" width="150" />
   </a>
 
-
-  <a href="https://apkpure.com/bookaccio/com.bugsdev2.bookaccio">
-    <img src="https://raw.githubusercontent.com/bugsdev2/bookaccioWebsite/refs/heads/main/assets/images/apkpure.png" alt="APKPure Badge" width="130" />
+  <a href="https://f-droid.org/en/packages/com.bugsdev2.bookaccio/">
+    <img src="https://f-droid.org/badge/get-it-on.png" alt="Fdroid Download" width="150" />
   </a>
-
 
 <hr />
 
@@ -52,4 +49,3 @@
 
 </body>
 </html>
-
