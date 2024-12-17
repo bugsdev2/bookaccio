@@ -1,0 +1,4 @@
+- Fixed page number error which was crashing the app
+- Fixed duplicate title issue in booklist whereby when two or more books had the same title, only the first one was always being selected
+- Fixed height issue of modal in a page
+- Other minor bug fixes and performance enhancements

@@ -5,6 +5,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
+import { useFullBookListContext } from '@/providers/booksFullListProvider';
 
 const PagesLayout = () => {
     const { bookdetails } = useLocalSearchParams();
@@ -12,11 +13,9 @@ const PagesLayout = () => {
     const [isDarkMode, setIsDarkMode] = useDarkModeContext();
     const [accentColor, setAccentColor] = useAccentColorContext();
 
-    if (Array.isArray(bookdetails)) throw new Error("bookdetails shouldn't be an array");
+    const [fullBookList, _] = useFullBookListContext();
 
-    function handleEditBook() {
-        //
-    }
+    if (Array.isArray(bookdetails)) throw new Error("bookdetails shouldn't be an array");
 
     return (
         <>
@@ -36,13 +35,8 @@ const PagesLayout = () => {
                             style={styles.headerText}
                             numberOfLines={1}
                             ellipsizeMode="tail"
-                            allowFontScaling={false}
-                            adjustsFontSizeToFit={false}
-                            lineBreakMode="tail"
-                            textBreakStrategy="highQuality"
-                            minimumFontScale={12}
                         >
-                            {bookdetails}
+                            {fullBookList.find((book) => book.id.toString() === bookdetails)?.title}
                         </Text>
                     </View>
 
@@ -95,6 +89,5 @@ const styles = StyleSheet.create({
         width: 45,
         height: 40,
         bottom: 8,
-        // borderWidth: 1,
     },
 });
