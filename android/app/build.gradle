@@ -114,10 +114,9 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
+
     dependenciesInfo {
-        
         includeInApk = false
-        
         includeInBundle = false
     }
     
@@ -138,8 +137,8 @@ android {
         applicationId 'com.bugsdev2.bookaccio'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "0.0.6"
+        versionCode 7
+        versionName "0.0.7"
     }
     signingConfigs {
         release {
