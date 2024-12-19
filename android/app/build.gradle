@@ -137,8 +137,8 @@ android {
         applicationId 'com.bugsdev2.bookaccio'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
-        versionName "0.0.7"
+        versionCode 100
+        versionName "0.1.0"
     }
     signingConfigs {
         release {
@@ -149,9 +149,6 @@ android {
         }
     }
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.

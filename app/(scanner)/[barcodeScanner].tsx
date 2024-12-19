@@ -1,18 +1,24 @@
-import { Button, StyleSheet, Text, View, Alert } from 'react-native';
+import { Button, StyleSheet, Text, View, Alert, TouchableOpacity } from 'react-native';
 import { useCameraPermissions, CameraView } from 'expo-camera';
 import React, { useEffect, useRef, useState } from 'react';
 import { defaultStyleSheet } from '../defaultStyleSheet';
 import { Colors } from '@/constants/Colors';
-import { getBookDetails } from '@/helpers/getBookDetails';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
+import { useDarkModeContext } from '@/providers/themeProvider';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const BarcodeScanner = () => {
   const { barcodeScanner }: { barcodeScanner: 'READ' | 'READING' | 'READ_LATER' } = useLocalSearchParams();
-  const [permission, requestPermissions] = useCameraPermissions();
+
+  const [isDarkMode, setIsDarkMode] = useDarkModeContext();
+
+  const [torch, setTorch] = useState(false);
 
   const [selectedBook, setSelectedBook] = useSelectedBookContext();
+
+  const [permission, requestPermissions] = useCameraPermissions();
 
   const [codeLock, setCodeLock] = useState(false);
 
@@ -33,6 +39,7 @@ const BarcodeScanner = () => {
       router.replace({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
     } catch (err) {
       if (err) {
+        console.log(err);
         Alert.alert('Error', 'Book not found. Please use the search feature or add the book manually');
       }
     }
@@ -44,10 +51,10 @@ const BarcodeScanner = () => {
 
   if (!permission.granted) {
     return (
-      <View style={[defaultStyleSheet.container, styles.container]}>
-        <View style={[styles.boxContainer]}>
-          <Text style={styles.heading}>Permission Required</Text>
-          <Text>Bookaccio requests permission to use the device camera for using the barcode scanner.</Text>
+      <View style={[defaultStyleSheet.container, styles.container, { backgroundColor: isDarkMode ? Colors.dark : Colors.light }]}>
+        <View style={[styles.boxContainer, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}>
+          <Text style={[styles.heading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Permission Required</Text>
+          <Text style={[styles.message, { color: isDarkMode ? Colors.light : Colors.dark }]}>Bookaccio requests permission to use the device camera for using the barcode scanner.</Text>
           <Button
             title="Grant Permission"
             onPress={requestPermissions}
@@ -63,13 +70,25 @@ const BarcodeScanner = () => {
         style={[styles.cameraView]}
         facing="back"
         autofocus="on"
+        enableTorch={torch}
         onBarcodeScanned={({ data }) => {
           if (!codeLock) {
             setCodeLock(true);
             handleGetBookDetails(data, barcodeScanner);
           }
         }}
-      ></CameraView>
+      >
+        <TouchableOpacity
+          onPress={() => setTorch(torch ? false : true)}
+          style={[styles.flashBtn]}
+        >
+          <MaterialCommunityIcons
+            name={torch ? 'flashlight' : 'flashlight-off'}
+            size={25}
+            color={Colors.black}
+          />
+        </TouchableOpacity>
+      </CameraView>
     </>
   );
 };
@@ -89,13 +108,26 @@ const styles = StyleSheet.create({
   },
 
   heading: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+  },
+
+  message: {
+    fontSize: 14,
   },
 
   cameraView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+  },
+
+  flashBtn: {
+    position: 'absolute',
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    padding: 30,
+    bottom: 100,
+    borderRadius: 100,
   },
 });
