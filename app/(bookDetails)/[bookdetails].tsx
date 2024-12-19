@@ -98,7 +98,7 @@ const BookDetails = () => {
   function handleProgressDetails(id: number) {
     if (!regexNumber.test(currentPage!.toString()) || !regexNumber.test(pageCount!.toString())) {
       Alert.alert('Error', 'Invalid number entered');
-      setCurrentPage(book?.currentPage && 0);
+      setCurrentPage(book?.currentPage || 0);
       setPageCount(book?.pageCount);
       return;
     }
