@@ -71,6 +71,10 @@ const Home = () => {
     router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
   }
 
+  function handleBarcodeSearch() {
+    router.push({ pathname: '/(scanner)/[barcodeScanner]', params: { barcodeScanner: 'READING' } });
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
       <FlatList
@@ -125,6 +129,21 @@ const Home = () => {
                 size={25}
               />
               <Text style={{ fontFamily: `${font}B` }}>Search Title</Text>
+            </Pressable>
+          </View>
+          <View>
+            <Pressable
+              onPress={() => {
+                setFirstModal(false);
+                handleBarcodeSearch();
+              }}
+              style={styles.modalButton}
+            >
+              <AntDesign
+                name="barcode"
+                size={30}
+              />
+              <Text style={{ fontFamily: `${font}B` }}>Scan Barcode</Text>
             </Pressable>
           </View>
         </View>

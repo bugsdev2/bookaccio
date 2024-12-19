@@ -9,8 +9,17 @@
 Permissions:
 ------------
 <b>INTERNET: </b>
+
 This permission is required to allow the app to access online services, such as fetching book metadata from the Google Books API and updating book details. It ensures the app can connect to the internet to retrieve real-time information and synchronize data.
+
 <b>READ_EXTERNAL_STORAGE: </b>
+
 This permission is required for reading user data stored in external storage, such as when importing or exporting book data. It enables the app to access user files that are stored on the device.
+
 <b>WRITE_EXTERNAL_STORAGE: </b>
-This permission is allows the app to save and modify data on the device’s external storage, such as exporting or saving book data. It is essential for creating backups of book data and providing a smooth experience for storing and retrieving files.
+
+This permission allows the app to save and modify data on the device’s external storage, such as exporting or saving book data. It is essential for creating backups of book data and providing a smooth experience for storing and retrieving files.
+
+<b>CAMERA: </b>
+
+This permission allows the app to use the device camera. This is essential when you are using the barcode scanner to scan and add new books.
