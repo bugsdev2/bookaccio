@@ -1,0 +1,3 @@
+- Added barcode scan feature to add new books
+- Changed the way the page numbers are set after an invalid number error occurs
+- Other minor bug fixes and performance enhancements
