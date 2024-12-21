@@ -15,7 +15,7 @@ import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { router } from 'expo-router';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { getBookList } from '@/helpers/getBookList';
-import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const Home = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
