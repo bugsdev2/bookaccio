@@ -15,6 +15,7 @@ import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { router } from 'expo-router';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { getBookList } from '@/helpers/getBookList';
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const Home = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -154,12 +155,20 @@ const Home = () => {
       >
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
           <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the title</Text>
-          <TextInput
-            style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
-            value={title}
-            onChangeText={(value) => setTitle(value)}
-            onSubmitEditing={() => handleBookSearch(title)}
-          />
+          <View style={styles.modalSearchInputContainer}>
+            <TextInput
+              style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
+              value={title}
+              onChangeText={(value) => setTitle(value)}
+              onSubmitEditing={() => handleBookSearch(title)}
+            />
+            <Pressable onPress={() => setTitle('')}>
+              <MaterialIcons
+                name="close"
+                size={20}
+              />
+            </Pressable>
+          </View>
           <Pressable
             onTouchStart={() => handleBookSearch(title)}
             style={styles.searchContainer}
@@ -228,12 +237,19 @@ const styles = StyleSheet.create({
     gap: 5,
   },
 
-  modalSearchInput: {
+  modalSearchInputContainer: {
     borderWidth: 1,
     width: '75%',
     borderRadius: 10,
     paddingVertical: 3,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  modalSearchInput: {
+    flex: 1,
+    paddingHorizontal: 5,
   },
 
   searchContainer: {

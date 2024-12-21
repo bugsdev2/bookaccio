@@ -186,7 +186,7 @@ const AddNewBook = () => {
           <CustomInput
             label="Category"
             value={bookDetails.categories ? bookDetails.categories[0] : ['']}
-            onChangeText={(value) => setBookDetails({ ...bookDetails, categories: value })}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, categories: [value] })}
           />
         </View>
         <View>

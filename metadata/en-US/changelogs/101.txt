@@ -1,0 +1,2 @@
+- Added a clear search button in book search field
+- Fixed the app crash when trying to open book with category details which was added manually
