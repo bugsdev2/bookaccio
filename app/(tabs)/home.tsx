@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Pressable, TextInput, ScrollView, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, TextInput, ScrollView, Keyboard, Alert, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -15,7 +15,8 @@ import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { router } from 'expo-router';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { getBookList } from '@/helpers/getBookList';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Entypo, MaterialIcons } from '@expo/vector-icons';
+import { getBookByIsbn } from '@/helpers/getBookByIsbn';
 
 const Home = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -32,7 +33,11 @@ const Home = () => {
 
   const [searchModal, setSearchModal] = useState(false);
 
+  const [isbnModal, setIsbnModal] = useState(false);
+
   const [title, setTitle] = useState('');
+
+  const [isbn, setIsbn] = useState('');
 
   const [isSearchActive, setIsSearchActive] = useState(false);
 
@@ -52,9 +57,23 @@ const Home = () => {
 
   async function handleBookSearch(title: string) {
     Keyboard.dismiss();
+    if (title === '') return;
     setIsSearchActive(true);
     const data = await getBookDetails(title);
     setBookSearchResults(await data);
+  }
+
+  async function handleBookSearchByIsbn(isbn: string) {
+    Keyboard.dismiss();
+    if (isbn === '') return;
+    const data = await getBookByIsbn(isbn);
+    if (data) {
+      setSelectedBook(data?.volumeInfo);
+      setIsbnModal(false);
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READING' } });
+    } else {
+      Alert.alert('Book Not Found', 'Try searching with the title or add the book manually.');
+    }
   }
 
   async function handleBookSelection(url: string, state: string) {
@@ -132,7 +151,20 @@ const Home = () => {
               <Text style={{ fontFamily: `${font}B` }}>Search Title</Text>
             </Pressable>
           </View>
-          <View>
+          <View style={styles.modalButtonContainer}>
+            <Pressable
+              onPress={() => {
+                setFirstModal(false);
+                setIsbnModal(true);
+              }}
+              style={styles.modalButton}
+            >
+              <Entypo
+                name="book"
+                size={30}
+              />
+              <Text style={{ fontFamily: `${font}B` }}>Get Book by ISBN</Text>
+            </Pressable>
             <Pressable
               onPress={() => {
                 setFirstModal(false);
@@ -180,7 +212,7 @@ const Home = () => {
               style={styles.modalScrollView}
               contentContainerStyle={{ width: '90%' }}
             >
-              {bookSearchResults.map((book) => (
+              {bookSearchResults?.map((book) => (
                 <View key={book.id}>
                   <BookSearchItem
                     book={book}
@@ -190,6 +222,35 @@ const Home = () => {
               ))}
             </ScrollView>
           )}
+        </View>
+      </Modal>
+      <Modal
+        isVisible={isbnModal}
+        onBackdropPress={() => setIsbnModal(false)}
+      >
+        <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
+          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the ISBN</Text>
+          <View style={styles.modalSearchInputContainer}>
+            <TextInput
+              style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
+              value={isbn}
+              onChangeText={(value) => setIsbn(value)}
+              onSubmitEditing={() => handleBookSearchByIsbn(isbn)}
+              keyboardType="numeric"
+            />
+            <Pressable onPress={() => setIsbn('')}>
+              <MaterialIcons
+                name="close"
+                size={20}
+              />
+            </Pressable>
+          </View>
+          <TouchableOpacity
+            onPressIn={() => handleBookSearchByIsbn(isbn)}
+            style={styles.searchContainer}
+          >
+            <Text style={[{ fontFamily: `${font}B` }]}>GET</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
     </View>

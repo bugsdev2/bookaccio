@@ -20,7 +20,6 @@
     "@react-navigation/native": "^6.0.2",
     "axios": "^1.7.7",
     "expo": "~51.0.39",
-    "expo-camera": "~15.0.16",
     "expo-constants": "~16.0.2",
     "expo-document-picker": "^12.0.2",
     "expo-file-system": "~17.0.1",

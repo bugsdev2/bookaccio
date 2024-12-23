@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bookaccio",
     "slug": "bookaccio",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -18,13 +18,8 @@
     },
     "android": {
       "package": "com.bugsdev2.bookaccio",
-      "versionCode": 100,
-      "permissions": [
-        "INTERNET",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "CAMERA"
-      ],
+      "versionCode": 101,
+      "permissions": ["INTERNET", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "CAMERA"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#77b3d4ff"
@@ -35,16 +30,7 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
-        }
-      ],
-      "react-native-vision-camera"
-    ],
+    "plugins": ["expo-router", "react-native-vision-camera"],
     "experiments": {
       "typedRoutes": true
     },

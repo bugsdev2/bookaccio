@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, FlatList, Pressable, TextInput, Keyboard, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, TextInput, Keyboard, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import React, { useState } from 'react';
 import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { useFontsContext } from '@/providers/fontProvider';
 import BookSearchItem from '@/components/bookSearchItem';
@@ -14,6 +15,7 @@ import { router } from 'expo-router';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { blankBook } from '@/helpers/blankBookDetails';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
+import { getBookByIsbn } from '@/helpers/getBookByIsbn';
 
 const Read = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -30,7 +32,11 @@ const Read = () => {
 
   const [searchModal, setSearchModal] = useState(false);
 
+  const [isbnModal, setIsbnModal] = useState(false);
+
   const [title, setTitle] = useState('');
+
+  const [isbn, setIsbn] = useState('');
 
   const [isSearchActive, setIsSearchActive] = useState(false);
 
@@ -44,9 +50,23 @@ const Read = () => {
 
   async function handleBookSearch(title: string) {
     Keyboard.dismiss();
+    if (title === '') return;
     setIsSearchActive(true);
     const data = await getBookDetails(title);
     setBookSearchResults(await data);
+  }
+
+  async function handleBookSearchByIsbn(isbn: string) {
+    Keyboard.dismiss();
+    if (isbn === '') return;
+    const data = await getBookByIsbn(isbn);
+    if (data) {
+      setSelectedBook(data?.volumeInfo);
+      setIsbnModal(false);
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READ' } });
+    } else {
+      Alert.alert('Book Not Found', 'Try searching with the title or add the book manually.');
+    }
   }
 
   async function handleBookSelection(url: string, state: string) {
@@ -124,7 +144,20 @@ const Read = () => {
               <Text style={{ fontFamily: `${font}B` }}>Search Title</Text>
             </Pressable>
           </View>
-          <View>
+          <View style={styles.modalButtonContainer}>
+            <Pressable
+              onPress={() => {
+                setFirstModal(false);
+                setIsbnModal(true);
+              }}
+              style={styles.modalButton}
+            >
+              <Entypo
+                name="book"
+                size={30}
+              />
+              <Text style={{ fontFamily: `${font}B` }}>Get Book by ISBN</Text>
+            </Pressable>
             <Pressable
               onPress={() => {
                 setFirstModal(false);
@@ -147,12 +180,20 @@ const Read = () => {
       >
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
           <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the title</Text>
-          <TextInput
-            style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
-            value={title}
-            onChangeText={(value) => setTitle(value)}
-            onSubmitEditing={() => handleBookSearch(title)}
-          />
+          <View style={styles.modalSearchInputContainer}>
+            <TextInput
+              style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
+              value={title}
+              onChangeText={(value) => setTitle(value)}
+              onSubmitEditing={() => handleBookSearch(title)}
+            />
+            <Pressable onPress={() => setTitle('')}>
+              <MaterialIcons
+                name="close"
+                size={20}
+              />
+            </Pressable>
+          </View>
           <Pressable
             onTouchStart={() => handleBookSearch(title)}
             style={styles.searchContainer}
@@ -164,7 +205,7 @@ const Read = () => {
               style={styles.modalScrollView}
               contentContainerStyle={{ width: '90%' }}
             >
-              {bookSearchResults.map((book) => (
+              {bookSearchResults?.map((book) => (
                 <View key={book.id}>
                   <BookSearchItem
                     book={book}
@@ -174,6 +215,35 @@ const Read = () => {
               ))}
             </ScrollView>
           )}
+        </View>
+      </Modal>
+      <Modal
+        isVisible={isbnModal}
+        onBackdropPress={() => setIsbnModal(false)}
+      >
+        <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
+          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the ISBN</Text>
+          <View style={styles.modalSearchInputContainer}>
+            <TextInput
+              style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
+              value={isbn}
+              onChangeText={(value) => setIsbn(value)}
+              onSubmitEditing={() => handleBookSearchByIsbn(isbn)}
+              keyboardType="numeric"
+            />
+            <Pressable onPress={() => setIsbn('')}>
+              <MaterialIcons
+                name="close"
+                size={20}
+              />
+            </Pressable>
+          </View>
+          <TouchableOpacity
+            onPressIn={() => handleBookSearchByIsbn(isbn)}
+            style={styles.searchContainer}
+          >
+            <Text style={[{ fontFamily: `${font}B` }]}>GET</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
     </View>
@@ -221,12 +291,19 @@ const styles = StyleSheet.create({
     gap: 5,
   },
 
-  modalSearchInput: {
+  modalSearchInputContainer: {
     borderWidth: 1,
     width: '75%',
     borderRadius: 10,
     paddingVertical: 3,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  modalSearchInput: {
+    flex: 1,
+    paddingHorizontal: 5,
   },
 
   searchContainer: {
