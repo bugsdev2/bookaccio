@@ -1,15 +1,15 @@
 import { Button, StyleSheet, Text, View, Alert, TouchableOpacity } from 'react-native';
-import { useCameraPermissions, CameraView } from 'expo-camera';
+import { BarcodeScanner } from 'rn-barcode-zxing';
 import React, { useEffect, useRef, useState } from 'react';
-import { defaultStyleSheet } from '../defaultStyleSheet';
 import { Colors } from '@/constants/Colors';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { getBookByIsbn } from '@/helpers/getBookByIsbn';
 
-const BarcodeScanner = () => {
+const Scanner = () => {
   const { barcodeScanner }: { barcodeScanner: 'READ' | 'READING' | 'READ_LATER' } = useLocalSearchParams();
 
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -17,8 +17,6 @@ const BarcodeScanner = () => {
   const [torch, setTorch] = useState(false);
 
   const [selectedBook, setSelectedBook] = useSelectedBookContext();
-
-  const [permission, requestPermissions] = useCameraPermissions();
 
   const [codeLock, setCodeLock] = useState(false);
 
@@ -30,13 +28,15 @@ const BarcodeScanner = () => {
     }
   }, [codeLock]);
 
-  async function handleGetBookDetails(value: string, state: 'READ' | 'READ_LATER' | 'READING') {
+  async function handleBarcodeScan(value: string, state: 'READ' | 'READ_LATER' | 'READING') {
     try {
-      const res = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${value}`);
-      const selected: BookSearchResultProp = res.data?.items[0];
-      const response = (await axios.get(selected.selfLink)).data;
-      setSelectedBook(response.volumeInfo);
-      router.replace({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
+      const response = await getBookByIsbn(value);
+      if (response) {
+        setSelectedBook(response?.volumeInfo);
+        router.replace({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
+      } else {
+        throw new Error('CustomErr: Either not connected to internet or the book is not found');
+      }
     } catch (err) {
       if (err) {
         console.log(err);
@@ -45,36 +45,15 @@ const BarcodeScanner = () => {
     }
   }
 
-  if (!permission) {
-    return <View />;
-  }
-
-  if (!permission.granted) {
-    return (
-      <View style={[defaultStyleSheet.container, styles.container, { backgroundColor: isDarkMode ? Colors.dark : Colors.light }]}>
-        <View style={[styles.boxContainer, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}>
-          <Text style={[styles.heading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Permission Required</Text>
-          <Text style={[styles.message, { color: isDarkMode ? Colors.light : Colors.dark }]}>Bookaccio requests permission to use the device camera for using the barcode scanner.</Text>
-          <Button
-            title="Grant Permission"
-            onPress={requestPermissions}
-          />
-        </View>
-      </View>
-    );
-  }
-
   return (
     <>
-      <CameraView
-        style={[styles.cameraView]}
-        facing="back"
-        autofocus="on"
-        enableTorch={torch}
-        onBarcodeScanned={({ data }) => {
+      <BarcodeScanner
+        style={styles.cameraView}
+        torch={torch ? 'on' : 'off'}
+        onBarcodesDetected={({ code }: { code: string[] }) => {
           if (!codeLock) {
             setCodeLock(true);
-            handleGetBookDetails(data, barcodeScanner);
+            handleBarcodeScan(code[0], barcodeScanner);
           }
         }}
       >
@@ -88,12 +67,12 @@ const BarcodeScanner = () => {
             color={Colors.black}
           />
         </TouchableOpacity>
-      </CameraView>
+      </BarcodeScanner>
     </>
   );
 };
 
-export default BarcodeScanner;
+export default Scanner;
 
 const styles = StyleSheet.create({
   container: {
