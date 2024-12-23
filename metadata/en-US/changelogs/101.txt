@@ -1,2 +1,6 @@
-- Added a clear search button in book search field
+- Changed the barcode scanning module
+- Added search by ISBN feature
+- Added a clear search button in book search field and search by ISBN field
+- Fixed the category input glitch
 - Fixed the app crash when trying to open book with category details which was added manually
+- Changed default accent color from teal to blue
