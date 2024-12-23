@@ -6,24 +6,24 @@ type AccentColorProps = [string, React.Dispatch<React.SetStateAction<string>>];
 export const AccentColorContext = createContext<AccentColorProps | []>([]);
 
 const AccentColorProvider = ({ children }: { children: React.ReactNode }) => {
-    const [accentColor, setAccentColor] = useState('#43646b');
-    getData('accentColor').then((value) => {
-        if (value) {
-            setAccentColor(value);
-        }
-    });
+  const [accentColor, setAccentColor] = useState('#005d7b');
+  getData('accentColor').then((value) => {
+    if (value) {
+      setAccentColor(value);
+    }
+  });
 
-    return <AccentColorContext.Provider value={[accentColor, setAccentColor]}>{children}</AccentColorContext.Provider>;
+  return <AccentColorContext.Provider value={[accentColor, setAccentColor]}>{children}</AccentColorContext.Provider>;
 };
 
 export function useAccentColorContext(): AccentColorProps {
-    const [accentColor, setAccentColor] = useContext(AccentColorContext);
+  const [accentColor, setAccentColor] = useContext(AccentColorContext);
 
-    if (accentColor == undefined || setAccentColor == undefined) {
-        throw new Error('accentColor or setAccentColor is not defined');
-    }
+  if (accentColor == undefined || setAccentColor == undefined) {
+    throw new Error('accentColor or setAccentColor is not defined');
+  }
 
-    return [accentColor, setAccentColor];
+  return [accentColor, setAccentColor];
 }
 
 export default AccentColorProvider;
