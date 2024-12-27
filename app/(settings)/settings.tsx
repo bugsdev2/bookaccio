@@ -1,4 +1,4 @@
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -14,6 +14,9 @@ import { getBookList } from '@/helpers/getBookList';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
 import * as WebBrowser from 'expo-web-browser';
+import { setData } from '@/helpers/storage';
+import { useRatingShownContext } from '@/providers/options/showRatingProvider';
+import { usePageNumberShownContext } from '@/providers/options/showPageNumberProvider';
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -22,9 +25,26 @@ const Settings = () => {
 
   const [fullBookList, setFullBookList] = useFullBookListContext();
 
+  const [ratingShown, setRatingShown] = useRatingShownContext();
+
+  const [pageNumberShown, setPageNumberShown] = usePageNumberShownContext();
+
   function handleLink(url: string) {
     WebBrowser.openBrowserAsync(url);
   }
+
+  const handleOptions = (title: string, value: boolean) => {
+    switch (title) {
+      case 'pageNumber':
+        setPageNumberShown(value);
+        setData('pageNumberShown', value);
+        break;
+      case 'rating':
+        setRatingShown(value);
+        setData('ratingShown', value);
+        break;
+    }
+  };
 
   const handleImport = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
@@ -50,8 +70,13 @@ const Settings = () => {
         console.log(err);
       }
     } else {
-      Alert.alert('Canceled', 'You have canceled the import');
+      Alert.alert('Cancelled', 'You have cancelled the import');
     }
+  };
+
+  const exportDate = () => {
+    const date = new Date().toISOString();
+    return date.slice(0, date.indexOf('T'));
   };
 
   const handleExport = async () => {
@@ -62,17 +87,17 @@ const Settings = () => {
         setFullBookList(data);
       });
 
-      await FileSystem.StorageAccessFramework.createFileAsync(dirUrl, `Bookaccio_Export_${new Date().toDateString().split(' ').join('_')}`, 'application/json')
+      await FileSystem.StorageAccessFramework.createFileAsync(dirUrl, `Bookaccio_Export_${exportDate()}`, 'application/json')
         .then(async (fileUri) => {
           await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(fullBookList), { encoding: FileSystem.EncodingType.UTF8 });
-          Alert.alert(`Export file saved successfully`);
+          Alert.alert('Success', `Export file saved successfully`);
         })
         .catch((e) => {
-          Alert.alert(`Error saving file: ${e}`);
+          Alert.alert('Error', `Error saving file: ${e}`);
           console.log(e);
         });
     } else {
-      Alert.alert('You must allow storage permission to save the file.');
+      Alert.alert('Cancelled', 'You have cancelled the export');
     }
   };
 
@@ -86,7 +111,7 @@ const Settings = () => {
           <Text style={[styles.headerTitle, { color: accentColor }]}>Settings</Text>
         </View>
         <View style={{ gap: 20 }}>
-          <View style={styles.sectionContainer}>
+          <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Colors</Text>
             <SettingItem
               label="Accent Color"
@@ -97,14 +122,37 @@ const Settings = () => {
               data={theme}
             />
           </View>
-          <View style={styles.sectionContainer}>
+          <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Fonts</Text>
             <SettingItem
               label="Font"
               data={fonts}
             />
           </View>
-          <View style={styles.sectionContainer}>
+          <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Options</Text>
+            <View style={{ gap: 15 }}>
+              <View style={[styles.switchContainer]}>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Page No. in 'Reading' Section</Text>
+                <Switch
+                  trackColor={{ false: Colors.gray, true: accentColor }}
+                  thumbColor={Colors.light}
+                  value={pageNumberShown}
+                  onValueChange={(value) => handleOptions('pageNumber', value)}
+                />
+              </View>
+              <View style={[styles.switchContainer]}>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Rating in 'Done' Section</Text>
+                <Switch
+                  trackColor={{ false: Colors.gray, true: accentColor }}
+                  thumbColor={Colors.light}
+                  value={ratingShown}
+                  onValueChange={(value) => handleOptions('rating', value)}
+                />
+              </View>
+            </View>
+          </View>
+          <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Import/Export</Text>
 
             <View style={styles.btnContainer}>
@@ -122,7 +170,7 @@ const Settings = () => {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.sectionContainer}>
+          <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Report a Bug</Text>
             <View style={{ flexDirection: 'column', gap: 15 }}>
               <TouchableOpacity
@@ -150,6 +198,7 @@ export default Settings;
 const styles = StyleSheet.create({
   contentContainer: {
     padding: 10,
+    paddingBottom: 50,
   },
 
   headerContainer: {
@@ -165,6 +214,9 @@ const styles = StyleSheet.create({
 
   sectionContainer: {
     gap: 15,
+    padding: 10,
+    paddingVertical: 25,
+    borderRadius: 10,
   },
 
   subheading: {
@@ -195,5 +247,15 @@ const styles = StyleSheet.create({
     color: Colors.light,
     fontFamily: 'MontR',
     textAlign: 'center',
+  },
+
+  switchContainer: {
+    flexDirection: 'row',
+  },
+
+  switchLabel: {
+    fontFamily: 'MontB',
+    fontSize: 15,
+    flex: 1,
   },
 });
