@@ -7,23 +7,23 @@ type ContextProps = [boolean, Dispatch<SetStateAction<boolean>>];
 export const ThemeContext = createContext<ContextProps | []>([]);
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [isDarkMode, setIsDarkMode] = useState<boolean>(useColorScheme() === 'dark');
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(useColorScheme() === 'dark');
 
-    getData('theme').then((value) => {
-        if (value !== undefined) {
-            setIsDarkMode(value);
-        }
-    });
+  getData('theme').then((value) => {
+    if (value !== undefined) {
+      setIsDarkMode(value);
+    }
+  });
 
-    return <ThemeContext.Provider value={[isDarkMode, setIsDarkMode]}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={[isDarkMode, setIsDarkMode]}>{children}</ThemeContext.Provider>;
 }
 
 export function useDarkModeContext(): ContextProps {
-    const [isDarkMode, setIsDarkMode] = useContext(ThemeContext);
+  const [isDarkMode, setIsDarkMode] = useContext(ThemeContext);
 
-    if (isDarkMode == undefined || setIsDarkMode == undefined) {
-        throw new Error('Either isDarkMode or setIsDarkMode is undefined.');
-    }
+  if (isDarkMode == undefined || setIsDarkMode == undefined) {
+    throw new Error('Either isDarkMode or setIsDarkMode is undefined.');
+  }
 
-    return [isDarkMode, setIsDarkMode];
+  return [isDarkMode, setIsDarkMode];
 }
