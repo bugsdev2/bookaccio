@@ -1,0 +1,6 @@
+- Changed the icons in the tab bar
+- Changed barcode scanning module again to remove non-free dependencies
+- Changed the way exports are named: changed date format to YYYY-MM-DD
+- Added the rating details for each book in the read section (controled by a toggle, mentioned below)
+- Added toggle switch in the settings to change display of rating and page number
+- Other minor bug fixes and performance enhancements
