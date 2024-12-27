@@ -87,7 +87,7 @@ const Settings = () => {
         setFullBookList(data);
       });
 
-      await FileSystem.StorageAccessFramework.createFileAsync(dirUrl, `Bookaccio_Export_${exportDate()}`, 'application/json')
+      await FileSystem.StorageAccessFramework.createFileAsync(dirUrl, `Bookaccio-Export-${exportDate()}`, 'application/json')
         .then(async (fileUri) => {
           await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(fullBookList), { encoding: FileSystem.EncodingType.UTF8 });
           Alert.alert('Success', `Export file saved successfully`);
