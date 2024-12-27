@@ -77,7 +77,7 @@ const BookDetails = () => {
           pageCount: pageCount ? pageCount : book.pageCount,
           publishedDate: publishedDate ? publishedDate : book.publishedDate,
           publisher: publisher ? publisher : book.publisher,
-          rating: rating ? rating : book.rating,
+          rating: rating !== undefined ? rating : book.rating,
           startDate: startDate ? Date.parse(startDate.toString()) : book.startDate,
           state: state ? state : book.state,
           subtitle: subtitle ? subtitle : book.subtitle,
