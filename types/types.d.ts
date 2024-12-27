@@ -1,5 +1,7 @@
 declare module '*.png';
 
+declare module 'rn-barcode-zxing-scan';
+
 declare interface SettingItemProps {
   label: string;
   data: { title: string; value: string | boolean }[];
