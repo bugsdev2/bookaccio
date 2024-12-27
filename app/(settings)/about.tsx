@@ -91,7 +91,7 @@ const About = () => {
         <View>
           <Text style={[styles.title, { color: accentColor }]}>Do you like using Bookaccio?</Text>
           <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>I'm a freelance web and app developer. I'm always working on some project or the other whenever I'm free. And all the stuff I've created so far are not only free to use and ad-free but also opensource.</Text>
-          <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>Do you like using my app? Would you like to contrinute a little something so that I can create more free and opensource apps? You can</Text>
+          <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>Do you like using my app? Would you like to contribute a little something so that I can create more free and opensource apps? You can</Text>
         </View>
         <View style={{ flexDirection: 'row', gap: 20, justifyContent: 'center' }}>
           <Pressable style={styles.btn}>
