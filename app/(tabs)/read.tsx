@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Pressable, TextInput, Keyboard, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, TextInput, Keyboard, ScrollView, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Modal from 'react-native-modal';
 import React, { useState } from 'react';
 import BookItem from '@/components/bookItem';
@@ -16,6 +16,7 @@ import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { blankBook } from '@/helpers/blankBookDetails';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { getBookByIsbn } from '@/helpers/getBookByIsbn';
+import BarcodeZxingScan from 'rn-barcode-zxing-scan';
 
 const Read = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -43,6 +44,8 @@ const Read = () => {
   const [bookSearchResults, setBookSearchResults] = useState<BookSearchResultProp[]>([]);
 
   const [fullBookList, setFullBookList] = useFullBookListContext();
+
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
 
   function handleAddBook() {
     setFirstModal(true);
@@ -84,12 +87,39 @@ const Read = () => {
     router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
   }
 
+  const barcodeScanned = async (barcode: string) => {
+    const data = await getBookByIsbn(barcode);
+    if (data) {
+      setSelectedBook(data?.volumeInfo);
+      setLoadingAnimation(false);
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READ' } });
+    } else {
+      setLoadingAnimation(false);
+      Alert.alert('Book Not Found', 'Try searching with the title or add the book manually.');
+    }
+  };
+
   function handleBarcodeSearch() {
-    router.push({ pathname: '/(scanner)/[barcodeScanner]', params: { barcodeScanner: 'READ' } });
+    BarcodeZxingScan.showQrReader(async (error: any, data: any) => {
+      if (error) {
+        console.log('Error:', error);
+        return;
+      } else {
+        setLoadingAnimation(true);
+        barcodeScanned(data);
+      }
+    });
+    // router.push({ pathname: '/(scanner)/[barcodeScanner]', params: { barcodeScanner: 'READ' } });
   }
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
+      <ActivityIndicator
+        style={styles.activitiyIndicator}
+        animating={loadingAnimation}
+        size={'large'}
+        color={accentColor}
+      />
       <FlatList
         keyExtractor={(_, index) => index.toString()}
         data={fullBookList}
@@ -255,6 +285,13 @@ export default Read;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+
+  activitiyIndicator: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
   },
 
   plusIcon: {

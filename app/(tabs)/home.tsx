@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Pressable, TextInput, ScrollView, Keyboard, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, TextInput, ScrollView, Keyboard, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -17,6 +17,7 @@ import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { getBookList } from '@/helpers/getBookList';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { getBookByIsbn } from '@/helpers/getBookByIsbn';
+import BarcodeZxingScan from 'rn-barcode-zxing-scan';
 
 const Home = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -44,6 +45,8 @@ const Home = () => {
   const [bookSearchResults, setBookSearchResults] = useState<BookSearchResultProp[]>([]);
 
   const [fullBookList, setFullBookList] = useFullBookListContext();
+
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
 
   useEffect(() => {
     getBookList().then((data) => {
@@ -91,12 +94,39 @@ const Home = () => {
     router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
   }
 
+  const barcodeScanned = async (barcode: string) => {
+    const data = await getBookByIsbn(barcode);
+    if (data) {
+      setSelectedBook(data?.volumeInfo);
+      setLoadingAnimation(false);
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READING' } });
+    } else {
+      setLoadingAnimation(false);
+      Alert.alert('Book Not Found', 'Try searching with the title or add the book manually.');
+    }
+  };
+
   function handleBarcodeSearch() {
-    router.push({ pathname: '/(scanner)/[barcodeScanner]', params: { barcodeScanner: 'READING' } });
+    BarcodeZxingScan.showQrReader(async (error: any, data: any) => {
+      if (error) {
+        console.log('Error:', error);
+        return;
+      } else {
+        setLoadingAnimation(true);
+        barcodeScanned(data);
+      }
+    });
+    // router.push({ pathname: '/(scanner)/[barcodeScanner]', params: { barcodeScanner: 'READING' } });
   }
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
+      <ActivityIndicator
+        style={styles.activitiyIndicator}
+        animating={loadingAnimation}
+        size={'large'}
+        color={accentColor}
+      />
       <FlatList
         keyExtractor={(_, index) => index.toString()}
         data={fullBookList}
@@ -108,6 +138,7 @@ const Home = () => {
         onMomentumScrollBegin={() => setHidePlusBtn(true)}
         onMomentumScrollEnd={() => setHidePlusBtn(false)}
       ></FlatList>
+
       <Pressable
         onPress={handleAddBook}
         style={styles.plusIcon}
@@ -262,6 +293,13 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+
+  activitiyIndicator: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
   },
 
   plusIcon: {
