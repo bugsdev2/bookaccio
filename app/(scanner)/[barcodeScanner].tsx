@@ -1,5 +1,5 @@
 import { Button, StyleSheet, Text, View, Alert, TouchableOpacity } from 'react-native';
-import { BarcodeScanner } from 'rn-barcode-zxing';
+// import { BarcodeScanner } from 'rn-barcode-zxing';
 import React, { useEffect, useRef, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
@@ -47,7 +47,7 @@ const Scanner = () => {
 
   return (
     <>
-      <BarcodeScanner
+      {/* <BarcodeScanner
         style={styles.cameraView}
         torch={torch ? 'on' : 'off'}
         onBarcodesDetected={({ code }: { code: string[] }) => {
@@ -67,7 +67,7 @@ const Scanner = () => {
             color={Colors.black}
           />
         </TouchableOpacity>
-      </BarcodeScanner>
+      </BarcodeScanner> */}
     </>
   );
 };
