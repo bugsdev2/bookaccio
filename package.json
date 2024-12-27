@@ -43,7 +43,7 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "react-native-web": "~0.19.10",
-    "rn-barcode-zxing-scan": "^1.0.2"
+    "rn-barcode-zxing-scan": "^1.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
