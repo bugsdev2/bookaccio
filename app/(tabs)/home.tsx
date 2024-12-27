@@ -61,9 +61,13 @@ const Home = () => {
   async function handleBookSearch(title: string) {
     Keyboard.dismiss();
     if (title === '') return;
-    setIsSearchActive(true);
     const data = await getBookDetails(title);
-    setBookSearchResults(await data);
+    if (data) {
+      setIsSearchActive(true);
+      setBookSearchResults(await data);
+    } else {
+      Alert.alert('Book not found', "Sorry! Your book isn't in the database. You will have to add the book manually");
+    }
   }
 
   async function handleBookSearchByIsbn(isbn: string) {
