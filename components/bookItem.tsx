@@ -12,6 +12,9 @@ import { getBookList } from '@/helpers/getBookList';
 import { storeBooks } from '@/helpers/storeBooks';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { processUrl } from '@/helpers/processUrl';
+import { MaterialIcons } from '@expo/vector-icons';
+import { usePageNumberShownContext } from '@/providers/options/showPageNumberProvider';
+import { useRatingShownContext } from '@/providers/options/showRatingProvider';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -21,6 +24,10 @@ const BookItem = ({ data }: { data: Book }) => {
   const [accentColor, setAccentColor] = useAccentColorContext();
 
   const [fullBookList, setFullBookList] = useFullBookListContext();
+
+  const [ratingShown, setRatingShown] = useRatingShownContext();
+
+  const [pageNumberShown, setPageNumberShown] = usePageNumberShownContext();
 
   const [selectedLocalBook, setSelectedLocalBook] = useState();
 
@@ -117,6 +124,24 @@ const BookItem = ({ data }: { data: Book }) => {
     ]);
   }
 
+  function handleBookRatingStar(rating: number = 0) {
+    if (rating === 0) {
+      return <View />;
+    } else {
+      return [
+        [...Array(rating)].map((_, index) => (
+          <View key={index}>
+            <MaterialIcons
+              name="star"
+              size={14}
+              color={'gold'}
+            />
+          </View>
+        )),
+      ];
+    }
+  }
+
   return (
     <>
       <TouchableOpacity
@@ -179,12 +204,13 @@ const BookItem = ({ data }: { data: Book }) => {
               />
             </Pressable>
             <View style={{ flexDirection: 'row', gap: 20, alignItems: 'flex-end' }}>
-              {data.state === 'READING' && (
+              {data.state === 'READING' && pageNumberShown && (
                 <Text style={[styles.percent, { color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>
                   {data.currentPage}/{data.pageCount}
                 </Text>
               )}
               {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
+              {data.state === 'READ' && data.rating && ratingShown ? <View style={styles.rating}>{handleBookRatingStar(data.rating)}</View> : null}
             </View>
           </View>
         </View>
@@ -262,6 +288,11 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     // flexDirection: 'row',
     alignItems: 'flex-end',
+  },
+
+  rating: {
+    flexDirection: 'row',
+    marginTop: 13,
   },
 
   percent: {},
