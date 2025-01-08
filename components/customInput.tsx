@@ -4,6 +4,7 @@ import { useDarkModeContext } from '@/providers/themeProvider';
 import { useFontsContext } from '@/providers/fontProvider';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { Colors } from '@/constants/Colors';
+import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 
 interface CustomInputProps {
   label: string;
@@ -17,6 +18,8 @@ interface CustomInputProps {
 const CustomInput = ({ label, onChangeText, value, multiline = false, inputMode = 'text', required = false }: CustomInputProps) => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
 
+  const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
+
   const [font, setFont] = useFontsContext();
 
   // To remove html tags from summary
@@ -29,7 +32,7 @@ const CustomInput = ({ label, onChangeText, value, multiline = false, inputMode 
   const [accentColor, setAccentColor] = useAccentColorContext();
   return (
     <View style={[styles.inputContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
-      <Text style={[styles.label, { fontFamily: `${font}B`, backgroundColor: isDarkMode ? Colors.black : Colors.light, color: accentColor }]}>{label}</Text>
+      <Text style={[styles.label, { fontFamily: `${font}B`, backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, color: accentColor }]}>{label}</Text>
       <TextInput
         style={[styles.textInput, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}
         value={cleanText}
