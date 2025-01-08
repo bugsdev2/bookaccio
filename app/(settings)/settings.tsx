@@ -17,6 +17,10 @@ import * as WebBrowser from 'expo-web-browser';
 import { setData } from '@/helpers/storage';
 import { useRatingShownContext } from '@/providers/options/showRatingProvider';
 import { usePageNumberShownContext } from '@/providers/options/showPageNumberProvider';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { usePreventScreenShotContext } from '@/providers/options/preventScreenShotProvider';
+import { useUnfinishedContext } from '@/providers/options/showUnfinishedProvider';
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -28,6 +32,12 @@ const Settings = () => {
   const [ratingShown, setRatingShown] = useRatingShownContext();
 
   const [pageNumberShown, setPageNumberShown] = usePageNumberShownContext();
+
+  const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
+
+  const [isScreenShotDisabled, setIsScreenShotDisabled] = usePreventScreenShotContext();
+
+  const [showUnfinished, setShowUnfinished] = useUnfinishedContext();
 
   function handleLink(url: string) {
     WebBrowser.openBrowserAsync(url);
@@ -43,6 +53,13 @@ const Settings = () => {
         setRatingShown(value);
         setData('ratingShown', value);
         break;
+      case 'screenshots':
+        setIsScreenShotDisabled(value);
+        setData('isScreenShotDisabled', value);
+        break;
+      case 'unfinished':
+        setShowUnfinished(value);
+        setData('showUnfinished', value);
     }
   };
 
@@ -93,7 +110,7 @@ const Settings = () => {
           Alert.alert('Success', `Export file saved successfully`);
         })
         .catch((e) => {
-          Alert.alert('Error', `Error saving file: ${e}`);
+          Alert.alert('Error', `${e}`);
           console.log(e);
         });
     } else {
@@ -103,7 +120,7 @@ const Settings = () => {
 
   return (
     <ScrollView
-      style={[{ backgroundColor: isDarkMode ? Colors.black : Colors.light }]}
+      style={[{ backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}
       contentContainerStyle={styles.contentContainer}
     >
       <SafeAreaView>
@@ -121,6 +138,22 @@ const Settings = () => {
               label="Theme"
               data={theme}
             />
+            {isDarkMode && (
+              <View style={{ gap: 15, flexDirection: 'row', justifyContent: 'flex-end', marginRight: -15, marginTop: 5 }}>
+                <Text style={{ color: isDarkMode ? Colors.light : Colors.dark, fontFamily: 'MontB', alignSelf: 'center' }}>Use Amoled Black</Text>
+                <BouncyCheckbox
+                  style={{ display: 'flex' }}
+                  fillColor={accentColor}
+                  iconStyle={{ borderRadius: 5 }}
+                  innerIconStyle={{ borderRadius: 5 }}
+                  isChecked={isBlackTheme}
+                  onPress={(ischecked) => {
+                    setIsBlackTheme(ischecked);
+                    setData('isBlackTheme', ischecked);
+                  }}
+                />
+              </View>
+            )}
           </View>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Fonts</Text>
@@ -133,7 +166,7 @@ const Settings = () => {
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Options</Text>
             <View style={{ gap: 15 }}>
               <View style={[styles.switchContainer]}>
-                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Page No. in 'Reading' Section</Text>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Page No. in 'Reading'</Text>
                 <Switch
                   trackColor={{ false: Colors.gray, true: accentColor }}
                   thumbColor={Colors.light}
@@ -142,12 +175,30 @@ const Settings = () => {
                 />
               </View>
               <View style={[styles.switchContainer]}>
-                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Rating in 'Done' Section</Text>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Rating in 'Done'</Text>
                 <Switch
                   trackColor={{ false: Colors.gray, true: accentColor }}
                   thumbColor={Colors.light}
                   value={ratingShown}
                   onValueChange={(value) => handleOptions('rating', value)}
+                />
+              </View>
+              <View style={[styles.switchContainer]}>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Unfinished Tag in 'Done'</Text>
+                <Switch
+                  trackColor={{ false: Colors.gray, true: accentColor }}
+                  thumbColor={Colors.light}
+                  value={showUnfinished}
+                  onValueChange={(value) => handleOptions('unfinished', value)}
+                />
+              </View>
+              <View style={[styles.switchContainer]}>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Disable ScreenShots</Text>
+                <Switch
+                  trackColor={{ false: Colors.gray, true: accentColor }}
+                  thumbColor={Colors.light}
+                  value={isScreenShotDisabled}
+                  onValueChange={(value) => handleOptions('screenshots', value)}
                 />
               </View>
             </View>
@@ -251,6 +302,7 @@ const styles = StyleSheet.create({
 
   switchContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
 
   switchLabel: {
