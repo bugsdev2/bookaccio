@@ -9,7 +9,6 @@ import Modal from 'react-native-modal';
 import { useFontsContext } from '@/providers/fontProvider';
 import { getBookDetails } from '@/helpers/getBookDetails';
 import axios from 'axios';
-import { blankBook } from '@/helpers/blankBookDetails';
 import BookSearchItem from '@/components/bookSearchItem';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import { router } from 'expo-router';
@@ -18,6 +17,7 @@ import { getBookList } from '@/helpers/getBookList';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { getBookByIsbn } from '@/helpers/getBookByIsbn';
 import BarcodeZxingScan from 'rn-barcode-zxing-scan';
+import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 
 const Home = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -25,6 +25,8 @@ const Home = () => {
   const [accentColor, setAccentColor] = useAccentColorContext();
 
   const [selectedBook, setSelectedBook] = useSelectedBookContext();
+
+  const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
 
   const [font, setFont] = useFontsContext();
 
@@ -85,14 +87,14 @@ const Home = () => {
 
   async function handleBookSelection(url: string, state: string) {
     const res = await axios.get(url);
-    setSelectedBook(await res.data.volumeInfo);
+    setSelectedBook(await res.data);
     Keyboard.dismiss();
     setSearchModal(false);
     router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
   }
 
   function addBookManually(state: string) {
-    setSelectedBook(blankBook);
+    setSelectedBook({});
     Keyboard.dismiss();
     setFirstModal(false);
     router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
@@ -101,7 +103,7 @@ const Home = () => {
   const barcodeScanned = async (barcode: string) => {
     const data = await getBookByIsbn(barcode);
     if (data) {
-      setSelectedBook(data?.volumeInfo);
+      setSelectedBook(data);
       setLoadingAnimation(false);
       router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READING' } });
     } else {
@@ -124,7 +126,7 @@ const Home = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
+    <View style={[styles.container, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.white }]}>
       <ActivityIndicator
         style={styles.activitiyIndicator}
         animating={loadingAnimation}
