@@ -14,6 +14,7 @@ import { useFontsContext } from '@/providers/fontProvider';
 import { getBookList } from '@/helpers/getBookList';
 import { storeBooks } from '@/helpers/storeBooks';
 import { useIsFocused } from '@react-navigation/native';
+import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 
 const TabsLayout = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -23,6 +24,8 @@ const TabsLayout = () => {
   const [font, setFont] = useFontsContext();
 
   const [fullBookList, setFullBookList] = useFullBookListContext();
+
+  const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -98,7 +101,7 @@ const TabsLayout = () => {
 
   const CustomIcon = ({ focused, name, title }: { focused: boolean; name: any; title: string }) => (
     <View>
-      <View style={[styles.customIconFill, { backgroundColor: focused ? accentColor : isDarkMode ? Colors.dark : Colors.light }]}>
+      <View style={[styles.customIconFill, { backgroundColor: focused ? accentColor : isBlackTheme ? Colors.closeBlack : isDarkMode ? Colors.dark : Colors.light }]}>
         <Icon
           name={focused ? name : `${name}-outline`}
           size={30}
@@ -194,9 +197,9 @@ const TabsLayout = () => {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: {
-            backgroundColor: isDarkMode ? Colors.dark : Colors.light,
+            backgroundColor: isBlackTheme ? Colors.closeBlack : isDarkMode ? Colors.dark : Colors.light,
             height: 65,
-            borderTopColor: isDarkMode ? Colors.black : Colors.light,
+            borderTopColor: isBlackTheme ? Colors.closeBlack : isDarkMode ? Colors.black : Colors.light,
             elevation: 10,
           },
         }}
