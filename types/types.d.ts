@@ -44,6 +44,7 @@ declare interface BookSearchResultProp {
     title: string;
     subtitle: string;
     industryIdentifiers: { type: string; identifier: string }[];
+    pageCount: number;
   };
 }
 
