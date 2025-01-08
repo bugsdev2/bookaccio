@@ -52,6 +52,10 @@ export default function RootLayout() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="(editBook)"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="(scanner)"
           options={{ headerShown: false }}
         />
