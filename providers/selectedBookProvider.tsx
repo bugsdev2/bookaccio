@@ -1,12 +1,11 @@
 import { createContext, useContext, useState } from 'react';
-import { blankBook } from '@/helpers/blankBookDetails';
 
-type SelectedBookProps = [Book, React.Dispatch<React.SetStateAction<Book>>];
+type SelectedBookProps = [Partial<BookSearchResultProp>, React.Dispatch<React.SetStateAction<Partial<BookSearchResultProp>>>];
 
 export const SelectedBookContext = createContext<SelectedBookProps | []>([]);
 
 const SelectedBookProvider = ({ children }: { children: React.ReactNode }) => {
-  const [selectedBook, setSelectedBook] = useState<Book>(blankBook);
+  const [selectedBook, setSelectedBook] = useState<Partial<BookSearchResultProp>>({});
 
   return <SelectedBookContext.Provider value={[selectedBook, setSelectedBook]}>{children}</SelectedBookContext.Provider>;
 };
