@@ -15,6 +15,7 @@ import { processUrl } from '@/helpers/processUrl';
 import { MaterialIcons } from '@expo/vector-icons';
 import { usePageNumberShownContext } from '@/providers/options/showPageNumberProvider';
 import { useRatingShownContext } from '@/providers/options/showRatingProvider';
+import { useUnfinishedContext } from '@/providers/options/showUnfinishedProvider';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -29,7 +30,7 @@ const BookItem = ({ data }: { data: Book }) => {
 
   const [pageNumberShown, setPageNumberShown] = usePageNumberShownContext();
 
-  const [selectedLocalBook, setSelectedLocalBook] = useState();
+  const [showUnfinished, setShowUnfinished] = useUnfinishedContext();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -183,6 +184,11 @@ const BookItem = ({ data }: { data: Book }) => {
                 {data?.subtitle}
               </Text>
             </View>
+            {data.state === 'READ' && showUnfinished && data.currentPage !== data.pageCount ? (
+              <View style={{ alignSelf: 'flex-start' }}>
+                <Text style={[styles.unfinished, { fontFamily: `${font}B` }]}>Unfinished</Text>
+              </View>
+            ) : null}
             <View>
               <Text
                 numberOfLines={1}
@@ -203,14 +209,16 @@ const BookItem = ({ data }: { data: Book }) => {
                 color={isDarkMode ? Colors.light : Colors.dark}
               />
             </Pressable>
-            <View style={{ flexDirection: 'row', gap: 20, alignItems: 'flex-end' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {data.state === 'READING' && pageNumberShown && (
-                <Text style={[styles.percent, { color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>
+                <Text style={[{ color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>
                   {data.currentPage}/{data.pageCount}
                 </Text>
               )}
-              {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
-              {data.state === 'READ' && data.rating && ratingShown ? <View style={styles.rating}>{handleBookRatingStar(data.rating)}</View> : null}
+              <View>
+                {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
+                {data.state === 'READ' && data.rating && ratingShown ? <View style={styles.rating}>{handleBookRatingStar(data.rating)}</View> : null}
+              </View>
             </View>
           </View>
         </View>
@@ -286,16 +294,29 @@ const styles = StyleSheet.create({
 
   endContent: {
     marginLeft: 'auto',
-    // flexDirection: 'row',
     alignItems: 'flex-end',
   },
 
   rating: {
     flexDirection: 'row',
     marginTop: 13,
+    marginLeft: 10,
   },
 
-  percent: {},
+  unfinished: {
+    borderWidth: 1,
+    paddingHorizontal: 3,
+    borderRadius: 5,
+    borderColor: Colors.green,
+    color: Colors.green,
+    fontSize: 10,
+    textAlign: 'center',
+    marginBottom: -5,
+  },
+
+  percent: {
+    marginLeft: 20,
+  },
 
   progressBar: {
     position: 'absolute',
