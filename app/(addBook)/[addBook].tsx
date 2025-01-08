@@ -8,6 +8,8 @@ import { Colors } from '@/constants/Colors';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import CustomInput from '@/components/customInput';
 import { Dropdown } from 'react-native-element-dropdown';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import Modal from 'react-native-modal';
 import bookCoverPlaceholder from '../../assets/images/others/book-cover-placeholder.png';
 
@@ -15,6 +17,7 @@ import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
 import { processUrl } from '@/helpers/processUrl';
 import { getBookList } from '@/helpers/getBookList';
+import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 
 const AddNewBook = () => {
   const { addBook }: { addBook: 'READING' | 'READ' | 'READ_LATER' } = useLocalSearchParams();
@@ -33,7 +36,11 @@ const AddNewBook = () => {
 
   const [fullBookList, setFullBookList] = useFullBookListContext();
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
+
+  const [isFirstModalVisible, setIsFirstModalVisible] = useState(false);
+
+  const [isUrlModalVisible, setIsUrlModalVisible] = useState(false);
 
   const [imgUrl, setImgUrl] = useState('');
 
@@ -54,23 +61,23 @@ const AddNewBook = () => {
 
   const [bookDetails, setBookDetails] = useState<Book>({
     id: createUID(),
-    title: selectedBook.title ? selectedBook.title : '',
-    subtitle: selectedBook.subtitle ? selectedBook.subtitle : '',
-    authors: selectedBook.authors ? selectedBook.authors : [''],
-    categories: selectedBook.categories ? selectedBook.categories : [''],
-    pageCount: selectedBook.pageCount ? selectedBook.pageCount : 0,
-    description: selectedBook.description ? selectedBook.description : '',
+    title: selectedBook.volumeInfo?.title ? selectedBook.volumeInfo.title : '',
+    subtitle: selectedBook.volumeInfo?.subtitle ? selectedBook.volumeInfo?.subtitle : '',
+    authors: selectedBook.volumeInfo?.authors ? selectedBook.volumeInfo?.authors : [''],
+    categories: selectedBook.volumeInfo?.categories ? selectedBook.volumeInfo?.categories : [''],
+    pageCount: selectedBook.volumeInfo?.pageCount ? selectedBook.volumeInfo?.pageCount : 0,
+    description: selectedBook.volumeInfo?.description ? selectedBook.volumeInfo?.description : '',
     imageLinks: {
-      thumbnail: selectedBook.imageLinks ? selectedBook.imageLinks.thumbnail : '',
+      thumbnail: selectedBook.volumeInfo?.imageLinks ? selectedBook.volumeInfo?.imageLinks.thumbnail : '',
     },
     currentPage: 0,
     state: addBook,
     startDate: Date.parse(new Date().toString()),
     endDate: Date.parse(new Date().toString()),
-    publishedDate: selectedBook.publishedDate,
-    language: selectedBook.language,
-    publisher: selectedBook.publisher,
-    maturityRating: selectedBook.maturityRating,
+    publishedDate: selectedBook.volumeInfo?.publishedDate,
+    language: selectedBook.volumeInfo?.language,
+    publisher: selectedBook.volumeInfo?.publisher,
+    isbn: selectedBook.volumeInfo?.industryIdentifiers[1].identifier ? selectedBook.volumeInfo?.industryIdentifiers[1].identifier : '',
   });
 
   const statusData: { title: string; value: 'READ' | 'READING' | 'READ_LATER' }[] = [
@@ -95,7 +102,19 @@ const AddNewBook = () => {
 
   function handleImageChange() {
     setBookDetails({ ...bookDetails, imageLinks: { thumbnail: imgUrl } });
-    setIsModalVisible(false);
+    setIsUrlModalVisible(false);
+  }
+
+  async function handleGalleryImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      aspect: [10, 16],
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImgUrl(result.assets[0].uri);
+      setBookDetails({ ...bookDetails, imageLinks: { thumbnail: result.assets[0].uri } });
+    }
   }
 
   function handleAddBook() {
@@ -117,14 +136,14 @@ const AddNewBook = () => {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}
+      style={[styles.container, { backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}
       contentContainerStyle={styles.contentContainer}
     >
       <View>
-        <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+        <TouchableOpacity onPress={() => setIsFirstModalVisible(true)}>
           <Image
             style={styles.image}
-            source={imgUrl !== '' ? { uri: processUrl(imgUrl) } : selectedBook.imageLinks?.thumbnail && selectedBook.imageLinks?.thumbnail !== '' ? { uri: processUrl(selectedBook.imageLinks.thumbnail) } : bookCoverPlaceholder}
+            source={imgUrl !== '' ? { uri: processUrl(imgUrl) } : selectedBook.volumeInfo?.imageLinks?.thumbnail && selectedBook.volumeInfo?.imageLinks?.thumbnail !== '' ? { uri: processUrl(selectedBook.volumeInfo?.imageLinks.thumbnail) } : bookCoverPlaceholder}
           />
         </TouchableOpacity>
       </View>
@@ -158,9 +177,9 @@ const AddNewBook = () => {
           />
         </View>
         <View style={styles.statusContainer}>
-          <Text style={[styles.statusText, { fontFamily: `${font}B`, backgroundColor: isDarkMode ? Colors.black : Colors.light, color: accentColor, zIndex: 1 }]}>Status</Text>
+          <Text style={[styles.statusText, { fontFamily: `${font}B`, backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light, color: accentColor, zIndex: 1 }]}>Status</Text>
           <Dropdown
-            style={[styles.dropDownField, { backgroundColor: isDarkMode ? Colors.black : Colors.light, borderColor: isDarkMode ? Colors.gray : Colors.dark }]}
+            style={[styles.dropDownField, { backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light, borderColor: isDarkMode ? Colors.gray : Colors.dark }]}
             labelField={'title'}
             valueField={'value'}
             data={statusData}
@@ -174,6 +193,13 @@ const AddNewBook = () => {
       <View style={[styles.detailsContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
         <View>
           <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Optional Details</Text>
+        </View>
+        <View>
+          <CustomInput
+            label="ISBN"
+            value={bookDetails.isbn ? bookDetails.isbn : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, subtitle: value })}
+          />
         </View>
         <View>
           <CustomInput
@@ -209,10 +235,37 @@ const AddNewBook = () => {
         </TouchableOpacity>
       </View>
       <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setIsModalVisible(false)}
+        isVisible={isFirstModalVisible}
+        onBackdropPress={() => setIsFirstModalVisible(false)}
       >
-        <View style={[styles.modal, { backgroundColor: isDarkMode ? Colors.dark : Colors.light }]}>
+        <View style={[styles.modal, { backgroundColor: accentColor }]}>
+          <View style={[styles.largeBtnContainer]}>
+            <TouchableOpacity
+              style={[styles.largeBtn]}
+              onPress={() => {
+                setIsFirstModalVisible(false);
+                setIsUrlModalVisible(true);
+              }}
+            >
+              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>Set Image using URL</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.largeBtn]}
+              onPress={() => {
+                setIsFirstModalVisible(false);
+                handleGalleryImage();
+              }}
+            >
+              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>Select Image from Gallery</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        isVisible={isUrlModalVisible}
+        onBackdropPress={() => setIsUrlModalVisible(false)}
+      >
+        <View style={[styles.modal, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
           <CustomInput
             label="Image URL"
             value={imgUrl}
@@ -314,5 +367,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 10,
     gap: 15,
+    borderWidth: 1,
+  },
+
+  largeBtnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+
+  largeBtn: {
+    height: 125,
+    width: 125,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    padding: 10,
+  },
+
+  largeBtnTxt: {
+    fontSize: 17,
+    textAlign: 'center',
   },
 });
