@@ -16,6 +16,8 @@ import { processUrl } from '@/helpers/processUrl';
 import { processInterjections } from '@/helpers/processInterjections';
 import { processDuration } from '@/helpers/processDuration';
 import { getBookList } from '@/helpers/getBookList';
+import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { readingMotivation } from '@/helpers/readingMotivation';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -33,6 +35,8 @@ const BookDetails = () => {
   const [accentColor, setAccentColor] = useAccentColorContext();
 
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
+
+  const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
 
   const [numOfLines, setNumOfLines] = useState(4);
 
@@ -64,7 +68,7 @@ const BookDetails = () => {
     });
   }, []);
 
-  const updateBookDetails = ({ id, authors, currentPage, pageCount, categories, description, endDate, publishedDate, publisher, rating, startDate, state, subtitle, title }: BookOptional) => {
+  const updateBookDetails = ({ id, authors, currentPage, pageCount, categories, description, endDate, publishedDate, publisher, rating, startDate, state, subtitle, title, isbn }: BookOptional) => {
     const updatedBooklist: Book[] = fullBookList.map((book) => {
       if (book.id === id) {
         return {
@@ -82,6 +86,7 @@ const BookDetails = () => {
           state: state ? state : book.state,
           subtitle: subtitle ? subtitle : book.subtitle,
           title: title ? title : book.title,
+          isbn: isbn ? isbn : book.isbn,
         };
       } else {
         return {
@@ -110,9 +115,32 @@ const BookDetails = () => {
 
     updateBookDetails({ id, currentPage, pageCount });
 
+    if (book?.state === 'READING') {
+      updateBookDetails({ id, endDate: new Date() });
+      setEndDate(new Date());
+    }
+
     setBookProgress(currentPage! / pageCount!);
 
     Keyboard.dismiss();
+
+    if (currentPage === pageCount && book?.state === 'READING') {
+      Alert.alert(processInterjections(), `You have finished reading '${book.title}' by ${book.authors.join(', ')}. \nDo you want to rate it and move it to 'Done'?`, [
+        {
+          text: 'Yes',
+          onPress: () => {
+            setIsRatinModalVisible(true);
+          },
+        },
+        {
+          text: 'No',
+          onPress: () => {
+            updateBookDetails({ id, endDate: new Date(), currentPage, pageCount });
+            setEndDate(new Date());
+          },
+        },
+      ]);
+    }
 
     setIsModalVisible(false);
   }
@@ -153,7 +181,7 @@ const BookDetails = () => {
   };
 
   const handleEndDate = ({ id, endDate }: { id: number; endDate: Date }) => {
-    if (Date.parse(startDate.toString()) > Date.parse(endDate.toString())) {
+    if (Date.parse(startDate.toISOString()) > Date.parse(endDate.toISOString())) {
       Alert.alert('Error!', 'Well, how can you end a book before you even start it?');
       return;
     }
@@ -178,6 +206,11 @@ const BookDetails = () => {
   function handleBookRating(id: number) {
     updateBookDetails({ id, rating });
     setIsRatinModalVisible(false);
+    if (book?.currentPage === book?.pageCount && book?.state === 'READING') {
+      updateBookDetails({ id, endDate: new Date(), currentPage, pageCount, state: 'READ' });
+      setEndDate(new Date());
+      Alert.alert('Success!', `'${book.title}' has been moved to 'Done'`);
+    }
   }
 
   function handleBookRatingStar(rating: number = 0) {
@@ -220,7 +253,7 @@ const BookDetails = () => {
   } else {
     return (
       <ScrollView
-        style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}
+        style={[styles.container, { backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}
         contentContainerStyle={styles.contentContainer}
       >
         <View>
@@ -229,6 +262,7 @@ const BookDetails = () => {
             source={book?.imageLinks.thumbnail !== '' ? { uri: processUrl(book?.imageLinks.thumbnail) } : bookCoverPlaceholder}
           />
         </View>
+
         <View style={styles.textContainer}>
           <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>{book?.title}</Text>
           {book?.subtitle && <Text style={[styles.subtitle, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.subtitle}</Text>}
@@ -248,6 +282,7 @@ const BookDetails = () => {
             {book?.description?.replace(/<\/?[^>]+(>|$)/g, '')}
           </Text>
         </View>
+
         <View style={styles.progressContainer}>
           {book?.state !== 'READ_LATER' && (
             <Pressable onPress={() => setIsModalVisible(true)}>
@@ -264,7 +299,19 @@ const BookDetails = () => {
             </Pressable>
           )}
         </View>
-        <View style={styles.durationContainer}>{book.state === 'READ' && bookProgress === 1 && <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{processInterjections() + ' You finished this book in ' + processDuration(book.startDate, book.endDate)}</Text>}</View>
+
+        {book.state === 'READING' && bookProgress < 1 && Date.parse(endDate.toString()) - Date.parse(startDate.toString()) > 86400000 ? (
+          <View style={styles.durationContainer}>
+            <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{readingMotivation(book.startDate, book.endDate)}</Text>
+          </View>
+        ) : null}
+
+        {book.state === 'READ' && bookProgress === 1 ? (
+          <View style={styles.durationContainer}>
+            <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{processInterjections() + ' You finished this book in ' + processDuration(book.startDate, book.endDate)}</Text>
+          </View>
+        ) : null}
+
         <View style={[styles.dateContainer]}>
           {book?.state !== 'READ_LATER' && (
             <>
@@ -272,14 +319,14 @@ const BookDetails = () => {
                 onPress={showStartDatePicker}
                 style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
               >
-                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>Start Date</Text>
+                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}>Start Date</Text>
                 <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(startDate)}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={showEndDatePicker}
                 style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
               >
-                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>End Date</Text>
+                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}>End Date</Text>
                 <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(endDate)}</Text>
               </TouchableOpacity>
             </>
