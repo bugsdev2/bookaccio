@@ -6,11 +6,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import * as WebBrowser from 'expo-web-browser';
 import { versionNum } from '@/constants/versionNum';
+import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 
 const About = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
 
   const [accentColor, setAccentColor] = useAccentColorContext();
+
+  const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
 
   function handleLink(url: string) {
     WebBrowser.openBrowserAsync(url);
@@ -29,7 +32,7 @@ const About = () => {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: isDarkMode ? Colors.dark : Colors.light }]}
+      style={[styles.container, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.dark : Colors.light }]}
       contentContainerStyle={styles.contentContainer}
     >
       <SafeAreaView>
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
 
   contentContainer: {
     padding: 15,
-    paddingBottom: 25,
+    paddingBottom: 40,
   },
 
   title: {
