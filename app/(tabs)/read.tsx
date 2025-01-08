@@ -13,10 +13,10 @@ import { getBookDetails } from '@/helpers/getBookDetails';
 import axios from 'axios';
 import { router } from 'expo-router';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
-import { blankBook } from '@/helpers/blankBookDetails';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { getBookByIsbn } from '@/helpers/getBookByIsbn';
 import BarcodeZxingScan from 'rn-barcode-zxing-scan';
+import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 
 const Read = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -26,6 +26,8 @@ const Read = () => {
   const [font, setFont] = useFontsContext();
 
   const [selectedBook, setSelectedBook] = useSelectedBookContext();
+
+  const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
 
   const [hidePlusBtn, setHidePlusBtn] = useState(false);
 
@@ -85,7 +87,7 @@ const Read = () => {
   }
 
   function addBookManually(state: string) {
-    setSelectedBook(blankBook);
+    setSelectedBook({});
     Keyboard.dismiss();
     setFirstModal(false);
     router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
@@ -117,7 +119,7 @@ const Read = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
+    <View style={[styles.container, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.white }]}>
       <ActivityIndicator
         style={styles.activitiyIndicator}
         animating={loadingAnimation}
