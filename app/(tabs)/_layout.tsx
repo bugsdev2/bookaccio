@@ -2,19 +2,19 @@ import { Link, Tabs } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import { View, Text, StyleSheet, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Entypo, Ionicons } from '@expo/vector-icons/';
+import { Entypo, Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons/';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import Modal from 'react-native-modal';
 import React, { useEffect, useRef, useState } from 'react';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { useFontsContext } from '@/providers/fontProvider';
 import { getBookList } from '@/helpers/getBookList';
 import { storeBooks } from '@/helpers/storeBooks';
 import { useIsFocused } from '@react-navigation/native';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { useTranslation } from 'react-i18next';
 
 const TabsLayout = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -38,6 +38,8 @@ const TabsLayout = () => {
   const textInputRef = useRef<TextInput>(null);
 
   const isScreenFocused = useIsFocused();
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (isScreenFocused && searchTxt !== '') {
@@ -159,7 +161,7 @@ const TabsLayout = () => {
             <TextInput
               ref={textInputRef}
               value={searchTxt}
-              placeholder="search by title or author"
+              placeholder={t('search-by-title-or-author')}
               placeholderTextColor={'#9e9e9e'}
               style={[styles.searchInput, { fontFamily: `${font}B` }]}
               onChangeText={(value) => {
@@ -213,7 +215,7 @@ const TabsLayout = () => {
               <CustomIcon
                 name="bookmark"
                 focused={focused}
-                title="For Later"
+                title={t('for-later')}
               />
             ),
             // unmountOnBlur: true,
@@ -228,7 +230,7 @@ const TabsLayout = () => {
               <CustomIcon
                 name="book-open-page-variant"
                 focused={focused}
-                title="Reading"
+                title={t('reading')}
               />
             ),
             // unmountOnBlur: true,
@@ -243,7 +245,7 @@ const TabsLayout = () => {
               <CustomIcon
                 name="book"
                 focused={focused}
-                title="Done"
+                title={t('done')}
               />
             ),
             // unmountOnBlur: true,
@@ -268,6 +270,24 @@ const TabsLayout = () => {
           <View>
             <View>
               <Link
+                href={'/(unfinished)/unfinished'}
+                asChild
+              >
+                <Pressable
+                  style={styles.linkContainer}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <MaterialCommunityIcons
+                    name="bookmark-remove"
+                    size={22}
+                    color={isDarkMode ? Colors.light : accentColor}
+                  />
+                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>{t('unfinished')}</Text>
+                </Pressable>
+              </Link>
+            </View>
+            <View>
+              <Link
                 href={'/(settings)/settings'}
                 asChild
               >
@@ -280,10 +300,11 @@ const TabsLayout = () => {
                     size={22}
                     color={isDarkMode ? Colors.light : accentColor}
                   />
-                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>Settings</Text>
+                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>{t('settings')}</Text>
                 </Pressable>
               </Link>
             </View>
+
             <View>
               <Link
                 href={'/(settings)/about'}
@@ -298,7 +319,7 @@ const TabsLayout = () => {
                     size={22}
                     color={isDarkMode ? Colors.light : accentColor}
                   />
-                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>About</Text>
+                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>{t('about')}</Text>
                 </Pressable>
               </Link>
             </View>
@@ -314,19 +335,19 @@ const TabsLayout = () => {
             onPress={() => handleSort('title')}
             style={[styles.sortModalBtn, { backgroundColor: accentColor }]}
           >
-            <Text style={[styles.sortModalTxt, { fontFamily: `${font}B` }]}>Sort books by Title</Text>
+            <Text style={[styles.sortModalTxt, { fontFamily: `${font}B` }]}>{t('sort-by-title')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleSort('dateAsc')}
             style={[styles.sortModalBtn, { backgroundColor: accentColor }]}
           >
-            <Text style={[styles.sortModalTxt, { fontFamily: `${font}B` }]}>Sort books by Start Date (Earliest to Latest)</Text>
+            <Text style={[styles.sortModalTxt, { fontFamily: `${font}B` }]}>{t('sort-by-start-e2l')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleSort('dateDesc')}
             style={[styles.sortModalBtn, { backgroundColor: accentColor }]}
           >
-            <Text style={[styles.sortModalTxt, { fontFamily: `${font}B` }]}>Sort books by Start Date (Latest to Earliest)</Text>
+            <Text style={[styles.sortModalTxt, { fontFamily: `${font}B` }]}>{t('sort-by-start-l2e')}</Text>
           </TouchableOpacity>
         </View>
       </Modal>

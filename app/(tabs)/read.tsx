@@ -17,6 +17,8 @@ import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { getBookByIsbn } from '@/helpers/getBookByIsbn';
 import BarcodeZxingScan from 'rn-barcode-zxing-scan';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { BookState } from '@/constants/bookState';
+import { useTranslation } from 'react-i18next';
 
 const Read = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -49,6 +51,8 @@ const Read = () => {
 
   const [loadingAnimation, setLoadingAnimation] = useState(false);
 
+  const { t } = useTranslation();
+
   function handleAddBook() {
     setFirstModal(true);
   }
@@ -61,7 +65,7 @@ const Read = () => {
       setIsSearchActive(true);
       setBookSearchResults(await data);
     } else {
-      Alert.alert('Book not found', "Sorry! Your book isn't in the database. You will have to add the book manually");
+      Alert.alert(t('book-not-found'), t('no-book-add-manually'));
     }
   }
 
@@ -72,15 +76,15 @@ const Read = () => {
     if (data) {
       setSelectedBook(data?.volumeInfo);
       setIsbnModal(false);
-      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READ' } });
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.READ } });
     } else {
-      Alert.alert('Book Not Found', 'Try searching with the title or add the book manually.');
+      Alert.alert(t('book-not-found'), t('try-search-or-add'));
     }
   }
 
   async function handleBookSelection(url: string, state: string) {
     const res = await axios.get(url);
-    setSelectedBook(await res.data.volumeInfo);
+    setSelectedBook(await res.data);
     Keyboard.dismiss();
     setSearchModal(false);
     router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
@@ -96,12 +100,12 @@ const Read = () => {
   const barcodeScanned = async (barcode: string) => {
     const data = await getBookByIsbn(barcode);
     if (data) {
-      setSelectedBook(data?.volumeInfo);
+      setSelectedBook(data);
       setLoadingAnimation(false);
-      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READ' } });
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.READ } });
     } else {
       setLoadingAnimation(false);
-      Alert.alert('Book Not Found', 'Try searching with the title or add the book manually.');
+      Alert.alert(t('book-not-found'), t('try-search-or-add'));
     }
   };
 
@@ -115,7 +119,6 @@ const Read = () => {
         barcodeScanned(data);
       }
     });
-    // router.push({ pathname: '/(scanner)/[barcodeScanner]', params: { barcodeScanner: 'READ' } });
   }
 
   return (
@@ -130,13 +133,14 @@ const Read = () => {
         keyExtractor={(_, index) => index.toString()}
         data={fullBookList}
         extraData={fullBookList}
-        renderItem={({ item }) => <View>{item.state === 'READ' ? <BookItem data={item} /> : null}</View>}
+        renderItem={({ item }) => <View>{item.state === BookState.READ ? <BookItem data={item} /> : null}</View>}
         ListFooterComponent={() => <View style={{ height: 10 }} />}
         // onScrollBeginDrag={() => setHidePlusBtn(true)}
         // onScrollEndDrag={() => setHidePlusBtn(false)}
         onMomentumScrollBegin={() => setHidePlusBtn(true)}
         onMomentumScrollEnd={() => setHidePlusBtn(false)}
       />
+
       <Pressable
         onPress={handleAddBook}
         style={styles.plusIcon}
@@ -154,17 +158,17 @@ const Read = () => {
         onBackdropPress={() => setFirstModal(false)}
       >
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
-          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Add Book</Text>
+          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>{t('add-book')}</Text>
           <View style={styles.modalButtonContainer}>
             <Pressable
-              onPress={() => addBookManually('READ')}
+              onPress={() => addBookManually(BookState.READ)}
               style={styles.modalButton}
             >
               <AntDesign
                 name="edit"
                 size={25}
               />
-              <Text style={{ fontFamily: `${font}B` }}>Add Manually</Text>
+              <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('add-manually')}</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -177,7 +181,7 @@ const Read = () => {
                 name="search1"
                 size={25}
               />
-              <Text style={{ fontFamily: `${font}B` }}>Search Title</Text>
+              <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('search-title')}</Text>
             </Pressable>
           </View>
           <View style={styles.modalButtonContainer}>
@@ -192,7 +196,7 @@ const Read = () => {
                 name="book"
                 size={30}
               />
-              <Text style={{ fontFamily: `${font}B` }}>Get Book by ISBN</Text>
+              <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('get-book')}</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -205,7 +209,7 @@ const Read = () => {
                 name="barcode"
                 size={30}
               />
-              <Text style={{ fontFamily: `${font}B` }}>Scan Barcode</Text>
+              <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('scan-barcode')}</Text>
             </Pressable>
           </View>
         </View>
@@ -215,7 +219,7 @@ const Read = () => {
         onBackdropPress={() => setSearchModal(false)}
       >
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
-          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the title</Text>
+          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>{t('enter-title')}</Text>
           <View style={styles.modalSearchInputContainer}>
             <TextInput
               style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
@@ -234,7 +238,7 @@ const Read = () => {
             onTouchStart={() => handleBookSearch(title)}
             style={styles.searchContainer}
           >
-            <Text style={[{ fontFamily: `${font}B` }]}>SEARCH</Text>
+            <Text style={[{ fontFamily: `${font}B` }]}>{t('search').toUpperCase()}</Text>
           </Pressable>
           {isSearchActive && (
             <ScrollView
@@ -245,7 +249,7 @@ const Read = () => {
                 <View key={book.id}>
                   <BookSearchItem
                     book={book}
-                    onPress={() => handleBookSelection(book.selfLink, 'READ')}
+                    onPress={() => handleBookSelection(book.selfLink, BookState.READ)}
                   />
                 </View>
               ))}
@@ -258,7 +262,7 @@ const Read = () => {
         onBackdropPress={() => setIsbnModal(false)}
       >
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
-          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the ISBN</Text>
+          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>{t('enter-isbn')}</Text>
           <View style={styles.modalSearchInputContainer}>
             <TextInput
               style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
@@ -278,7 +282,7 @@ const Read = () => {
             onPressIn={() => handleBookSearchByIsbn(isbn)}
             style={styles.searchContainer}
           >
-            <Text style={[{ fontFamily: `${font}B` }]}>GET</Text>
+            <Text style={[{ fontFamily: `${font}B` }]}>{t('get').toUpperCase()}</Text>
           </TouchableOpacity>
         </View>
       </Modal>

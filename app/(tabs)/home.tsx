@@ -18,6 +18,8 @@ import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { getBookByIsbn } from '@/helpers/getBookByIsbn';
 import BarcodeZxingScan from 'rn-barcode-zxing-scan';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { BookState } from '@/constants/bookState';
+import { useTranslation } from 'react-i18next';
 
 const Home = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -50,6 +52,8 @@ const Home = () => {
 
   const [loadingAnimation, setLoadingAnimation] = useState(false);
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     getBookList().then((data) => {
       setFullBookList([...data]);
@@ -68,7 +72,7 @@ const Home = () => {
       setIsSearchActive(true);
       setBookSearchResults(await data);
     } else {
-      Alert.alert('Book not found', "Sorry! Your book isn't in the database. You will have to add the book manually");
+      Alert.alert(t('book-not-found'), t('no-book-add-manually'));
     }
   }
 
@@ -79,9 +83,9 @@ const Home = () => {
     if (data) {
       setSelectedBook(data?.volumeInfo);
       setIsbnModal(false);
-      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READING' } });
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.READING } });
     } else {
-      Alert.alert('Book Not Found', 'Try searching with the title or add the book manually.');
+      Alert.alert(t('book-not-found'), t('try-search-or-add'));
     }
   }
 
@@ -105,10 +109,10 @@ const Home = () => {
     if (data) {
       setSelectedBook(data);
       setLoadingAnimation(false);
-      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: 'READING' } });
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.READING } });
     } else {
       setLoadingAnimation(false);
-      Alert.alert('Book Not Found', 'Try searching with the title or add the book manually.');
+      Alert.alert(t('book-not-found'), t('try-search-or-add'));
     }
   };
 
@@ -122,7 +126,6 @@ const Home = () => {
         barcodeScanned(data);
       }
     });
-    // router.push({ pathname: '/(scanner)/[barcodeScanner]', params: { barcodeScanner: 'READING' } });
   }
 
   return (
@@ -137,13 +140,13 @@ const Home = () => {
         keyExtractor={(_, index) => index.toString()}
         data={fullBookList}
         extraData={fullBookList}
-        renderItem={({ item }) => <View>{item.state === 'READING' ? <BookItem data={item} /> : null}</View>}
+        renderItem={({ item }) => <View>{item.state === BookState.READING ? <BookItem data={item} /> : null}</View>}
         ListFooterComponent={() => <View style={{ height: 10 }} />}
         // onScrollBeginDrag={() => setHidePlusBtn(true)}
         // onScrollEndDrag={() => setHidePlusBtn(false)}
         onMomentumScrollBegin={() => setHidePlusBtn(true)}
         onMomentumScrollEnd={() => setHidePlusBtn(false)}
-      ></FlatList>
+      />
 
       <Pressable
         onPress={handleAddBook}
@@ -162,17 +165,17 @@ const Home = () => {
         onBackdropPress={() => setFirstModal(false)}
       >
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
-          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Add Book</Text>
+          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>{t('add-book')}</Text>
           <View style={styles.modalButtonContainer}>
             <Pressable
-              onPress={() => addBookManually('READING')}
+              onPress={() => addBookManually(BookState.READING)}
               style={styles.modalButton}
             >
               <AntDesign
                 name="edit"
                 size={25}
               />
-              <Text style={{ fontFamily: `${font}B` }}>Add Manually</Text>
+              <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('add-manually')}</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -185,7 +188,7 @@ const Home = () => {
                 name="search1"
                 size={25}
               />
-              <Text style={{ fontFamily: `${font}B` }}>Search Title</Text>
+              <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('search-title')}</Text>
             </Pressable>
           </View>
           <View style={styles.modalButtonContainer}>
@@ -200,7 +203,7 @@ const Home = () => {
                 name="book"
                 size={30}
               />
-              <Text style={{ fontFamily: `${font}B` }}>Get Book by ISBN</Text>
+              <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('get-book')}</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -213,7 +216,7 @@ const Home = () => {
                 name="barcode"
                 size={30}
               />
-              <Text style={{ fontFamily: `${font}B` }}>Scan Barcode</Text>
+              <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('scan-barcode')}</Text>
             </Pressable>
           </View>
         </View>
@@ -223,7 +226,7 @@ const Home = () => {
         onBackdropPress={() => setSearchModal(false)}
       >
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
-          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the title</Text>
+          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>{t('enter-title')}</Text>
           <View style={styles.modalSearchInputContainer}>
             <TextInput
               style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
@@ -242,7 +245,7 @@ const Home = () => {
             onTouchStart={() => handleBookSearch(title)}
             style={styles.searchContainer}
           >
-            <Text style={[{ fontFamily: `${font}B` }]}>SEARCH</Text>
+            <Text style={[{ fontFamily: `${font}B` }]}>{t('search').toUpperCase()}</Text>
           </Pressable>
           {isSearchActive && (
             <ScrollView
@@ -253,7 +256,7 @@ const Home = () => {
                 <View key={book.id}>
                   <BookSearchItem
                     book={book}
-                    onPress={() => handleBookSelection(book.selfLink, 'READING')}
+                    onPress={() => handleBookSelection(book.selfLink, BookState.READING)}
                   />
                 </View>
               ))}
@@ -266,7 +269,7 @@ const Home = () => {
         onBackdropPress={() => setIsbnModal(false)}
       >
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? accentColor : Colors.light }]}>
-          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>Enter the ISBN</Text>
+          <Text style={[styles.modalHeader, { fontFamily: `${font}B` }]}>{t('enter-isbn')}</Text>
           <View style={styles.modalSearchInputContainer}>
             <TextInput
               style={[styles.modalSearchInput, { fontFamily: `${font}B` }]}
@@ -286,7 +289,7 @@ const Home = () => {
             onPressIn={() => handleBookSearchByIsbn(isbn)}
             style={styles.searchContainer}
           >
-            <Text style={[{ fontFamily: `${font}B` }]}>GET</Text>
+            <Text style={[{ fontFamily: `${font}B` }]}>{t('get').toUpperCase()}</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -340,6 +343,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 5,
+    paddingHorizontal: 5,
   },
 
   modalSearchInputContainer: {
