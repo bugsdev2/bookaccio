@@ -11,4 +11,5 @@ export const Colors = {
   black: '#2a2a2a', //'#1c1c1c',
   closeBlack: '#0b0b0b',
   fullBlack: '#000000',
+  red: '#FF3B30',
 };
