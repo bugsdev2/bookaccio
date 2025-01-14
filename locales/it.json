@@ -45,8 +45,9 @@
   "original-title": "Titolo originale",
   "translator": "Traduttore",
   "description": "Descrizione",
-  "my-review": "Recensione",
+  "review": "Recensione",
   "notes": "Note",
+  "update": "Aggiorna",
 
   "enter-progress": "Inserire l'avanzamento",
   "current-page": "Pagina corrente",
@@ -66,6 +67,7 @@
   "use-amoled-black": "Usa il nero Amoled",
   "fonts": "Font",
   "font": "Font",
+  "language": "Lingua",
   "options": "Opzioni",
   "show-page-number": "Mostra il numero di pagina in 'Lettura'",
   "show-rating": "Mostra valutazione in 'Letti'",
@@ -86,7 +88,7 @@
 
   "explore-works": "Guarda i miei lavori",
   "explore-donate": "Guarda le opzioni per donare",
-  "visit-website": "Visita il sito di Bookaccio"
+  "visit-website": "Visita il sito di Bookaccio",
 
   "title-mandatory": "Titolo, autore e pagine sono campi obbligatori",
   "error": "Errore",
@@ -131,5 +133,8 @@
     "_ sono andati, come vola il tempo! Continua, lettore, a raggiungere il cielo!",
     "Guarda come vai. _ sono volati! Un progresso come questo merita una standing ovation!",
     "_ di lettura e sei ufficialmente impegnato in una relazione con questo libro. Mantieni la costanza!"
-  ]
+  ],
+  "finished-book-in": "Hai finito questo libro in _",
+  "less-than-a-day": "meno di un giorno",
+  "one-day": "1 giorno"
 }

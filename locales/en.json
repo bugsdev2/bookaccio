@@ -45,8 +45,9 @@
   "original-title": "Original Title",
   "translator": "Translator",
   "description": "Description",
-  "my-review": "Review",
+  "review": "Review",
   "notes": "Notes",
+  "update": "Update",
 
   "enter-progress": "Enter Progress",
   "current-page": "Current Page",
@@ -66,6 +67,7 @@
   "use-amoled-black": "Use Amoled Black",
   "fonts": "Fonts",
   "font": "Font",
+  "language": "Language",
   "options": "Options",
   "show-page-number": "Show Page No. in 'Reading'",
   "show-rating": "Show Rating in 'Done'",
@@ -131,5 +133,8 @@
     "_ gone by, oh how time does fly! Keep going, reader—reach for the sky!",
     "Look at you go. _ and counting! Progress like this deserves a standing ovation!",
     "_ of reading, and you’re officially in a committed relationship with this book. Keep it steady!"
-  ]
+  ],
+  "finished-book-in": "You finished this book in _",
+  "less-than-a-day": "less than a day",
+  "one-day": "1 day"
 }
