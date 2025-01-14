@@ -56,7 +56,7 @@ export default function RootLayout() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="(scanner)"
+          name="(unfinished)"
           options={{ headerShown: false }}
         />
       </Stack>
