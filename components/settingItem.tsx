@@ -9,7 +9,6 @@ import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 import { useLanguageContext } from '@/providers/languageProvider';
 import i18n from '@/services/i18next';
-import { languages } from '@/constants/languages';
 import { languageList } from '../constants/languageList';
 import { useTranslation } from 'react-i18next';
 
