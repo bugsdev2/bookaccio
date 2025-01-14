@@ -6,25 +6,25 @@ type FontsProps = [string, React.Dispatch<React.SetStateAction<string>>];
 export const FontsContext = createContext<FontsProps | []>([]);
 
 const FontsProvider = ({ children }: { children: React.ReactNode }) => {
-    const [font, setFont] = useState<string>('Quicksand');
+  const [font, setFont] = useState<string>('Quicksand');
 
-    getData('font').then((value) => {
-        if (value) {
-            setFont(value);
-        }
-    });
+  getData('font').then((value) => {
+    if (value) {
+      setFont(value);
+    }
+  });
 
-    return <FontsContext.Provider value={[font, setFont]}>{children}</FontsContext.Provider>;
+  return <FontsContext.Provider value={[font, setFont]}>{children}</FontsContext.Provider>;
 };
 
 export function useFontsContext(): FontsProps {
-    const [font, setFont] = useContext(FontsContext);
+  const [font, setFont] = useContext(FontsContext);
 
-    if (font === undefined || setFont === undefined) {
-        throw new Error('font or setFont is undefined');
-    }
+  if (font === undefined || setFont === undefined) {
+    throw new Error('font or setFont is undefined');
+  }
 
-    return [font, setFont];
+  return [font, setFont];
 }
 
 export default FontsProvider;
