@@ -18,6 +18,9 @@ import { processDuration } from '@/helpers/processDuration';
 import { getBookList } from '@/helpers/getBookList';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 import { readingMotivation } from '@/helpers/readingMotivation';
+import { BookState } from '@/constants/bookState';
+import { useShowAdditionalDetailsContext } from '@/providers/options/showAdditionalDetails';
+import { useTranslation } from 'react-i18next';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -38,6 +41,8 @@ const BookDetails = () => {
 
   const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
 
+  const [additionalDetailsShown, setAdditionalDetailsShown] = useShowAdditionalDetailsContext();
+
   const [numOfLines, setNumOfLines] = useState(4);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -55,6 +60,8 @@ const BookDetails = () => {
   const [endDate, setEndDate] = useState(new Date(book!.endDate));
 
   const [rating, setRating] = useState(book!.rating);
+
+  const { t } = useTranslation();
 
   const regexNumber = /\d/g;
 
@@ -102,21 +109,21 @@ const BookDetails = () => {
 
   function handleProgressDetails(id: number) {
     if (!regexNumber.test(currentPage!.toString()) || !regexNumber.test(pageCount!.toString())) {
-      Alert.alert('Error', 'Invalid number entered');
+      Alert.alert(t('error'), t('invalid-num-msg'));
       setCurrentPage(book?.currentPage || 0);
       setPageCount(book?.pageCount);
       return;
     }
 
     if (currentPage! > pageCount!) {
-      Alert.alert('Current Page should not exceed Page Count');
+      Alert.alert(t('error'), t('warning-current-page'));
       return;
     }
 
     updateBookDetails({ id, currentPage, pageCount });
 
-    if (book?.state === 'READING') {
-      updateBookDetails({ id, endDate: new Date() });
+    if (book?.state === BookState.READING) {
+      updateBookDetails({ id, endDate: new Date(), currentPage, pageCount });
       setEndDate(new Date());
     }
 
@@ -124,16 +131,16 @@ const BookDetails = () => {
 
     Keyboard.dismiss();
 
-    if (currentPage === pageCount && book?.state === 'READING') {
-      Alert.alert(processInterjections(), `You have finished reading '${book.title}' by ${book.authors.join(', ')}. \nDo you want to rate it and move it to 'Done'?`, [
+    if (currentPage === pageCount && book?.state === BookState.READING) {
+      Alert.alert(processInterjections(t('interjections', { returnObjects: true })), `${t('fisnish-reading-msg')} '${book.title}'. \n${t('rate-and-move')}`, [
         {
-          text: 'Yes',
+          text: t('yes'),
           onPress: () => {
             setIsRatinModalVisible(true);
           },
         },
         {
-          text: 'No',
+          text: t('no'),
           onPress: () => {
             updateBookDetails({ id, endDate: new Date(), currentPage, pageCount });
             setEndDate(new Date());
@@ -158,7 +165,7 @@ const BookDetails = () => {
 
   const handleStartDate = ({ id, startDate }: { id: number; startDate: Date }) => {
     if (Date.parse(startDate.toString()) > Date.parse(endDate.toString())) {
-      Alert.alert('Date Error!', 'Well, how can you end a book before you even start it?');
+      Alert.alert(t('date-error'), t('date-error-how'));
       return;
     }
     setStartDate(startDate);
@@ -182,7 +189,7 @@ const BookDetails = () => {
 
   const handleEndDate = ({ id, endDate }: { id: number; endDate: Date }) => {
     if (Date.parse(startDate.toISOString()) > Date.parse(endDate.toISOString())) {
-      Alert.alert('Error!', 'Well, how can you end a book before you even start it?');
+      Alert.alert(t('date-error'), t('date-error-how'));
       return;
     }
     setEndDate(endDate);
@@ -198,7 +205,7 @@ const BookDetails = () => {
       if (intValue <= 5) {
         setRating(intValue);
       } else {
-        Alert.alert('Invalid Number', 'You have entered an invalid number');
+        Alert.alert(t('error'), t('invalid-num-msg'));
       }
     }
   }
@@ -206,10 +213,10 @@ const BookDetails = () => {
   function handleBookRating(id: number) {
     updateBookDetails({ id, rating });
     setIsRatinModalVisible(false);
-    if (book?.currentPage === book?.pageCount && book?.state === 'READING') {
-      updateBookDetails({ id, endDate: new Date(), currentPage, pageCount, state: 'READ' });
+    if (book?.currentPage === book?.pageCount && book?.state === BookState.READING) {
+      updateBookDetails({ id, endDate: new Date(), currentPage, pageCount, state: BookState.READ });
       setEndDate(new Date());
-      Alert.alert('Success!', `'${book.title}' has been moved to 'Done'`);
+      Alert.alert(t('success'), t('move-to-done-msg'));
     }
   }
 
@@ -253,7 +260,7 @@ const BookDetails = () => {
   } else {
     return (
       <ScrollView
-        style={[styles.container, { backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}
+        style={[styles.container, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light }]}
         contentContainerStyle={styles.contentContainer}
       >
         <View>
@@ -264,9 +271,41 @@ const BookDetails = () => {
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>{book?.title}</Text>
+          <View>
+            <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : accentColor }]}>{book?.title}</Text>
+          </View>
           {book?.subtitle && <Text style={[styles.subtitle, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.subtitle}</Text>}
-          <Text style={[styles.author, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book?.authors[0]}</Text>
+          <Text style={(styles.author, [styles.author, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }])}>{book?.authors[0]}</Text>
+
+          {additionalDetailsShown && (
+            <View style={[styles.additionalInfo]}>
+              {book?.originalTitle && (
+                <Text style={[styles.originalTitle, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>
+                  <Text style={styles.smallHeading}>{t('original-title')}: </Text>
+                  {book.originalTitle}
+                </Text>
+              )}
+              {book?.translator && (
+                <Text style={[styles.originalTitle, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>
+                  <Text style={styles.smallHeading}>{t('translator')}: </Text>
+                  {book.translator}
+                </Text>
+              )}
+              {book?.isbn && (
+                <Text style={[styles.isbn, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>
+                  <Text style={styles.smallHeading}>{t('isbn')}: </Text>
+                  <Text style={styles.textSpaced}>{book.isbn}</Text>
+                </Text>
+              )}
+              {book?.publishedDate && (
+                <Text style={[styles.publishedDate, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>
+                  <Text style={styles.smallHeading}>{t('published-year')}: </Text>
+                  {book.publishedDate.slice(0, 4)}
+                </Text>
+              )}
+            </View>
+          )}
+
           <Pressable
             onPress={() => setIsRatinModalVisible(true)}
             style={styles.ratingContainer}
@@ -274,13 +313,15 @@ const BookDetails = () => {
             {handleBookRatingStar(rating)}
           </Pressable>
           <Text style={[styles.category, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{[...new Set([...book!.categories!.join(' /').split('/')])].join('/')}</Text>
-          <Text
-            onPress={handleTextExpansion}
-            numberOfLines={numOfLines}
-            style={[styles.summary, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
-          >
-            {book?.description?.replace(/<\/?[^>]+(>|$)/g, '')}
-          </Text>
+          {book?.description && (
+            <Text
+              onPress={handleTextExpansion}
+              numberOfLines={numOfLines}
+              style={[styles.summary, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
+            >
+              {book?.description?.replace(/<\/?[^>]+(>|$)/g, '')}
+            </Text>
+          )}
         </View>
 
         <View style={styles.progressContainer}>
@@ -300,38 +341,52 @@ const BookDetails = () => {
           )}
         </View>
 
-        {book.state === 'READING' && bookProgress < 1 && Date.parse(endDate.toString()) - Date.parse(startDate.toString()) > 86400000 ? (
+        {book.state === BookState.READING && bookProgress < 1 && Date.parse(endDate.toString()) - Date.parse(startDate.toString()) > 86400000 ? (
           <View style={styles.durationContainer}>
-            <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{readingMotivation(book.startDate, book.endDate)}</Text>
+            <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{readingMotivation(book.startDate, book.endDate, t('reading-motivation', { returnObjects: true }), t('less-than-a-day'), t('one-day'), t('days'))}</Text>
           </View>
         ) : null}
 
-        {book.state === 'READ' && bookProgress === 1 ? (
+        {book.state === BookState.READ && bookProgress === 1 ? (
           <View style={styles.durationContainer}>
-            <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{processInterjections() + ' You finished this book in ' + processDuration(book.startDate, book.endDate)}</Text>
+            <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{processInterjections(t('interjections', { returnObjects: true })) + ' ' + t('finished-book-in').replace('_', '') + processDuration(book.startDate, book.endDate, t('less-than-a-day'), t('one-day'), t('days'))}</Text>
           </View>
         ) : null}
 
         <View style={[styles.dateContainer]}>
-          {book?.state !== 'READ_LATER' && (
+          {book?.state !== BookState.READ_LATER && (
             <>
               <TouchableOpacity
                 onPress={showStartDatePicker}
                 style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
               >
-                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}>Start Date</Text>
+                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light }]}>{t('start-date')}</Text>
                 <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(startDate)}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={showEndDatePicker}
                 style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
               >
-                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}>End Date</Text>
+                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light }]}>{t('end-date')}</Text>
                 <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(endDate)}</Text>
               </TouchableOpacity>
             </>
           )}
         </View>
+
+        {book.review && (
+          <View style={[styles.reviewContainer, { borderColor: isDarkMode ? Colors.light : Colors.gray }]}>
+            <Text style={[styles.reviewTitle, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, fontFamily: `${font}B`, color: accentColor }]}>{t('review')}</Text>
+            <Text style={[styles.reviewTxt, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book.review}</Text>
+          </View>
+        )}
+
+        {book.notes && (
+          <View style={[styles.notesContainer, { borderColor: isDarkMode ? Colors.light : Colors.gray }]}>
+            <Text style={[styles.notesTitle, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, fontFamily: `${font}B`, color: accentColor }]}>{t('notes')}</Text>
+            <Text style={[styles.notesTxt, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}>{book.notes}</Text>
+          </View>
+        )}
 
         <GlobalDateTimePicker
           visible={isStartDatePickerVisible}
@@ -382,7 +437,7 @@ const BookDetails = () => {
                 onTouchStart={() => handleProgressDetails(book ? book.id : 0)}
                 style={[styles.modalBtn, { backgroundColor: isDarkMode ? Colors.light : accentColor }]}
               >
-                <Text style={[styles.modalBtnText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.dark : Colors.light }]}>SAVE</Text>
+                <Text style={[styles.modalBtnText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.dark : Colors.light }]}>{t('save').toUpperCase()}</Text>
               </Pressable>
             </View>
           </View>
@@ -393,7 +448,7 @@ const BookDetails = () => {
         >
           <View style={[styles.ratingModalContainer, { backgroundColor: isDarkMode ? Colors.black : Colors.light }]}>
             <View>
-              <Text style={[styles.ratingLabel, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}B` }]}>Rating [0-5]</Text>
+              <Text style={[styles.ratingLabel, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}B` }]}>{t('rating')}</Text>
               <TextInput
                 style={[styles.ratingInput, { borderColor: isDarkMode ? Colors.light : Colors.dark, color: isDarkMode ? Colors.light : Colors.dark }]}
                 keyboardType="numeric"
@@ -410,7 +465,7 @@ const BookDetails = () => {
                 onTouchStart={() => handleBookRating(book.id)}
                 style={[styles.ratingSaveBtn, { backgroundColor: accentColor }]}
               >
-                <Text style={styles.ratingSaveTxt}>Save</Text>
+                <Text style={(styles.ratingSaveTxt, { fontFamily: `${font}B` })}>{t('save').toUpperCase()}</Text>
               </Pressable>
             </View>
           </View>
@@ -430,7 +485,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
     gap: 10,
-    paddingBottom: 30,
+    paddingBottom: 50,
   },
 
   thumbnailImage: {
@@ -451,6 +506,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  smallHeading: {
+    color: Colors.gray,
+  },
+
+  isbn: {
+    textAlign: 'center',
+  },
+
+  publishedDate: {
+    textAlign: 'center',
+  },
+
+  textSpaced: {
+    letterSpacing: 1,
+  },
+
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
@@ -458,6 +529,14 @@ const styles = StyleSheet.create({
 
   author: {
     fontSize: 15,
+    textAlign: 'center',
+  },
+
+  additionalInfo: {
+    //
+  },
+
+  originalTitle: {
     textAlign: 'center',
   },
 
@@ -490,6 +569,52 @@ const styles = StyleSheet.create({
   progressContainer: {
     marginVertical: 20,
     marginBottom: 40,
+  },
+
+  reviewContainer: {
+    width: '92%',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingTop: 15,
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+    marginTop: 20,
+    position: 'relative',
+  },
+
+  reviewTitle: {
+    fontSize: 18,
+    position: 'absolute',
+    top: -15,
+    left: 20,
+    paddingHorizontal: 8,
+  },
+
+  reviewTxt: {
+    fontSize: 16,
+  },
+
+  notesContainer: {
+    width: '92%',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingTop: 15,
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+    marginTop: 20,
+    position: 'relative',
+  },
+
+  notesTitle: {
+    fontSize: 18,
+    position: 'absolute',
+    top: -15,
+    left: 20,
+    paddingHorizontal: 8,
+  },
+
+  notesTxt: {
+    fontSize: 16,
   },
 
   modalHeader: {

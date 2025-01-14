@@ -16,6 +16,8 @@ import { storeBooks } from '@/helpers/storeBooks';
 import { processUrl } from '@/helpers/processUrl';
 import { getBookList } from '@/helpers/getBookList';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { BookState, BookStateStringProps } from '@/constants/bookState';
+import { useTranslation } from 'react-i18next';
 
 const AddNewBook = () => {
   const { editBook } = useLocalSearchParams();
@@ -42,6 +44,8 @@ const AddNewBook = () => {
 
   const selectedBook = fullBookList.find((book) => book.id.toString() === editBook);
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     getBookList().then((data) => {
       setFullBookList([...data]);
@@ -63,28 +67,36 @@ const AddNewBook = () => {
     state: selectedBook?.state,
     startDate: selectedBook!.startDate,
     endDate: selectedBook!.endDate,
-    publishedDate: selectedBook!.publishedDate,
+    publishedDate: selectedBook!.publishedDate?.slice(0, 4),
     language: selectedBook!.language,
     publisher: selectedBook!.publisher,
     isbn: selectedBook!.isbn,
+    notes: selectedBook?.notes,
+    originalTitle: selectedBook?.originalTitle,
+    translator: selectedBook?.translator,
+    review: selectedBook?.review,
   });
 
-  const statusData: { title: string; value: 'READ' | 'READING' | 'READ_LATER' }[] = [
-    { title: 'Reading', value: 'READING' },
-    { title: 'Read Later', value: 'READ_LATER' },
-    { title: 'Read', value: 'READ' },
+  const statusData: { title: string; value: BookStateStringProps }[] = [
+    { title: 'Reading', value: BookState.READING },
+    { title: 'Read Later', value: BookState.READ_LATER },
+    { title: 'Read', value: BookState.READ },
+    { title: 'Unfinished', value: BookState.UNFINISHED },
   ];
 
   function selectedText() {
     switch (bookDetails.state) {
-      case 'READ':
+      case BookState.READ:
         return 'Read';
         break;
-      case 'READING':
+      case BookState.READING:
         return 'Reading';
         break;
-      case 'READ_LATER':
+      case BookState.READ_LATER:
         return 'Read Later';
+        break;
+      case BookState.UNFINISHED:
+        return 'Unfinished';
         break;
     }
   }
@@ -108,7 +120,7 @@ const AddNewBook = () => {
 
   function handleEditBook() {
     if (bookDetails.title === '' || bookDetails.authors[0] === '' || bookDetails.pageCount === 0) {
-      Alert.alert('Title, Author and Pages are mandatory fields');
+      Alert.alert(t('error'), t('title-mandatory'));
       return;
     }
 
@@ -142,21 +154,21 @@ const AddNewBook = () => {
       <View style={[styles.detailsContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
         <View>
           <CustomInput
-            label="Title"
+            label={t('title')}
             value={bookDetails.title !== undefined ? bookDetails.title : ''}
             onChangeText={(value) => setBookDetails({ ...bookDetails, title: value })}
           />
         </View>
         <View>
           <CustomInput
-            label="Author"
+            label={t('author')}
             value={bookDetails.authors[0]}
             onChangeText={(value) => setBookDetails({ ...bookDetails, authors: [value] })}
           />
         </View>
 
         <View style={styles.statusContainer}>
-          <Text style={[styles.statusText, { fontFamily: `${font}B`, backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, color: accentColor, zIndex: 1 }]}>Status</Text>
+          <Text style={[styles.statusText, { fontFamily: `${font}B`, backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, color: accentColor, zIndex: 1 }]}>{t('status')}</Text>
           <Dropdown
             style={[styles.dropDownField, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, borderColor: isDarkMode ? Colors.gray : Colors.dark }]}
             labelField={'title'}
@@ -171,11 +183,11 @@ const AddNewBook = () => {
       </View>
       <View style={[styles.detailsContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
         <View>
-          <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Optional Details</Text>
+          <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('optional-details')}</Text>
         </View>
         <View>
           <CustomInput
-            label="ISBN"
+            label={t('isbn')}
             value={bookDetails.isbn ? bookDetails.isbn : ''}
             onChangeText={(value) => setBookDetails({ ...bookDetails, isbn: value })}
             inputMode="numeric"
@@ -183,14 +195,14 @@ const AddNewBook = () => {
         </View>
         <View>
           <CustomInput
-            label="Subtitle"
+            label={t('subtitle')}
             value={bookDetails.subtitle ? bookDetails.subtitle : ''}
             onChangeText={(value) => setBookDetails({ ...bookDetails, subtitle: value })}
           />
         </View>
         <View>
           <CustomInput
-            label="Category"
+            label={t('category')}
             value={bookDetails.categories ? [...new Set([...bookDetails.categories!.join(' /').split('/')])].join('/') : ['']}
             onChangeText={(value) => {
               setBookDetails({ ...bookDetails, categories: [value.split(',').join('/')] });
@@ -199,9 +211,47 @@ const AddNewBook = () => {
         </View>
         <View>
           <CustomInput
-            label="Description"
+            label={t('published-year')}
+            value={bookDetails.publishedDate ? bookDetails.publishedDate : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, publishedDate: value })}
+            inputMode="numeric"
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('original-title')}
+            value={bookDetails.originalTitle ? bookDetails.originalTitle : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, originalTitle: value })}
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('translator')}
+            value={bookDetails.translator ? bookDetails.translator : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, translator: value })}
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('description')}
             value={bookDetails.description ? bookDetails.description : ''}
             onChangeText={(value) => setBookDetails({ ...bookDetails, description: value })}
+            multiline={true}
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('review')}
+            value={bookDetails.review ? bookDetails.review : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, review: value })}
+            multiline={true}
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('notes')}
+            value={bookDetails.notes ? bookDetails.notes : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, notes: value })}
             multiline={true}
           />
         </View>
@@ -212,7 +262,7 @@ const AddNewBook = () => {
           style={[styles.bigBtn, { backgroundColor: accentColor }]}
         >
           <View>
-            <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>Update</Text>
+            <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>{t('update')}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -229,7 +279,7 @@ const AddNewBook = () => {
                 setIsUrlModalVisible(true);
               }}
             >
-              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>Set Image using URL</Text>
+              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>{t('set-image-url')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.largeBtn]}
@@ -238,7 +288,7 @@ const AddNewBook = () => {
                 handleGalleryImage();
               }}
             >
-              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>Select Image from Gallery</Text>
+              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>{t('select-image-gallery')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -257,7 +307,7 @@ const AddNewBook = () => {
             onPress={handleImageChange}
             style={[styles.bigBtn, { backgroundColor: accentColor, alignSelf: 'center' }]}
           >
-            <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>Save</Text>
+            <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>{t('save')}</Text>
           </TouchableOpacity>
         </View>
       </Modal>

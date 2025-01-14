@@ -8,7 +8,6 @@ import { Colors } from '@/constants/Colors';
 import { useSelectedBookContext } from '@/providers/selectedBookProvider';
 import CustomInput from '@/components/customInput';
 import { Dropdown } from 'react-native-element-dropdown';
-import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import Modal from 'react-native-modal';
 import bookCoverPlaceholder from '../../assets/images/others/book-cover-placeholder.png';
@@ -18,9 +17,11 @@ import { storeBooks } from '@/helpers/storeBooks';
 import { processUrl } from '@/helpers/processUrl';
 import { getBookList } from '@/helpers/getBookList';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { BookState, BookStateStringProps } from '@/constants/bookState';
+import { useTranslation } from 'react-i18next';
 
 const AddNewBook = () => {
-  const { addBook }: { addBook: 'READING' | 'READ' | 'READ_LATER' } = useLocalSearchParams();
+  const { addBook }: { addBook: BookStateStringProps } = useLocalSearchParams();
 
   if (Array.isArray(addBook)) {
     throw new Error("Custom addBook mustn't be an Array Error");
@@ -43,6 +44,8 @@ const AddNewBook = () => {
   const [isUrlModalVisible, setIsUrlModalVisible] = useState(false);
 
   const [imgUrl, setImgUrl] = useState('');
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     getBookList().then((data) => {
@@ -74,28 +77,36 @@ const AddNewBook = () => {
     state: addBook,
     startDate: Date.parse(new Date().toString()),
     endDate: Date.parse(new Date().toString()),
-    publishedDate: selectedBook.volumeInfo?.publishedDate,
+    publishedDate: selectedBook.volumeInfo?.publishedDate ? selectedBook.volumeInfo?.publishedDate.slice(0, 4) : '',
     language: selectedBook.volumeInfo?.language,
     publisher: selectedBook.volumeInfo?.publisher,
-    isbn: selectedBook.volumeInfo?.industryIdentifiers[1].identifier ? selectedBook.volumeInfo?.industryIdentifiers[1].identifier : '',
+    isbn: selectedBook.volumeInfo?.industryIdentifiers && selectedBook.volumeInfo?.industryIdentifiers[1]?.identifier ? selectedBook.volumeInfo?.industryIdentifiers[1]?.identifier : '',
+    translator: '',
+    originalTitle: '',
+    notes: '',
+    review: '',
   });
 
-  const statusData: { title: string; value: 'READ' | 'READING' | 'READ_LATER' }[] = [
-    { title: 'Reading', value: 'READING' },
-    { title: 'Read Later', value: 'READ_LATER' },
-    { title: 'Read', value: 'READ' },
+  const statusData: { title: string; value: BookStateStringProps }[] = [
+    { title: 'Reading', value: BookState.READING },
+    { title: 'Read Later', value: BookState.READ_LATER },
+    { title: 'Read', value: BookState.READ },
+    { title: 'Unfinished', value: BookState.UNFINISHED },
   ];
 
   function selectedText() {
     switch (bookDetails.state) {
-      case 'READ':
+      case BookState.READ:
         return 'Read';
         break;
-      case 'READING':
+      case BookState.READING:
         return 'Reading';
         break;
-      case 'READ_LATER':
+      case BookState.READ_LATER:
         return 'Read Later';
+        break;
+      case BookState.UNFINISHED:
+        return 'Unfinished';
         break;
     }
   }
@@ -119,7 +130,7 @@ const AddNewBook = () => {
 
   function handleAddBook() {
     if (bookDetails.title === '' || bookDetails.authors[0] === '' || bookDetails.pageCount === 0) {
-      Alert.alert('Title, Author and Pages are mandatory fields');
+      Alert.alert(t('error'), t('title-mandatory'));
       return;
     }
 
@@ -136,7 +147,7 @@ const AddNewBook = () => {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}
+      style={[styles.container, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light }]}
       contentContainerStyle={styles.contentContainer}
     >
       <View>
@@ -150,21 +161,21 @@ const AddNewBook = () => {
       <View style={[styles.detailsContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
         <View>
           <CustomInput
-            label="Title"
+            label={t('title')}
             value={bookDetails.title !== undefined ? bookDetails.title : ''}
             onChangeText={(value) => setBookDetails({ ...bookDetails, title: value })}
           />
         </View>
         <View>
           <CustomInput
-            label="Author"
+            label={t('author')}
             value={bookDetails.authors[0]}
             onChangeText={(value) => setBookDetails({ ...bookDetails, authors: [value] })}
           />
         </View>
         <View>
           <CustomInput
-            label="Pages"
+            label={t('pages')}
             value={bookDetails.pageCount.toString()}
             onChangeText={(value) => {
               if (value.trim() !== '') {
@@ -177,9 +188,9 @@ const AddNewBook = () => {
           />
         </View>
         <View style={styles.statusContainer}>
-          <Text style={[styles.statusText, { fontFamily: `${font}B`, backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light, color: accentColor, zIndex: 1 }]}>Status</Text>
+          <Text style={[styles.statusText, { fontFamily: `${font}B`, backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, color: accentColor, zIndex: 1 }]}>{t('status')}</Text>
           <Dropdown
-            style={[styles.dropDownField, { backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light, borderColor: isDarkMode ? Colors.gray : Colors.dark }]}
+            style={[styles.dropDownField, { backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light, borderColor: isDarkMode ? Colors.gray : Colors.dark }]}
             labelField={'title'}
             valueField={'value'}
             data={statusData}
@@ -192,34 +203,73 @@ const AddNewBook = () => {
       </View>
       <View style={[styles.detailsContainer, { borderColor: isDarkMode ? Colors.gray : Colors.dark }]}>
         <View>
-          <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Optional Details</Text>
+          <Text style={[styles.title, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('optional-details')}</Text>
         </View>
         <View>
           <CustomInput
-            label="ISBN"
+            label={t('isbn')}
             value={bookDetails.isbn ? bookDetails.isbn : ''}
             onChangeText={(value) => setBookDetails({ ...bookDetails, subtitle: value })}
           />
         </View>
         <View>
           <CustomInput
-            label="Subtitle"
+            label={t('subtitle')}
             value={bookDetails.subtitle ? bookDetails.subtitle : ''}
             onChangeText={(value) => setBookDetails({ ...bookDetails, subtitle: value })}
           />
         </View>
         <View>
           <CustomInput
-            label="Category"
+            label={t('category')}
             value={bookDetails.categories ? bookDetails.categories[0] : ['']}
             onChangeText={(value) => setBookDetails({ ...bookDetails, categories: [value] })}
           />
         </View>
+
         <View>
           <CustomInput
-            label="Description"
+            label={t('published-year')}
+            value={bookDetails.publishedDate ? bookDetails.publishedDate : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, publishedDate: value })}
+            inputMode="numeric"
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('original-title')}
+            value={bookDetails.originalTitle ? bookDetails.originalTitle : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, originalTitle: value })}
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('translator')}
+            value={bookDetails.translator ? bookDetails.translator : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, translator: value })}
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('description')}
             value={bookDetails.description ? bookDetails.description : ''}
             onChangeText={(value) => setBookDetails({ ...bookDetails, description: value })}
+            multiline={true}
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('review')}
+            value={bookDetails.review ? bookDetails.review : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, review: value })}
+            multiline={true}
+          />
+        </View>
+        <View>
+          <CustomInput
+            label={t('notes')}
+            value={bookDetails.notes ? bookDetails.notes : ''}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, notes: value })}
             multiline={true}
           />
         </View>
@@ -230,7 +280,7 @@ const AddNewBook = () => {
           style={[styles.bigBtn, { backgroundColor: accentColor }]}
         >
           <View>
-            <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>Add Book</Text>
+            <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>{t('add-book')}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -247,7 +297,7 @@ const AddNewBook = () => {
                 setIsUrlModalVisible(true);
               }}
             >
-              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>Set Image using URL</Text>
+              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>{t('set-image-url')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.largeBtn]}
@@ -256,7 +306,7 @@ const AddNewBook = () => {
                 handleGalleryImage();
               }}
             >
-              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>Select Image from Gallery</Text>
+              <Text style={[styles.largeBtnTxt, { fontFamily: `${font}B` }]}>{t('select-image-gallery')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -275,7 +325,7 @@ const AddNewBook = () => {
             onPress={handleImageChange}
             style={[styles.bigBtn, { backgroundColor: accentColor, alignSelf: 'center' }]}
           >
-            <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>Save</Text>
+            <Text style={[styles.btnTxt, { fontFamily: `${font}B` }]}>{t('save')}</Text>
           </TouchableOpacity>
         </View>
       </Modal>

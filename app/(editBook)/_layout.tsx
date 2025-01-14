@@ -4,10 +4,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
+import { useTranslation } from 'react-i18next';
 
 const PagesLayout = () => {
   const [accentColor, setAccentColor] = useAccentColorContext();
 
+  const { t } = useTranslation();
   return (
     <>
       <View style={[styles.header, { backgroundColor: accentColor, borderColor: accentColor }]}>
@@ -32,7 +34,7 @@ const PagesLayout = () => {
               textBreakStrategy="highQuality"
               minimumFontScale={12}
             >
-              Edit Book
+              {t('edit-book')}
             </Text>
           </View>
           <View style={{ flex: 1 }}></View>
