@@ -88,26 +88,25 @@ const AddNewBook = () => {
   });
 
   const statusData: { title: string; value: BookStateStringProps }[] = [
-    { title: 'Reading', value: BookState.READING },
-    { title: 'Read Later', value: BookState.READ_LATER },
-    { title: 'Read', value: BookState.READ },
-    { title: 'Unfinished', value: BookState.UNFINISHED },
+    { title: t('reading'), value: BookState.READING },
+    { title: t('read-later'), value: BookState.READ_LATER },
+    { title: t('read'), value: BookState.READ },
+    { title: t('unfinished'), value: BookState.UNFINISHED },
   ];
 
   function selectedText() {
     switch (bookDetails.state) {
       case BookState.READ:
-        return 'Read';
-        break;
+        return t('read');
+
       case BookState.READING:
-        return 'Reading';
-        break;
+        return t('reading');
+
       case BookState.READ_LATER:
-        return 'Read Later';
-        break;
+        return t('read-later');
+
       case BookState.UNFINISHED:
-        return 'Unfinished';
-        break;
+        return t('unfinished');
     }
   }
 
