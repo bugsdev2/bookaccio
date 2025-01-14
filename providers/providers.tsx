@@ -8,6 +8,8 @@ import ShowRatingProvider from './options/showRatingProvider';
 import BlackThemeProvider from './blackThemeProvider';
 import PreventScreenShotProvider from './options/preventScreenShotProvider';
 import UnfinishedProvider from './options/showUnfinishedProvider';
+import ShowAdditionalDetailsProvider from './options/showAdditionalDetails';
+import LanguageProvider from './languageProvider';
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -20,7 +22,11 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
                 <FontsProvider>
                   <PreventScreenShotProvider>
                     <UnfinishedProvider>
-                      <ThemeProvider>{children}</ThemeProvider>
+                      <ShowAdditionalDetailsProvider>
+                        <LanguageProvider>
+                          <ThemeProvider>{children}</ThemeProvider>
+                        </LanguageProvider>
+                      </ShowAdditionalDetailsProvider>
                     </UnfinishedProvider>
                   </PreventScreenShotProvider>
                 </FontsProvider>
