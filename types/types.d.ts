@@ -71,11 +71,15 @@ declare interface Book {
   publisher?: string;
   subtitle?: string;
   title?: string;
-  state?: 'READ' | 'READING' | 'READ_LATER';
+  state?: 'READ' | 'READING' | 'READ_LATER' | 'UNFINISHED';
   startDate: number;
   endDate: number;
   rating?: number;
   isbn?: string;
+  notes?: string;
+  review?: string;
+  originalTitle?: string;
+  translator?: string;
 }
 
 declare interface BookOptional {
@@ -101,7 +105,7 @@ declare interface BookOptional {
   publisher?: string;
   subtitle?: string;
   title?: string;
-  state?: 'READ' | 'READING' | 'READ_LATER';
+  state?: 'READ' | 'READING' | 'READ_LATER' | 'UNFINISHED';
   startDate?: Date;
   endDate?: Date;
   rating?: number;
