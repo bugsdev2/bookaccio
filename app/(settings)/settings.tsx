@@ -21,6 +21,9 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 import { usePreventScreenShotContext } from '@/providers/options/preventScreenShotProvider';
 import { useUnfinishedContext } from '@/providers/options/showUnfinishedProvider';
+import { useShowAdditionalDetailsContext } from '@/providers/options/showAdditionalDetails';
+import { languages } from '@/constants/languages';
+import { useTranslation } from 'react-i18next';
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -38,6 +41,10 @@ const Settings = () => {
   const [isScreenShotDisabled, setIsScreenShotDisabled] = usePreventScreenShotContext();
 
   const [showUnfinished, setShowUnfinished] = useUnfinishedContext();
+
+  const [additionalDetailsShown, setAdditionalDetailsShown] = useShowAdditionalDetailsContext();
+
+  const { t } = useTranslation();
 
   function handleLink(url: string) {
     WebBrowser.openBrowserAsync(url);
@@ -60,6 +67,11 @@ const Settings = () => {
       case 'unfinished':
         setShowUnfinished(value);
         setData('showUnfinished', value);
+        break;
+      case 'additionalDetails':
+        setAdditionalDetailsShown(value);
+        setData('additionalDetails', value);
+        break;
     }
   };
 
@@ -70,24 +82,24 @@ const Settings = () => {
         const data = await FileSystem.readAsStringAsync(result.assets[0].uri);
         const fileData: Book[] = JSON.parse(await data);
         if (fileData[0].id && fileData[0].title) {
-          Alert.alert('Warning!', 'This will remove all existing books from your library and add the new list', [
+          Alert.alert(t('warning'), t('warning-clear-books'), [
             {
-              text: 'Okay',
-              onPress: () => (setFullBookList([...fileData]), storeBooks(fileData), Alert.alert('Success', 'File successfully imported')),
+              text: t('okay'),
+              onPress: () => (setFullBookList([...fileData]), storeBooks(fileData), Alert.alert(t('success'), t('success-import-file'))),
             },
             {
-              text: 'Cancel',
+              text: t('cancel'),
             },
           ]);
         } else {
           throw new Error('You might have provided a different file. You can use only a bookaccio export file');
         }
       } catch (err) {
-        Alert.alert('Error', 'You might have provided a different file. You can use only a bookaccio export file');
+        Alert.alert(t('error'), t('wrong-import-file'));
         console.log(err);
       }
     } else {
-      Alert.alert('Cancelled', 'You have cancelled the import');
+      Alert.alert(t('cancelled'), t('cancel-import'));
     }
   };
 
@@ -107,40 +119,40 @@ const Settings = () => {
       await FileSystem.StorageAccessFramework.createFileAsync(dirUrl, `Bookaccio-Export-${exportDate()}`, 'application/json')
         .then(async (fileUri) => {
           await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(fullBookList), { encoding: FileSystem.EncodingType.UTF8 });
-          Alert.alert('Success', `Export file saved successfully`);
+          Alert.alert(t('success'), t('export-saved'));
         })
         .catch((e) => {
-          Alert.alert('Error', `${e}`);
+          Alert.alert(t('error'), `${e}`);
           console.log(e);
         });
     } else {
-      Alert.alert('Cancelled', 'You have cancelled the export');
+      Alert.alert(t('cancelled'), t('cancel-export'));
     }
   };
 
   return (
     <ScrollView
-      style={[{ backgroundColor: isBlackTheme ? '#000000' : isDarkMode ? Colors.black : Colors.light }]}
+      style={[{ backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light }]}
       contentContainerStyle={styles.contentContainer}
     >
       <SafeAreaView>
         <View style={styles.headerContainer}>
-          <Text style={[styles.headerTitle, { color: accentColor }]}>Settings</Text>
+          <Text style={[styles.headerTitle, { color: accentColor }]}>{t('settings')}</Text>
         </View>
         <View style={{ gap: 20 }}>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
-            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Colors</Text>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('colors')}</Text>
             <SettingItem
-              label="Accent Color"
+              label={t('accent-color')}
               data={accentColors}
             />
             <SettingItem
-              label="Theme"
+              label={t('theme')}
               data={theme}
             />
             {isDarkMode && (
               <View style={{ gap: 15, flexDirection: 'row', justifyContent: 'flex-end', marginRight: -15, marginTop: 5 }}>
-                <Text style={{ color: isDarkMode ? Colors.light : Colors.dark, fontFamily: 'MontB', alignSelf: 'center' }}>Use Amoled Black</Text>
+                <Text style={{ color: isDarkMode ? Colors.light : Colors.dark, fontFamily: 'MontB', alignSelf: 'center' }}>{t('use-amoled-black')}</Text>
                 <BouncyCheckbox
                   style={{ display: 'flex' }}
                   fillColor={accentColor}
@@ -156,17 +168,24 @@ const Settings = () => {
             )}
           </View>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
-            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Fonts</Text>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('fonts')}</Text>
             <SettingItem
-              label="Font"
+              label={t('font')}
               data={fonts}
             />
           </View>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
-            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Options</Text>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('language')}</Text>
+            <SettingItem
+              label={t('language')}
+              data={languages}
+            />
+          </View>
+          <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('options')}</Text>
             <View style={{ gap: 15 }}>
               <View style={[styles.switchContainer]}>
-                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Page No. in 'Reading'</Text>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('show-page-number')}</Text>
                 <Switch
                   trackColor={{ false: Colors.gray, true: accentColor }}
                   thumbColor={Colors.light}
@@ -175,7 +194,7 @@ const Settings = () => {
                 />
               </View>
               <View style={[styles.switchContainer]}>
-                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Rating in 'Done'</Text>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('show-rating')}</Text>
                 <Switch
                   trackColor={{ false: Colors.gray, true: accentColor }}
                   thumbColor={Colors.light}
@@ -184,7 +203,7 @@ const Settings = () => {
                 />
               </View>
               <View style={[styles.switchContainer]}>
-                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Show Unfinished Tag in 'Done'</Text>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('show-unfinished')}</Text>
                 <Switch
                   trackColor={{ false: Colors.gray, true: accentColor }}
                   thumbColor={Colors.light}
@@ -193,7 +212,16 @@ const Settings = () => {
                 />
               </View>
               <View style={[styles.switchContainer]}>
-                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>Disable ScreenShots</Text>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('show-additional-details')}</Text>
+                <Switch
+                  trackColor={{ false: Colors.gray, true: accentColor }}
+                  thumbColor={Colors.light}
+                  value={additionalDetailsShown}
+                  onValueChange={(value) => handleOptions('additionalDetails', value)}
+                />
+              </View>
+              <View style={[styles.switchContainer]}>
+                <Text style={[styles.switchLabel, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('disable-screenshots')}</Text>
                 <Switch
                   trackColor={{ false: Colors.gray, true: accentColor }}
                   thumbColor={Colors.light}
@@ -204,39 +232,59 @@ const Settings = () => {
             </View>
           </View>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
-            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Import/Export</Text>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('import-export')}</Text>
 
             <View style={styles.btnContainer}>
               <TouchableOpacity
                 style={[styles.btn, { backgroundColor: accentColor }]}
                 onPress={handleImport}
               >
-                <Text style={styles.text}>Import</Text>
+                <Text style={styles.text}>{t('import')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.btn, { backgroundColor: accentColor }]}
                 onPress={handleExport}
               >
-                <Text style={styles.text}>Export</Text>
+                <Text style={styles.text}>{t('export')}</Text>
               </TouchableOpacity>
             </View>
           </View>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
-            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Report a Bug</Text>
-            <View style={{ flexDirection: 'column', gap: 15 }}>
-              <TouchableOpacity
-                onPress={() => handleLink('https://t.me/+2qtifdFNRv00Y2M9')}
-                style={[styles.btn, { backgroundColor: accentColor }]}
-              >
-                <Text style={styles.text}>Join the Official Telegram Group</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleLink('https://github.com/bugsdev2/bookaccio/issues')}
-                style={[styles.btn, { backgroundColor: accentColor }]}
-              >
-                <Text style={styles.text}>Create a New Issue via Github</Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('report-bug')}</Text>
+            <TouchableOpacity
+              onPress={() => handleLink('https://t.me/+2qtifdFNRv00Y2M9')}
+              style={[styles.btn, { backgroundColor: accentColor }]}
+            >
+              <Text style={styles.text}>{t('join-tg-group')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleLink('https://github.com/bugsdev2/bookaccio/issues')}
+              style={[styles.btn, { backgroundColor: accentColor }]}
+            >
+              <Text style={styles.text}>{t('create-issue-github')}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('donate')}</Text>
+            <TouchableOpacity
+              onPress={() => handleLink('https://buymeacoffee.com/bugsdev2')}
+              style={[styles.btn, { backgroundColor: accentColor }]}
+            >
+              <Text style={styles.text}>{t('buy-coffee')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleLink('https://github.com/sponsors/bugsdev2')}
+              style={[styles.btn, { backgroundColor: accentColor }]}
+            >
+              <Text style={styles.text}>{t('github-sponsor')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleLink('https://github.com/bugsdev2/bookaccio/issues')}
+              style={[styles.btn, { backgroundColor: accentColor }]}
+            >
+              <Text style={styles.text}>{t('donate-crypto')}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>
