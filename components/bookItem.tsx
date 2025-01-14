@@ -16,6 +16,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { usePageNumberShownContext } from '@/providers/options/showPageNumberProvider';
 import { useRatingShownContext } from '@/providers/options/showRatingProvider';
 import { useUnfinishedContext } from '@/providers/options/showUnfinishedProvider';
+import { BookState, BookStateStringProps } from '@/constants/bookState';
+import { useTranslation } from 'react-i18next';
 
 const bookCoverPlaceholder = require('@/assets/images/others/book-cover-placeholder.png');
 
@@ -33,6 +35,8 @@ const BookItem = ({ data }: { data: Book }) => {
   const [showUnfinished, setShowUnfinished] = useUnfinishedContext();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const { t } = useTranslation();
 
   const [font, setFont] = useFontsContext();
 
@@ -54,7 +58,7 @@ const BookItem = ({ data }: { data: Book }) => {
     });
   };
 
-  function handleMoveBook({ id, state }: { id: number; state: 'READ' | 'READING' | 'READ_LATER' }) {
+  function handleMoveBook({ id, state }: { id: number; state: BookStateStringProps }) {
     getBookList().then((data) => {
       data.map((book: Book) => {
         if (book.id === id) {
@@ -70,57 +74,80 @@ const BookItem = ({ data }: { data: Book }) => {
     });
   }
 
-  function handleModalMenus({ id, state }: { id: number; state: 'READ' | 'READING' | 'READ_LATER' | undefined }) {
+  function handleModalMenus({ id, state }: { id: number; state: BookStateStringProps | undefined }) {
     switch (state) {
-      case 'READING':
+      case BookState.READING:
         return (
           <>
-            <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READ' })}>
-              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Move to Done</Text>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READ })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-done')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READ_LATER' })}>
-              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Move to Read Later</Text>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READ_LATER })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-read-later')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.UNFINISHED })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-unfinished')}</Text>
             </TouchableOpacity>
           </>
         );
         break;
-      case 'READ':
+      case BookState.READ:
         return (
           <>
-            <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READING' })}>
-              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Move to Reading</Text>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READING })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-reading')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READ_LATER' })}>
-              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Move to Read Later</Text>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READ_LATER })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-read-later')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.UNFINISHED })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-unfinished')}</Text>
             </TouchableOpacity>
           </>
         );
         break;
-      case 'READ_LATER':
+      case BookState.READ_LATER:
         return (
           <>
-            <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READ' })}>
-              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Move to Done</Text>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READ })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-done')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleMoveBook({ id, state: 'READING' })}>
-              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Move to Reading</Text>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READING })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-reading')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.UNFINISHED })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-unfinished')}</Text>
             </TouchableOpacity>
           </>
         );
         break;
+      case BookState.UNFINISHED:
+        return (
+          <>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READ_LATER })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-read-later')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READING })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-reading')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMoveBook({ id, state: BookState.READ })}>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('move-to-done')}</Text>
+            </TouchableOpacity>
+          </>
+        );
       default:
         return <></>;
     }
   }
 
   function handleDeleteBook(title: string | undefined, id: number) {
-    Alert.alert(`This will delete ${title} from your library.`, 'Are you sure you want to continue?', [
+    Alert.alert(t('warning'), `${t('warn-delete-book')} ${t('sure-to-continue')}`, [
       {
-        text: 'Yes',
+        text: t('yes'),
         onPress: () => deleteBook(id),
       },
       {
-        text: 'No',
+        text: t('no'),
       },
     ]);
   }
@@ -184,9 +211,9 @@ const BookItem = ({ data }: { data: Book }) => {
                 {data?.subtitle}
               </Text>
             </View>
-            {data.state === 'READ' && showUnfinished && data.currentPage !== data.pageCount ? (
+            {data.state === BookState.READ && showUnfinished && data.currentPage !== data.pageCount ? (
               <View style={{ alignSelf: 'flex-start' }}>
-                <Text style={[styles.unfinished, { fontFamily: `${font}B` }]}>Unfinished</Text>
+                <Text style={[styles.unfinished, { fontFamily: `${font}B` }]}>{t('unfinished')}</Text>
               </View>
             ) : null}
             <View>
@@ -210,14 +237,14 @@ const BookItem = ({ data }: { data: Book }) => {
               />
             </Pressable>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {data.state === 'READING' && pageNumberShown && (
+              {data.state === BookState.READING && pageNumberShown && (
                 <Text style={[{ color: isDarkMode ? Colors.gray : Colors.dark, fontFamily: `${font}R` }]}>
                   {data.currentPage}/{data.pageCount}
                 </Text>
               )}
               <View>
-                {data.state === 'READING' ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
-                {data.state === 'READ' && data.rating && ratingShown ? <View style={styles.rating}>{handleBookRatingStar(data.rating)}</View> : null}
+                {data.state === BookState.READING ? <Text style={[styles.percent, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{percentCompleted}%</Text> : null}
+                {data.state === BookState.READ && data.rating && ratingShown ? <View style={styles.rating}>{handleBookRatingStar(data.rating)}</View> : null}
               </View>
             </View>
           </View>
@@ -238,7 +265,7 @@ const BookItem = ({ data }: { data: Book }) => {
           <View style={styles.modalTextContainer}>
             {handleModalMenus({ id: data.id, state: data.state })}
             <TouchableOpacity onPress={() => handleDeleteBook(data.title, data.id)}>
-              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>Delete Book</Text>
+              <Text style={[styles.modalText, { fontFamily: `${font}B`, color: isDarkMode ? Colors.light : Colors.dark }]}>{t('delete-book')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -307,8 +334,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 3,
     borderRadius: 5,
-    borderColor: Colors.green,
-    color: Colors.green,
+    borderColor: Colors.red,
+    color: Colors.red,
     fontSize: 10,
     textAlign: 'center',
     marginBottom: -5,

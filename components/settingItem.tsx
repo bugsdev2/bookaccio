@@ -4,9 +4,14 @@ import { StyleSheet, View, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Colors } from '../constants/Colors';
 import { useFontsContext } from '@/providers/fontProvider';
-import { getData, setData } from '@/helpers/storage';
+import { setData } from '@/helpers/storage';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { useLanguageContext } from '@/providers/languageProvider';
+import i18n from '@/services/i18next';
+import { languages } from '@/constants/languages';
+import { languageList } from '../constants/languageList';
+import { useTranslation } from 'react-i18next';
 
 const SettingItem = ({ label, data }: SettingItemProps) => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -17,20 +22,26 @@ const SettingItem = ({ label, data }: SettingItemProps) => {
 
   const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
 
+  const [language, setLanguage] = useLanguageContext();
+
+  const { t } = useTranslation();
+
   const selectedText = () => {
     switch (label) {
-      case 'Theme':
+      case t('theme'):
         return isDarkMode ? 'Dark' : 'Light';
-      case 'Font':
+      case t('font'):
         return font;
-      case 'Accent Color':
+      case t('accent-color'):
         return data.filter((item) => item.value === accentColor)[0].title;
+      case t('language'):
+        return languageList[language].nativeName;
     }
   };
 
   const handleSelectedItem = (value: any) => {
     switch (label) {
-      case 'Theme':
+      case t('theme'):
         if (!value) {
           setIsBlackTheme(value);
           setData('isBlackTheme', value);
@@ -38,13 +49,18 @@ const SettingItem = ({ label, data }: SettingItemProps) => {
         setIsDarkMode(value);
         setData('theme', value);
         break;
-      case 'Font':
+      case t('font'):
         setFont(value);
         setData('font', value);
         break;
-      case 'Accent Color':
+      case t('accent-color'):
         setAccentColor(value);
         setData('accentColor', value);
+        break;
+      case t('language'):
+        setLanguage(value);
+        setData('language', value);
+        i18n.changeLanguage(value);
         break;
     }
   };
@@ -85,7 +101,7 @@ const styles = StyleSheet.create({
   },
 
   themeSelect: {
-    flex: 4.5,
+    flex: 3,
   },
 
   themeSelectInner: {
