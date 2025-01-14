@@ -1,0 +1,10 @@
+- Added Italian translation
+- Added auto update of end date as you progress with the pages in the 'Reading' section.
+- Added a feature which prompts the user if they want to move the book once they are done with it to the 'Done' section automatically. This is triggered when the current page is the same as the total number of pages in the book.
+- Added an amoled friendly black theme which can be toggled while already in the existing dark mode.
+- Added screenshot prevention feature along with a toggle switch in settings.
+- Added an unfinished section where the users could move unfinished books
+- Added an unfinished tag to books that have not been finished in the 'Done' section along with a toggle switch to control its visibility in settings. This is separate from the unfinished section.
+- Added some reading motivations which also give you the total time elapsed (in days) from the book's start date.
+- Added isbn, published year, original author, translator, notes and review field in add book and edit book pages
+
