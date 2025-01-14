@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Colors } from '@/constants/Colors';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -7,6 +7,7 @@ import { useAccentColorContext } from '@/providers/accentColorProvider';
 import * as WebBrowser from 'expo-web-browser';
 import { versionNum } from '@/constants/versionNum';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
+import { Link } from 'expo-router';
 
 const About = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -19,7 +20,7 @@ const About = () => {
     WebBrowser.openBrowserAsync(url);
   }
 
-  const Link = ({ text, url }: { text: string; url: string }) => {
+  const CustomLink = ({ text, url }: { text: string; url: string }) => {
     return (
       <Text
         onPress={() => handleLink(url)}
@@ -54,12 +55,12 @@ const About = () => {
           </Text>
           <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>
             This app is inspired by
-            <Link
+            <CustomLink
               text="Dante Book Tracker"
               url="https://github.com/shockbytes/DanteX"
             />
             app created by
-            <Link
+            <CustomLink
               text="Martin Macheiner."
               url="https://github.com/shockbytes"
             />
@@ -67,12 +68,12 @@ const About = () => {
           </Text>
           <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>
             The name 'Bookaccio' is a nod to one of Italy’s most influential writers
-            <Link
+            <CustomLink
               text="Giovanni Boccaccio"
               url="https://en.wikipedia.org/wiki/Giovanni_Boccaccio"
             />
             who was a contemporary of
-            <Link
+            <CustomLink
               text="Dante Alighieri."
               url="https://en.wikipedia.org/wiki/Dante_Alighieri"
             />
@@ -84,7 +85,7 @@ const About = () => {
           <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>This pronunciation is most probably the one you're likely to think of when you see the name for the first time.</Text>
           <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>
             It is inspired by the summoning spell
-            <Link
+            <CustomLink
               text='"Accio"'
               url="https://harrypotter.fandom.com/wiki/Summoning_Charm"
             />
@@ -94,19 +95,37 @@ const About = () => {
         <View>
           <Text style={[styles.title, { color: accentColor }]}>Do you like using Bookaccio?</Text>
           <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>I'm a freelance web and app developer. I'm always working on some project or the other whenever I'm free. And all the stuff I've created so far are not only free to use and ad-free but also opensource.</Text>
-          <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>Do you like using my app? Would you like to contribute a little something so that I can create more free and opensource apps? You can</Text>
-        </View>
-        <View style={{ flexDirection: 'row', gap: 20, justifyContent: 'center' }}>
-          <Pressable style={styles.btn}>
+          <Text style={[styles.text, { color: isDarkMode ? Colors.white : Colors.dark }]}>
+            Do you like using my app? Would you like to contribute a little something so that I can create more free and opensource apps? You can check out the donate options by visiting the
             <Link
-              text="Buy me a coffee"
-              url="https://buymeacoffee.com/bugsdev2"
+              style={[styles.linkText, { color: accentColor }]}
+              href={'/(settings)/settings'}
+            >
+              <Text>{` Settings `}</Text>
+            </Link>
+            Page. If you have any website/app project that you would like to work on, I'm also available for hire as a freelance developer.
+          </Text>
+        </View>
+        <View style={{ gap: 10 }}>
+          <Pressable style={styles.btn}>
+            <CustomLink
+              text="Explore my Works"
+              url="https://bugsdev2.github.io/portfolio/"
             />
           </Pressable>
+          <Link
+            asChild
+            href={'/(settings)/settings'}
+          >
+            <TouchableOpacity style={styles.btn}>
+              <Text style={[styles.linkText, { color: accentColor }]}>Explore Donate Options</Text>
+            </TouchableOpacity>
+          </Link>
+
           <Pressable style={styles.btn}>
-            <Link
-              text="Hire me"
-              url="https://bugsdev2.github.io/portfolio/"
+            <CustomLink
+              text="Visit the Bookaccio Website"
+              url="https://bugsdev2.github.io/bookaccioWebsite/"
             />
           </Pressable>
         </View>
@@ -155,13 +174,13 @@ const styles = StyleSheet.create({
 
   linkText: {
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 
   btn: {
     paddingHorizontal: 25,
     paddingVertical: 10,
     borderWidth: 1,
-    alignSelf: 'center',
     backgroundColor: Colors.light,
     borderRadius: 20,
   },
