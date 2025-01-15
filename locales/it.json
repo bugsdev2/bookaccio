@@ -9,8 +9,8 @@
 
   "search-by-title-or-author": "Cerca per titolo o autore",
 
-  "add-book": "Aggiungi un libro",
-  "edit-book": "Modifica un libro",
+  "add-book": "Aggiungi il libro",
+  "edit-book": "Modifica il libro",
 
   "add-manually": "Aggiungi manualmente",
   "search-title": "Cerca per titolo",
@@ -58,8 +58,8 @@
   "rating": "Valutazione [0-5]",
 
   "sort-by-title": "Ordina i libri per titolo",
-  "sort-by-start-e2l": "Ordinare i libri per data di inizio (dal più vecchio al più recente)",
-  "sort-by-start-l2e": "Ordinare i libri per data di inizio (dal più recente al più vecchio)",
+  "sort-by-start-e2l": "Ordina i libri per data di inizio (dal più vecchio al più recente)",
+  "sort-by-start-l2e": "Ordina i libri per data di inizio (dal più recente al più vecchio)",
 
   "colors": "Colori",
   "accent-color": "Colore dettagli",
