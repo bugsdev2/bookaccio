@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
   },
 
   modalTxt: {
+    textAlign: 'center',
     fontSize: 16,
     fontFamily: 'MontB',
   },
