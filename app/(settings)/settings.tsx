@@ -24,6 +24,8 @@ import { useUnfinishedContext } from '@/providers/options/showUnfinishedProvider
 import { useShowAdditionalDetailsContext } from '@/providers/options/showAdditionalDetails';
 import { languages } from '@/constants/languages';
 import { useTranslation } from 'react-i18next';
+import { booksDataBase } from '@/constants/booksDataBase';
+import { Link } from 'expo-router';
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -181,6 +183,13 @@ const Settings = () => {
               data={languages}
             />
           </View>
+          {/* <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('book-database')}</Text>
+            <SettingItem
+              label={t('source')}
+              data={booksDataBase}
+            />
+          </View> */}
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('options')}</Text>
             <View style={{ gap: 15 }}>
@@ -279,12 +288,15 @@ const Settings = () => {
             >
               <Text style={styles.text}>{t('github-sponsor')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleLink('https://github.com/bugsdev2/bookaccio/issues')}
+            <Link
+              asChild
+              href={'/(cryptoAddress)/cryptoAddress'}
               style={[styles.btn, { backgroundColor: accentColor }]}
             >
-              <Text style={styles.text}>{t('donate-crypto')}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.text}>{t('donate-crypto')}</Text>
+              </TouchableOpacity>
+            </Link>
           </View>
         </View>
       </SafeAreaView>
@@ -334,12 +346,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingVertical: 10,
     borderRadius: 10,
-  },
-
-  modalContainer: {
-    backgroundColor: Colors.light,
-    borderRadius: 20,
-    padding: 25,
   },
 
   text: {
