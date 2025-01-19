@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bookaccio",
     "slug": "bookaccio",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -18,7 +18,7 @@
     },
     "android": {
       "package": "com.bugsdev2.bookaccio",
-      "versionCode": 200,
+      "versionCode": 300,
       "permissions": ["INTERNET", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "CAMERA"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
