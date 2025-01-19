@@ -74,7 +74,7 @@ const ToRead = () => {
     if (isbn === '') return;
     const data = await getBookByIsbn(isbn);
     if (data) {
-      setSelectedBook(data?.volumeInfo);
+      setSelectedBook(data);
       setIsbnModal(false);
       router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.READ_LATER } });
     } else {

@@ -20,6 +20,10 @@ import BarcodeZxingScan from 'rn-barcode-zxing-scan';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 import { BookState } from '@/constants/bookState';
 import { useTranslation } from 'react-i18next';
+import { getBookDetailsOL } from '@/helpers/getBookDetailsOL';
+import BookSearchItemOL from '@/components/bookSearchItemsOL';
+import { useSelectedBookOLContext } from '@/providers/selectedBookOLProvider';
+import { useBookSourceContext } from '@/providers/bookSourceProvider';
 
 const Home = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -28,7 +32,11 @@ const Home = () => {
 
   const [selectedBook, setSelectedBook] = useSelectedBookContext();
 
+  // const [selectedBookOL, setSelectedBookOL] = useSelectedBookOLContext();
+
   const [isBlackTheme, setIsBlackTheme] = useBlackThemeContext();
+
+  // const [bookSource, setBookSource] = useBookSourceContext();
 
   const [font, setFont] = useFontsContext();
 
@@ -47,6 +55,8 @@ const Home = () => {
   const [isSearchActive, setIsSearchActive] = useState(false);
 
   const [bookSearchResults, setBookSearchResults] = useState<BookSearchResultProp[]>([]);
+
+  const [bookSearchResultsOL, setBookSearchResultsOL] = useState<OLBookSearchResults[]>([]);
 
   const [fullBookList, setFullBookList] = useFullBookListContext();
 
@@ -71,6 +81,7 @@ const Home = () => {
     if (data) {
       setIsSearchActive(true);
       setBookSearchResults(await data);
+      setBookSearchResultsOL([]);
     } else {
       Alert.alert(t('book-not-found'), t('no-book-add-manually'));
     }
@@ -81,13 +92,29 @@ const Home = () => {
     if (isbn === '') return;
     const data = await getBookByIsbn(isbn);
     if (data) {
-      setSelectedBook(data?.volumeInfo);
+      setSelectedBook(data);
       setIsbnModal(false);
       router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.READING } });
     } else {
       Alert.alert(t('book-not-found'), t('try-search-or-add'));
     }
   }
+
+  // async function handleBookSelectionOL(isbn: string, state: string) {
+  //   const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=details&format=json`;
+  //   try {
+  //     const res = await axios.get(url);
+  //     setSelectedBookOL(res.data[`ISBN:${isbn}`]);
+  //     setSelectedBook({});
+  //     setLoadingAnimation(false);
+  //     Keyboard.dismiss();
+  //     setSearchModal(false);
+  //     router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
+  //   } catch (err) {
+  //     setLoadingAnimation(false);
+  //     Alert.alert(t('book-not-found'), t('try-search-or-add'));
+  //   }
+  // }
 
   async function handleBookSelection(url: string, state: string) {
     const res = await axios.get(url);
@@ -260,8 +287,31 @@ const Home = () => {
                   />
                 </View>
               ))}
+              {/* {bookSearchResultsOL?.map((book) => (
+                <View key={book.key}>
+                  <BookSearchItemOL
+                    book={book}
+                    onPress={() => handleBookSelectionOL(book.isbn[0], BookState.READING)}
+                  />
+                </View>
+              ))} */}
             </ScrollView>
           )}
+          {/* {isSearchActive && bookSearchResults.length === 0 && (
+            <ScrollView
+              style={styles.modalScrollView}
+              contentContainerStyle={{ width: '90%' }}
+            >
+              {bookSearchResultsOL?.map((book) => (
+                <View key={book.key}>
+                  <BookSearchItemOL
+                    book={book}
+                    onPress={() => handleBookSelectionOL(book.isbn[0], BookState.READING)}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          )} */}
         </View>
       </Modal>
       <Modal
