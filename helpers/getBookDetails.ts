@@ -8,6 +8,7 @@ export const getBookDetails = async (bookTitle: string) => {
     const res = await axios.get(URL);
     return await res.data.items;
   } catch (err) {
+    console.log(err);
     return undefined;
   }
 };
