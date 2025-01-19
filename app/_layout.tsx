@@ -59,6 +59,10 @@ export default function RootLayout() {
           name="(unfinished)"
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="(cryptoAddress)"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </Providers>
   );
