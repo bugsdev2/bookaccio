@@ -73,15 +73,13 @@ const Unfinished = () => {
     if (isbn === '') return;
     const data = await getBookByIsbn(isbn);
     if (data) {
-      setSelectedBook(data?.volumeInfo);
+      setSelectedBook(data);
       setIsbnModal(false);
       router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.UNFINISHED } });
     } else {
       Alert.alert(t('book-not-found'), t('try-search-or-add'));
     }
   }
-
-  // count variable to check number of calls
 
   async function handleBookSelection(url: string, state: string) {
     const res = await axios.get(url);
