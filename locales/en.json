@@ -62,6 +62,8 @@
   "sort-by-start-l2e": "Sort Books by Start Date (Latest to Earliest)",
 
   "colors": "Colors",
+  "book-database": "Book Database",
+  "source": "Source",
   "accent-color": "Accent Color",
   "theme": "Theme",
   "use-amoled-black": "Use Amoled Black",
@@ -85,6 +87,7 @@
   "github-sponsor": "Become a Github Sponsor",
   "donate-crypto": "Donate via Crypto",
   "addresses": "Addresses",
+  "address-copied": "The address has been copied!",
 
   "explore-works": "Explore my Works",
   "explore-donate": "Explore Donate Options",
