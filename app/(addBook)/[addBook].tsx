@@ -19,6 +19,7 @@ import { getBookList } from '@/helpers/getBookList';
 import { useBlackThemeContext } from '@/providers/blackThemeProvider';
 import { BookState, BookStateStringProps } from '@/constants/bookState';
 import { useTranslation } from 'react-i18next';
+import { useSelectedBookOLContext } from '@/providers/selectedBookOLProvider';
 
 const AddNewBook = () => {
   const { addBook }: { addBook: BookStateStringProps } = useLocalSearchParams();
@@ -34,6 +35,8 @@ const AddNewBook = () => {
   const [accentColor, setAccentColor] = useAccentColorContext();
 
   const [selectedBook, setSelectedBook] = useSelectedBookContext();
+
+  // const [selectedBookOL, setSelectedBookOL] = useSelectedBookOLContext();
 
   const [fullBookList, setFullBookList] = useFullBookListContext();
 
@@ -153,7 +156,7 @@ const AddNewBook = () => {
         <TouchableOpacity onPress={() => setIsFirstModalVisible(true)}>
           <Image
             style={styles.image}
-            source={imgUrl !== '' ? { uri: processUrl(imgUrl) } : selectedBook.volumeInfo?.imageLinks?.thumbnail && selectedBook.volumeInfo?.imageLinks?.thumbnail !== '' ? { uri: processUrl(selectedBook.volumeInfo?.imageLinks.thumbnail) } : bookCoverPlaceholder}
+            source={imgUrl !== '' ? { uri: processUrl(imgUrl) } : bookDetails.imageLinks.thumbnail ? { uri: processUrl(bookDetails.imageLinks.thumbnail) } : bookCoverPlaceholder}
           />
         </TouchableOpacity>
       </View>
