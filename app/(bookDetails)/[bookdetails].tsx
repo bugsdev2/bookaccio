@@ -214,7 +214,7 @@ const BookDetails = () => {
     updateBookDetails({ id, rating });
     setIsRatinModalVisible(false);
     if (book?.currentPage === book?.pageCount && book?.state === BookState.READING) {
-      updateBookDetails({ id, endDate: new Date(), currentPage, pageCount, state: BookState.READ });
+      updateBookDetails({ id, endDate: new Date(), currentPage, pageCount, state: BookState.READ, rating });
       setEndDate(new Date());
       Alert.alert(t('success'), t('move-to-done-msg'));
     }
