@@ -14,13 +14,6 @@ export const cryptoList: CryptoDetails[] = [
     offIcon: require('@/assets/images/cryptoIcons/ethereum.png'),
   },
   {
-    name: 'Tether',
-    code: 'USDT',
-    address: 'UQBb4xTfCi-_O9dcqCLDD_ZEiumT3N7uA4FN7YL7gOeDmTdA',
-    icon: 'https://cryptologos.cc/logos/tether-usdt-logo.png',
-    offIcon: require('@/assets/images/cryptoIcons/usdt.png'),
-  },
-  {
     name: 'Binance Coin',
     code: 'BNB',
     address: '0x45768dd038b2889D38eEd55Afd462B7275D45855',
@@ -35,7 +28,7 @@ export const cryptoList: CryptoDetails[] = [
     offIcon: require('@/assets/images/cryptoIcons/polygon.png'),
   },
   {
-    name: 'The Open Network',
+    name: 'Toncoin',
     code: 'TON',
     address: 'UQBb4xTfCi-_O9dcqCLDD_ZEiumT3N7uA4FN7YL7gOeDmTdA',
     icon: 'https://cryptologos.cc/logos/toncoin-ton-logo.png',
