@@ -23,3 +23,7 @@ This permission allows the app to save and modify data on the device’s externa
 <b>CAMERA: </b>
 
 This permission allows the app to use the device camera. This is essential when you are using the barcode scanner to scan and add new books.
+
+<b>READ_MEDIA_IMAGES: </b>
+
+This permission allows the app to access images on the device, enabling users to select a book cover.

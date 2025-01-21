@@ -1,0 +1,4 @@
+- Fixed an error in Italian translation.
+- Fixed an issue where the rating was not being updated while moving the book to 'Done'.
+- Adjusted spacing between certain items.
+- Other minor bug fixes and performance enhancements.
