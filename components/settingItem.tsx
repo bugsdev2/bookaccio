@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
 
   themeSelect: {
-    flex: 3,
+    flex: 2.5,
   },
 
   themeSelectInner: {
