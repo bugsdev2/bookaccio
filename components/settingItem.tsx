@@ -13,6 +13,7 @@ import { languageList } from '../constants/languageList';
 import { useTranslation } from 'react-i18next';
 import { useBookSourceContext } from '@/providers/bookSourceProvider';
 import { booksDataBase } from '@/constants/booksDataBase';
+import { fonts } from '@/constants/fonts';
 
 const SettingItem = ({ label, data }: SettingItemProps) => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -34,7 +35,7 @@ const SettingItem = ({ label, data }: SettingItemProps) => {
       case t('theme'):
         return isDarkMode ? 'Dark' : 'Light';
       case t('font'):
-        return font;
+        return fonts.find((item) => item.value === font)?.title;
       case t('accent-color'):
         return data.filter((item) => item.value === accentColor)[0].title;
       case t('language'):
