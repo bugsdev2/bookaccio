@@ -211,7 +211,7 @@ const AddNewBook = () => {
           <CustomInput
             label={t('isbn')}
             value={bookDetails.isbn ? bookDetails.isbn : ''}
-            onChangeText={(value) => setBookDetails({ ...bookDetails, subtitle: value })}
+            onChangeText={(value) => setBookDetails({ ...bookDetails, isbn: value })}
           />
         </View>
         <View>
