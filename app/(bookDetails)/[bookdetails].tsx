@@ -360,14 +360,14 @@ const BookDetails = () => {
                 onPress={showStartDatePicker}
                 style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
               >
-                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light }]}>{t('start-date')}</Text>
+                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: isDarkMode ? accentColor : Colors.light, backgroundColor: isBlackTheme ? Colors.white : isDarkMode ? Colors.white : accentColor }]}>{t('start-date')}</Text>
                 <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(startDate)}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={showEndDatePicker}
                 style={[styles.bigBtn, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}
               >
-                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: accentColor, backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light }]}>{t('end-date')}</Text>
+                <Text style={[styles.dateLabel, { fontFamily: `${font}B`, color: isDarkMode ? accentColor : Colors.light, backgroundColor: isBlackTheme ? Colors.white : isDarkMode ? Colors.white : accentColor }]}>{t('end-date')}</Text>
                 <Text style={[styles.date, { color: isDarkMode ? Colors.light : Colors.dark }]}>{formatDate(endDate)}</Text>
               </TouchableOpacity>
             </>
@@ -678,17 +678,24 @@ const styles = StyleSheet.create({
     height: 80,
     borderWidth: 1,
     borderRadius: 10,
-    padding: 10,
+    // padding: 10,
   },
 
   dateLabel: {
-    fontSize: 18,
+    fontSize: 17,
     position: 'absolute',
-    top: -15,
-    paddingHorizontal: 8,
+    top: 0,
+    paddingBottom: 2,
+    textAlign: 'center',
+    borderTopLeftRadius: 9,
+    borderTopRightRadius: 9,
+    width: '100%',
+    // paddingHorizontal: 8,
+    // borderWidth: 2,
   },
 
   date: {
+    marginTop: 25,
     fontSize: 17,
   },
 
