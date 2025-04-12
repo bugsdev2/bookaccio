@@ -168,7 +168,7 @@ const TabsLayout = () => {
               }}
               numberOfLines={1}
               multiline={false}
-              placeholder={t('search-by-title-or-author ase e er as d as as as asd asd')}
+              placeholder={t('search-by-title-or-author')}
               placeholderTextColor={'#9e9e9e'}
             />
           </View>
