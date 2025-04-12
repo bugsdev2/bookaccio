@@ -314,12 +314,14 @@ const styles = StyleSheet.create({
   },
 
   midContent: {
+    flex: 4,
     width: '70%',
     overflow: 'hidden',
     justifyContent: 'space-between',
   },
 
   endContent: {
+    flex: 1,
     marginLeft: 'auto',
     alignItems: 'flex-end',
   },

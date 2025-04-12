@@ -37,7 +37,8 @@
         {
           "photosPermission": "The app accesses your photos so that you can add a book cover from your phone gallery."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
@@ -49,6 +50,7 @@
       "eas": {
         "projectId": "1c30e353-a54f-45bc-b351-ff43a5dd8bdb"
       }
-    }
+    },
+    "newArchEnabled": true
   }
 }

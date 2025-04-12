@@ -157,17 +157,19 @@ const TabsLayout = () => {
               color={accentColor}
             />
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, overflow: 'hidden' }}>
             <TextInput
               ref={textInputRef}
               value={searchTxt}
-              placeholder={t('search-by-title-or-author')}
-              placeholderTextColor={'#9e9e9e'}
               style={[styles.searchInput, { fontFamily: `${font}B` }]}
               onChangeText={(value) => {
                 setSearchTxt(value);
                 onSearch(value);
               }}
+              numberOfLines={1}
+              multiline={false}
+              placeholder={t('search-by-title-or-author ase e er as d as as as asd asd')}
+              placeholderTextColor={'#9e9e9e'}
             />
           </View>
         </View>
@@ -200,10 +202,11 @@ const TabsLayout = () => {
           tabBarShowLabel: false,
           tabBarStyle: {
             backgroundColor: isBlackTheme ? Colors.closeBlack : isDarkMode ? Colors.dark : Colors.light,
-            height: 65,
-            borderTopColor: isBlackTheme ? Colors.closeBlack : isDarkMode ? Colors.black : Colors.light,
-            elevation: 10,
+            height: 80,
+            borderColor: isBlackTheme ? Colors.closeBlack : isDarkMode ? Colors.dark : Colors.light,
+            paddingTop: 20,
           },
+          // tabBarPosition: 'bottom',
         }}
       >
         <Tabs.Screen
@@ -218,6 +221,7 @@ const TabsLayout = () => {
                 title={t('for-later')}
               />
             ),
+
             // unmountOnBlur: true,
           }}
         />
@@ -386,7 +390,7 @@ const styles = StyleSheet.create({
   },
 
   customIconFill: {
-    borderRadius: 30,
+    borderRadius: 40,
     width: 100,
     height: 60,
     flexDirection: 'column',
@@ -419,6 +423,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 20,
     paddingHorizontal: 10,
+    paddingVertical: 3,
     justifyContent: 'space-between',
     flex: 1,
   },

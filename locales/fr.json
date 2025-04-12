@@ -1,11 +1,11 @@
 {
   "reading": "En lecture",
-  "for-later": "Pour plus tard",
+  "for-later": "À lire",
   "done": "Lus",
   "unfinished": "Non fini",
 
   "read": "Lu",
-  "read-later": "Lire plus tard",
+  "read-later": "À lire",
 
   "search-by-title-or-author": "chercher par titre ou auteurice",
 
@@ -133,7 +133,7 @@
     "Le temps passe vite ! _ sont passés depuis que vous avez commencé cette histoire. Continuez à tourner les pages !",
     "Cela fait _ depuis la première page. L’intrigue avance, tout comme vos progrès !",
     "_ sont passés, et vous êtes vraiment à fond dans cette aventure. Continuez d’explorer, page après page !",
-      "_ se sont écoulés, comme le temps passe ! Continuez, lisez, visez la lune !",
+    "_ se sont écoulés, comme le temps passe ! Continuez, lisez, visez la lune !",
     "Regardez vous. _ sont passés ! Les progrès comme ça méritent une ovation !",
     "_ de lecture, vous êtes officiellement en relation avec ce livre. Ne lâchez pas le morceau !"
   ],
