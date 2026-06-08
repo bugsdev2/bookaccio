@@ -5,7 +5,7 @@ import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Entypo, MaterialIcons } from '@expo/vector-icons';
+import { Entypo, Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import BookSearchItem from '@/components/bookSearchItem';
 import { getBookDetails } from '@/helpers/getBookDetails';
@@ -146,9 +146,9 @@ const ToRead = () => {
         style={styles.plusIcon}
       >
         {hidePlusBtn ? null : (
-          <AntDesign
-            name="pluscircle"
-            size={55}
+          <MaterialCommunityIcons
+            name="plus-circle"
+            size={70}
             color={accentColor}
           />
         )}
@@ -177,8 +177,8 @@ const ToRead = () => {
               }}
               style={styles.modalButton}
             >
-              <AntDesign
-                name="search1"
+              <Feather
+                name="search"
                 size={25}
               />
               <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('search-title')}</Text>
@@ -192,7 +192,7 @@ const ToRead = () => {
               }}
               style={styles.modalButton}
             >
-              <Entypo
+              <Feather
                 name="book"
                 size={30}
               />
@@ -336,6 +336,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 5,
+    paddingHorizontal: 5,
   },
 
   modalSearchInputContainer: {

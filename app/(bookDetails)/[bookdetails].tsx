@@ -255,6 +255,12 @@ const BookDetails = () => {
     }
   }
 
+  function handleDescription(description: string) {
+    let finalDescription = description.replace(/<\/?[^>]+(>|$)/g, '');
+    finalDescription = finalDescription.replace(/&\D{3,4};/g, '');
+    return finalDescription;
+  }
+
   if (!book) {
     null;
   } else {
@@ -319,7 +325,7 @@ const BookDetails = () => {
               numberOfLines={numOfLines}
               style={[styles.summary, { fontFamily: `${font}R`, color: isDarkMode ? Colors.light : Colors.dark }]}
             >
-              {book?.description?.replace(/<\/?[^>]+(>|$)/g, '')}
+              {handleDescription(book?.description)}
             </Text>
           )}
         </View>
@@ -349,7 +355,7 @@ const BookDetails = () => {
 
         {book.state === BookState.READ && bookProgress === 1 ? (
           <View style={styles.durationContainer}>
-            <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{processInterjections(t('interjections', { returnObjects: true })) + ' ' + t('finished-book-in').replace('_', '') + processDuration(book.startDate, book.endDate, t('less-than-a-day'), t('one-day'), t('days'))}</Text>
+            <Text style={[styles.durationMsg, { color: isDarkMode ? Colors.light : Colors.dark, fontFamily: `${font}R` }]}>{processInterjections(t('interjections', { returnObjects: true })) + ' ' + t('finished-book-in').replace('_', processDuration(book.startDate, book.endDate, t('less-than-a-day'), t('one-day'), t('days')))}</Text>
           </View>
         ) : null}
 

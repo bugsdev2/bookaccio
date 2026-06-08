@@ -202,9 +202,10 @@ const TabsLayout = () => {
           tabBarShowLabel: false,
           tabBarStyle: {
             backgroundColor: isBlackTheme ? Colors.closeBlack : isDarkMode ? Colors.dark : Colors.light,
-            height: 80,
+            height: 70,
             borderColor: isBlackTheme ? Colors.closeBlack : isDarkMode ? Colors.dark : Colors.light,
-            paddingTop: 20,
+            paddingTop: 16,
+            borderWidth: 0,
           },
           // tabBarPosition: 'bottom',
         }}
@@ -308,7 +309,24 @@ const TabsLayout = () => {
                 </Pressable>
               </Link>
             </View>
-
+            <View>
+              <Link
+                href={'/(statistics)/statistics'}
+                asChild
+              >
+                <Pressable
+                  style={styles.linkContainer}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <MaterialIcons
+                    name="sentiment-satisfied-alt"
+                    size={22}
+                    color={isDarkMode ? Colors.light : accentColor}
+                  />
+                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>{'Statistics'}</Text>
+                </Pressable>
+              </Link>
+            </View>
             <View>
               <Link
                 href={'/(settings)/about'}

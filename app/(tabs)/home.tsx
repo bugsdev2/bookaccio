@@ -4,6 +4,7 @@ import BookItem from '@/components/bookItem';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { MaterialCommunityIcons, FontAwesome, Feather } from '@expo/vector-icons';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import Modal from 'react-native-modal';
 import { useFontsContext } from '@/providers/fontProvider';
@@ -77,13 +78,16 @@ const Home = () => {
   async function handleBookSearch(title: string) {
     Keyboard.dismiss();
     if (title === '') return;
+    setLoadingAnimation(true);
     const data = await getBookDetails(title);
     if (data) {
       setIsSearchActive(true);
       setBookSearchResults(await data);
+      setLoadingAnimation(false);
       setBookSearchResultsOL([]);
     } else {
       Alert.alert(t('book-not-found'), t('no-book-add-manually'));
+      setLoadingAnimation(false);
     }
   }
 
@@ -180,9 +184,9 @@ const Home = () => {
         style={styles.plusIcon}
       >
         {hidePlusBtn ? null : (
-          <AntDesign
-            name="pluscircle"
-            size={55}
+          <MaterialCommunityIcons
+            name="plus-circle"
+            size={70}
             color={accentColor}
           />
         )}
@@ -198,7 +202,7 @@ const Home = () => {
               onPress={() => addBookManually(BookState.READING)}
               style={styles.modalButton}
             >
-              <AntDesign
+              <Feather
                 name="edit"
                 size={25}
               />
@@ -211,8 +215,8 @@ const Home = () => {
               }}
               style={styles.modalButton}
             >
-              <AntDesign
-                name="search1"
+              <Feather
+                name="search"
                 size={25}
               />
               <Text style={{ fontFamily: `${font}B`, textAlign: 'center' }}>{t('search-title')}</Text>
@@ -226,7 +230,7 @@ const Home = () => {
               }}
               style={styles.modalButton}
             >
-              <Entypo
+              <Feather
                 name="book"
                 size={30}
               />
@@ -274,20 +278,27 @@ const Home = () => {
           >
             <Text style={[{ fontFamily: `${font}B` }]}>{t('search').toUpperCase()}</Text>
           </Pressable>
+          <ActivityIndicator
+            style={styles.activitiyIndicator}
+            animating={loadingAnimation}
+            size={'large'}
+            color={'white'}
+          />
           {isSearchActive && (
-            <ScrollView
-              style={styles.modalScrollView}
-              contentContainerStyle={{ width: '90%' }}
-            >
-              {bookSearchResults?.map((book) => (
-                <View key={book.id}>
-                  <BookSearchItem
-                    book={book}
-                    onPress={() => handleBookSelection(book.selfLink, BookState.READING)}
-                  />
-                </View>
-              ))}
-              {/* {bookSearchResultsOL?.map((book) => (
+            <>
+              <ScrollView
+                style={styles.modalScrollView}
+                contentContainerStyle={{ width: '90%' }}
+              >
+                {bookSearchResults?.map((book) => (
+                  <View key={book.id}>
+                    <BookSearchItem
+                      book={book}
+                      onPress={() => handleBookSelection(book.selfLink, BookState.READING)}
+                    />
+                  </View>
+                ))}
+                {/* {bookSearchResultsOL?.map((book) => (
                 <View key={book.key}>
                   <BookSearchItemOL
                     book={book}
@@ -295,7 +306,8 @@ const Home = () => {
                   />
                 </View>
               ))} */}
-            </ScrollView>
+              </ScrollView>
+            </>
           )}
           {/* {isSearchActive && bookSearchResults.length === 0 && (
             <ScrollView

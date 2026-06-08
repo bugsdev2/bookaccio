@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   },
 
   endContent: {
-    flex: 1,
+    flex: 1.2,
     marginLeft: 'auto',
     alignItems: 'flex-end',
   },

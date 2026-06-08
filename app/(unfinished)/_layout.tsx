@@ -162,7 +162,7 @@ const UnfinishedLayout = () => {
             <TextInput
               ref={textInputRef}
               value={searchTxt}
-              placeholder="search by title or author"
+              placeholder={t('search-by-title-or-author')}
               placeholderTextColor={'#9e9e9e'}
               style={[styles.searchInput, { fontFamily: `${font}B` }]}
               onChangeText={(value) => {
@@ -238,7 +238,7 @@ const UnfinishedLayout = () => {
                     size={22}
                     color={isDarkMode ? Colors.light : accentColor}
                   />
-                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>Settings</Text>
+                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>{t('settings')}</Text>
                 </Pressable>
               </Link>
             </View>
@@ -256,7 +256,7 @@ const UnfinishedLayout = () => {
                     size={22}
                     color={isDarkMode ? Colors.light : accentColor}
                   />
-                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>About</Text>
+                  <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>{t('about')}</Text>
                 </Pressable>
               </Link>
             </View>
