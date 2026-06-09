@@ -309,7 +309,7 @@ const TabsLayout = () => {
                 </Pressable>
               </Link>
             </View>
-            <View>
+            {/* <View>
               <Link
                 href={'/(statistics)/statistics'}
                 asChild
@@ -326,7 +326,7 @@ const TabsLayout = () => {
                   <Text style={[styles.linkText, { color: isDarkMode ? Colors.light : accentColor }]}>{'Statistics'}</Text>
                 </Pressable>
               </Link>
-            </View>
+            </View> */}
             <View>
               <Link
                 href={'/(settings)/about'}
