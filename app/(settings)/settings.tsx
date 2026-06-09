@@ -1,5 +1,5 @@
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch } from 'react-native';
-import React from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch, TextInput } from 'react-native';
+import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDarkModeContext } from '@/providers/themeProvider';
 import { Colors } from '@/constants/Colors';
@@ -7,7 +7,7 @@ import SettingItem from '@/components/settingItem';
 import { theme } from '@/constants/theme';
 import { fonts } from '@/constants/fonts';
 import { accentColors } from '@/constants/accentColors';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAccentColorContext } from '@/providers/accentColorProvider';
 import { getBookList } from '@/helpers/getBookList';
@@ -26,6 +26,8 @@ import { languages } from '@/constants/languages';
 import { useTranslation } from 'react-i18next';
 import { booksDataBase } from '@/constants/booksDataBase';
 import { Link } from 'expo-router';
+import { useApiKeyContext } from '@/providers/apiKeyProvider';
+import Modal from 'react-native-modal';
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -45,6 +47,12 @@ const Settings = () => {
   const [showUnfinished, setShowUnfinished] = useUnfinishedContext();
 
   const [additionalDetailsShown, setAdditionalDetailsShown] = useShowAdditionalDetailsContext();
+
+  const [apiKey, setApiKey] = useApiKeyContext();
+
+  const [hideApiKey, setHideApiKey] = useState(true);
+
+  const [showApiModal, setShowApiModal] = useState(false);
 
   const { t } = useTranslation();
 
@@ -168,6 +176,25 @@ const Settings = () => {
                 />
               </View>
             )}
+          </View>
+          <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
+            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Google Books API Key</Text>
+            <View style={[{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }]}>
+              <Text style={[styles.text, { color: isDarkMode ? Colors.light : Colors.dark }]}>My API Key:</Text>
+              <Text style={[styles.text, { color: isDarkMode ? Colors.light : Colors.dark }]}>{hideApiKey ? '*********************' : apiKey}</Text>
+              <TouchableOpacity
+                onPress={() => setHideApiKey(!hideApiKey)}
+                style={[styles.btn, { backgroundColor: accentColor }]}
+              >
+                <Text style={[styles.text]}>{hideApiKey ? 'Show' : 'Hide'}</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={[styles.btn, { backgroundColor: accentColor, alignItems: 'center' }]}
+              onPress={() => setShowApiModal(true)}
+            >
+              <Text style={[styles.text]}>Update API Key</Text>
+            </TouchableOpacity>
           </View>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>{t('fonts')}</Text>
@@ -299,6 +326,21 @@ const Settings = () => {
             </Link>
           </View>
         </View>
+        <Modal
+          isVisible={showApiModal}
+          onBackdropPress={() => setShowApiModal(false)}
+          onBackButtonPress={() => setShowApiModal(false)}
+        >
+          <View style={[styles.modalContainer]}>
+            <TextInput
+              placeholder="Please Enter your Google Books API Key"
+              placeholderTextColor={Colors.closeBlack}
+              style={[styles.text, { color: accentColor }]}
+            >
+              {apiKey !== 'No API Key' ? apiKey : ''}
+            </TextInput>
+          </View>
+        </Modal>
       </SafeAreaView>
     </ScrollView>
   );
@@ -363,5 +405,12 @@ const styles = StyleSheet.create({
     fontFamily: 'MontB',
     fontSize: 15,
     flex: 1,
+  },
+
+  modalContainer: {
+    backgroundColor: Colors.light,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
 });
