@@ -34,7 +34,7 @@ declare interface BookSearchResultProp {
   selfLink: string;
   volumeInfo: {
     authors: [author: string];
-    canonicalVolumeLink: 'https://play.google.com/store/books/details?id=CmPPDwAAQBAJ';
+    canonicalVolumeLink: string;
     categories: [];
     description: string;
     imageLinks: { thumbnail: string };

@@ -1,4 +1,4 @@
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch, TextInput } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch, TextInput, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -28,6 +28,7 @@ import { booksDataBase } from '@/constants/booksDataBase';
 import { Link } from 'expo-router';
 import { useApiKeyContext } from '@/providers/apiKeyProvider';
 import Modal from 'react-native-modal';
+import { checkApiKey } from '@/helpers/checkApiKey';
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -140,6 +141,20 @@ const Settings = () => {
     }
   };
 
+  function handleAPIKey() {
+    console.log('Logged');
+    checkApiKey(apiKey).then((data) => {
+      if (data === null) {
+        console.log('Error');
+        Alert.alert('Error', 'You seem to have entered an incorrect API Key. Please try again.');
+      } else {
+        Alert.alert('Success');
+        setData('apiKey', apiKey);
+        setShowApiModal(false);
+      }
+    });
+  }
+
   return (
     <ScrollView
       style={[{ backgroundColor: isBlackTheme ? Colors.fullBlack : isDarkMode ? Colors.black : Colors.light }]}
@@ -181,7 +196,9 @@ const Settings = () => {
             <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Google Books API Key</Text>
             <View style={[{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }]}>
               <Text style={[styles.text, { color: isDarkMode ? Colors.light : Colors.dark }]}>My API Key:</Text>
-              <Text style={[styles.text, { color: isDarkMode ? Colors.light : Colors.dark }]}>{hideApiKey ? '*********************' : apiKey}</Text>
+              <View style={[styles.apiBox, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}>
+                <Text style={[styles.text, { color: isDarkMode ? Colors.light : Colors.dark }]}>{hideApiKey ? '*********************' : apiKey !== '' ? apiKey : 'No API Key'}</Text>
+              </View>
               <TouchableOpacity
                 onPress={() => setHideApiKey(!hideApiKey)}
                 style={[styles.btn, { backgroundColor: accentColor }]}
@@ -334,11 +351,19 @@ const Settings = () => {
           <View style={[styles.modalContainer]}>
             <TextInput
               placeholder="Please Enter your Google Books API Key"
-              placeholderTextColor={Colors.closeBlack}
-              style={[styles.text, { color: accentColor }]}
+              placeholderTextColor={Colors.dark}
+              style={[styles.text, { color: Colors.dark }]}
+              value={apiKey}
+              onChangeText={(value) => setApiKey(value)}
+              submitBehavior="blurAndSubmit"
+              onSubmitEditing={() => handleAPIKey()}
+            />
+            <TouchableOpacity
+              onPressIn={handleAPIKey}
+              style={[styles.btn, { backgroundColor: accentColor }]}
             >
-              {apiKey !== 'No API Key' ? apiKey : ''}
-            </TextInput>
+              <Text style={[styles.text]}>UPDATE</Text>
+            </TouchableOpacity>
           </View>
         </Modal>
       </SafeAreaView>
@@ -412,5 +437,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 10,
+  },
+
+  apiBox: {
+    borderWidth: 1,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
   },
 });

@@ -25,6 +25,7 @@ import { getBookDetailsOL } from '@/helpers/getBookDetailsOL';
 import BookSearchItemOL from '@/components/bookSearchItemsOL';
 import { useSelectedBookOLContext } from '@/providers/selectedBookOLProvider';
 import { useBookSourceContext } from '@/providers/bookSourceProvider';
+import { useApiKeyContext } from '@/providers/apiKeyProvider';
 
 const Home = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -63,6 +64,8 @@ const Home = () => {
 
   const [loadingAnimation, setLoadingAnimation] = useState(false);
 
+  const [apiKey, setApiKey] = useApiKeyContext();
+
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -79,7 +82,7 @@ const Home = () => {
     Keyboard.dismiss();
     if (title === '') return;
     setLoadingAnimation(true);
-    const data = await getBookDetails(title);
+    const data = await getBookDetails(title, apiKey);
     if (data) {
       setIsSearchActive(true);
       setBookSearchResults(await data);
@@ -94,7 +97,7 @@ const Home = () => {
   async function handleBookSearchByIsbn(isbn: string) {
     Keyboard.dismiss();
     if (isbn === '') return;
-    const data = await getBookByIsbn(isbn);
+    const data = await getBookByIsbn(isbn, apiKey);
     if (data) {
       setSelectedBook(data);
       setIsbnModal(false);
@@ -120,12 +123,18 @@ const Home = () => {
   //   }
   // }
 
-  async function handleBookSelection(url: string, state: string) {
-    const res = await axios.get(url);
-    setSelectedBook(await res.data);
-    Keyboard.dismiss();
-    setSearchModal(false);
-    router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
+  async function handleBookSelection(id: string, state: string) {
+    try {
+      const url = `https://www.googleapis.com/books/v1/volumes/${id}?&key=${apiKey}`;
+      const res = await axios.get(url);
+      setSelectedBook(res.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      Keyboard.dismiss();
+      setSearchModal(false);
+      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: state } });
+    }
   }
 
   function addBookManually(state: string) {
@@ -136,7 +145,7 @@ const Home = () => {
   }
 
   const barcodeScanned = async (barcode: string) => {
-    const data = await getBookByIsbn(barcode);
+    const data = await getBookByIsbn(barcode, apiKey);
     if (data) {
       setSelectedBook(data);
       setLoadingAnimation(false);
@@ -294,7 +303,7 @@ const Home = () => {
                   <View key={book.id}>
                     <BookSearchItem
                       book={book}
-                      onPress={() => handleBookSelection(book.selfLink, BookState.READING)}
+                      onPress={() => handleBookSelection(`${book.id}`, BookState.READING)}
                     />
                   </View>
                 ))}

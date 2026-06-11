@@ -6,14 +6,11 @@ type ApiKeyContextProps = [string, React.Dispatch<React.SetStateAction<string>>]
 export const ApiKeyContext = createContext<ApiKeyContextProps | []>([]);
 
 const ApiKeyProvider = ({ children }: { children: React.ReactNode }) => {
-  const [apiKey, setApiKey] = useState<string>('asd687awf87asd23d8b23d98hg');
+  const [apiKey, setApiKey] = useState<string>('');
 
   getData('apiKey').then((data) => {
-    console.log(apiKey);
     if (data !== undefined) {
       setApiKey(data);
-    } else {
-      setApiKey('No API Key');
     }
   });
 
