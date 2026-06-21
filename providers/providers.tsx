@@ -16,35 +16,35 @@ import ApiKeyProvider from './apiKeyProvider';
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ApiKeyProvider>
-      <BlackThemeProvider>
-        <ShowPageNumberProvider>
-          <ShowRatingProvider>
-            <FullBooksListProvider>
-              <SelectedBookProvider>
-                <AccentColorProvider>
-                  <FontsProvider>
-                    <PreventScreenShotProvider>
-                      <UnfinishedProvider>
-                        <ShowAdditionalDetailsProvider>
-                          <LanguageProvider>
-                            <SelectedBookOLProvider>
-                              <BookSourceProvider>
+    <BlackThemeProvider>
+      <ShowPageNumberProvider>
+        <ShowRatingProvider>
+          <FullBooksListProvider>
+            <SelectedBookProvider>
+              <AccentColorProvider>
+                <FontsProvider>
+                  <PreventScreenShotProvider>
+                    <UnfinishedProvider>
+                      <ShowAdditionalDetailsProvider>
+                        <LanguageProvider>
+                          <SelectedBookOLProvider>
+                            <BookSourceProvider>
+                              <ApiKeyProvider>
                                 <ThemeProvider>{children}</ThemeProvider>
-                              </BookSourceProvider>
-                            </SelectedBookOLProvider>
-                          </LanguageProvider>
-                        </ShowAdditionalDetailsProvider>
-                      </UnfinishedProvider>
-                    </PreventScreenShotProvider>
-                  </FontsProvider>
-                </AccentColorProvider>
-              </SelectedBookProvider>
-            </FullBooksListProvider>
-          </ShowRatingProvider>
-        </ShowPageNumberProvider>
-      </BlackThemeProvider>
-    </ApiKeyProvider>
+                              </ApiKeyProvider>
+                            </BookSourceProvider>
+                          </SelectedBookOLProvider>
+                        </LanguageProvider>
+                      </ShowAdditionalDetailsProvider>
+                    </UnfinishedProvider>
+                  </PreventScreenShotProvider>
+                </FontsProvider>
+              </AccentColorProvider>
+            </SelectedBookProvider>
+          </FullBooksListProvider>
+        </ShowRatingProvider>
+      </ShowPageNumberProvider>
+    </BlackThemeProvider>
   );
 };
 

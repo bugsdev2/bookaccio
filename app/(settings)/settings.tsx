@@ -1,4 +1,4 @@
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch, TextInput, Pressable } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch, TextInput, Button, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDarkModeContext } from '@/providers/themeProvider';
@@ -14,7 +14,7 @@ import { getBookList } from '@/helpers/getBookList';
 import { useFullBookListContext } from '@/providers/booksFullListProvider';
 import { storeBooks } from '@/helpers/storeBooks';
 import * as WebBrowser from 'expo-web-browser';
-import { setData } from '@/helpers/storage';
+import { getData, setData, deleteData } from '@/helpers/storage';
 import { useRatingShownContext } from '@/providers/options/showRatingProvider';
 import { usePageNumberShownContext } from '@/providers/options/showPageNumberProvider';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
@@ -29,6 +29,8 @@ import { Link } from 'expo-router';
 import { useApiKeyContext } from '@/providers/apiKeyProvider';
 import Modal from 'react-native-modal';
 import { checkApiKey } from '@/helpers/checkApiKey';
+import { Feather } from '@expo/vector-icons';
+import ApiKeyInstructions from '@/components/apiKeyInstructions';
 
 const Settings = () => {
   const [isDarkMode, setIsDarkMode] = useDarkModeContext();
@@ -55,7 +57,19 @@ const Settings = () => {
 
   const [showApiModal, setShowApiModal] = useState(false);
 
+  const [showInfoModal, setShowInfoModal] = useState(false);
+
   const { t } = useTranslation();
+
+  const getWorkingKey = async () => {
+    try {
+      const workingKey = await getData('apiKey');
+      return workingKey || '';
+    } catch (err) {
+      console.log(err);
+      return '';
+    }
+  };
 
   function handleLink(url: string) {
     WebBrowser.openBrowserAsync(url);
@@ -148,11 +162,30 @@ const Settings = () => {
         console.log('Error');
         Alert.alert('Error', 'You seem to have entered an incorrect API Key. Please try again.');
       } else {
-        Alert.alert('Success');
+        Alert.alert('Success', `Your Google Books API Key -- ${apiKey} -- has been updated`);
         setData('apiKey', apiKey);
         setShowApiModal(false);
       }
     });
+  }
+
+  function deleteApiKey() {
+    Alert.alert('Do you want to delete your API Key?', 'This will delete your API permanently. Do you want to coninue?', [
+      { text: 'Cancel', style: 'cancel', onPress: () => console.log('Canceled Deleting API Key') },
+      {
+        text: 'Delete',
+        style: 'default',
+        onPress: () => {
+          setApiKey('');
+          setData('apiKey', '');
+          console.log('API Key has been deleted');
+        },
+      },
+    ]);
+  }
+
+  function handleInfoModal() {
+    setShowInfoModal(true);
   }
 
   return (
@@ -193,7 +226,21 @@ const Settings = () => {
             )}
           </View>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
-            <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Google Books API Key</Text>
+            <View style={[{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end' }]}>
+              <Text style={[styles.subheading, { color: isDarkMode ? Colors.light : Colors.dark }]}>Google Books API Key</Text>
+              <Pressable
+                style={[{ paddingLeft: 10 }]}
+                onPress={() => setShowInfoModal(true)}
+              >
+                <View style={[]}>
+                  <Feather
+                    name="info"
+                    color={accentColor}
+                    size={20}
+                  />
+                </View>
+              </Pressable>
+            </View>
             <View style={[{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }]}>
               <Text style={[styles.text, { color: isDarkMode ? Colors.light : Colors.dark }]}>My API Key:</Text>
               <View style={[styles.apiBox, { borderColor: isDarkMode ? Colors.light : Colors.dark }]}>
@@ -206,11 +253,18 @@ const Settings = () => {
                 <Text style={[styles.text]}>{hideApiKey ? 'Show' : 'Hide'}</Text>
               </TouchableOpacity>
             </View>
+
             <TouchableOpacity
               style={[styles.btn, { backgroundColor: accentColor, alignItems: 'center' }]}
               onPress={() => setShowApiModal(true)}
             >
               <Text style={[styles.text]}>Update API Key</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={deleteApiKey}
+              style={[styles.btn, { backgroundColor: accentColor, alignItems: 'center' }]}
+            >
+              <Text style={[styles.text]}>Delete API Key</Text>
             </TouchableOpacity>
           </View>
           <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? 'rgba(15,15,15,0.3)' : 'rgba(200,200,200,0.3)' }]}>
@@ -345,8 +399,18 @@ const Settings = () => {
         </View>
         <Modal
           isVisible={showApiModal}
-          onBackdropPress={() => setShowApiModal(false)}
-          onBackButtonPress={() => setShowApiModal(false)}
+          onBackdropPress={() => {
+            getWorkingKey().then((value) => {
+              setApiKey(value);
+            });
+            setShowApiModal(false);
+          }}
+          onBackButtonPress={() => {
+            getWorkingKey().then((value) => {
+              setApiKey(value);
+            });
+            setShowApiModal(false);
+          }}
         >
           <View style={[styles.modalContainer]}>
             <TextInput
@@ -364,6 +428,22 @@ const Settings = () => {
             >
               <Text style={[styles.text]}>UPDATE</Text>
             </TouchableOpacity>
+          </View>
+        </Modal>
+        <Modal
+          isVisible={showInfoModal}
+          onBackdropPress={() => setShowInfoModal(false)}
+        >
+          <View style={[styles.modalContainer]}>
+            <ApiKeyInstructions />
+            <View style={[styles.btnContainer, { marginVertical: 10 }]}>
+              <TouchableOpacity
+                style={[styles.btn, { backgroundColor: accentColor }]}
+                onPress={() => setShowInfoModal(false)}
+              >
+                <Text style={styles.text}>Take me back</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </Modal>
       </SafeAreaView>

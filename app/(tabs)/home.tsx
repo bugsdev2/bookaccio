@@ -97,13 +97,18 @@ const Home = () => {
   async function handleBookSearchByIsbn(isbn: string) {
     Keyboard.dismiss();
     if (isbn === '') return;
-    const data = await getBookByIsbn(isbn, apiKey);
-    if (data) {
-      setSelectedBook(data);
-      setIsbnModal(false);
-      router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.READING } });
-    } else {
-      Alert.alert(t('book-not-found'), t('try-search-or-add'));
+    try {
+      const data = await getBookByIsbn(isbn, apiKey);
+
+      if (data) {
+        setSelectedBook(data);
+        setIsbnModal(false);
+        router.push({ pathname: '/(addBook)/[addBook]', params: { addBook: BookState.READING } });
+      } else {
+        Alert.alert(t('book-not-found'), t('try-search-or-add'));
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
 
