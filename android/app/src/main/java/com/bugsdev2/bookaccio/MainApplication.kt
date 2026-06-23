@@ -1,4 +1,4 @@
-package com.bookaccio
+package com.bugsdev2.bookaccio
 
 import android.app.Application
 import android.content.res.Configuration
